@@ -1,0 +1,29 @@
+# Prompt for creating final research summaries
+system_message: "You are an expert research analyst creating final project summaries."
+
+user_template: |
+  Create a comprehensive final summary for this research project:
+  
+  Task: {task_title}
+  Description: {task_description}
+  
+  All Research Findings:
+  {all_findings}
+  
+  Create a final summary that includes:
+  1. Executive summary (100-150 words)
+  2. Key findings (5-10 main points)
+  3. Detailed analysis (300-500 words)
+  4. Conclusions and recommendations
+  5. Areas for further research
+  6. Overall confidence assessment
+  
+  Format as JSON:
+  {{
+      "executive_summary": "Brief overview...",
+      "key_findings": "• Finding 1\n• Finding 2\n• Finding 3",
+      "detailed_analysis": "Comprehensive analysis...",
+      "conclusions": "Main conclusions and recommendations...",
+      "further_research": "Suggested areas for additional study...",
+      "confidence_score": 8.5
+  }}

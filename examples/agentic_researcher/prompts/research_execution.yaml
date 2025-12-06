@@ -1,0 +1,52 @@
+# Prompt for executing individual research steps with real data
+system_template: "You are an expert researcher specializing in {step_type_lower}. Analyze the provided real research data and synthesize accurate, well-sourced findings."
+
+user_template: |
+  You are conducting research step {step_number} of {total_steps} for the following research task:
+  
+  Task: {task_title}
+  Description: {task_description}
+  
+  Current Step: {step_title}
+  Step Description: {step_description}
+  Step Type: {step_type}
+  Research Query: {research_query}
+  {context}
+  
+  REAL RESEARCH DATA GATHERED:
+  {research_data}
+  
+  Based on the actual research data provided above, analyze and synthesize:
+  
+  1. **Detailed Findings**: Comprehensive analysis of the research data (300+ words)
+     - Cite specific sources from the research data
+     - Include relevant statistics, quotes, or key facts found
+     - Note any conflicting information or data gaps
+  
+  2. **Source Analysis**: Evaluate the quality and reliability of sources
+     - Note publication dates and source credibility
+     - Identify any potential bias or limitations
+  
+  3. **Key Insights**: Extract 3-5 actionable insights with source citations
+  
+  4. **Confidence Assessment**: Rate your confidence (1-10) based on:
+     - Quality and quantity of sources found
+     - Consistency of information across sources
+     - Recency and relevance of data
+  
+  5. **Research Limitations**: Identify any gaps or limitations in the data
+  
+  6. **Follow-up Research**: Suggest specific areas needing deeper investigation
+  
+  Format as JSON:
+  {{
+      "content": "Detailed findings with source citations...",
+      "summary": "Brief executive summary (50-100 words)...",
+      "key_insights": "• Insight 1 (Source: Title/URL)\n• Insight 2 (Source: Title/URL)\n• Insight 3 (Source: Title/URL)",
+      "confidence_score": 8.5,
+      "source_quality": "Assessment of source reliability and limitations...",
+      "research_limitations": "Identified gaps in data or methodology...",
+      "follow_up_questions": "1. Specific question for deeper research\n2. Another targeted question",
+      "tags": "tag1, tag2, tag3",
+      "sources_cited": ["Source 1 title", "Source 2 title", "Source 3 title"]
+  }}

@@ -1,0 +1,33 @@
+# Prompt for defining research steps based on task requirements
+system_message: "You are an expert research strategist who creates detailed, actionable research plans."
+
+user_template: |
+  You are an expert research strategist. Define a comprehensive research plan for the following task.
+  
+  Research Task: {task_title}
+  Description: {task_description}
+  Keywords: {task_keywords}
+  Priority: {task_priority}
+  Budget Hours: {budget_hours}
+  
+  Create 5-10 specific, actionable research steps. For each step, provide:
+  1. Step title (brief, descriptive)
+  2. Detailed description of what to do
+  3. Step type (choose from: Literature Search, Data Analysis, Expert Consultation, Case Study, Market Research, Technical Analysis, Synthesis, Validation)
+  4. Estimated hours
+  5. Specific research query or focus
+  6. Recommended data sources
+  
+  Format your response as JSON:
+  {{
+      "steps": [
+          {{
+              "title": "Step title",
+              "description": "Detailed description",
+              "step_type": "Literature Search",
+              "estimated_hours": 2.0,
+              "research_query": "Specific query",
+              "data_sources": "source1, source2, source3"
+          }}
+      ]
+  }}

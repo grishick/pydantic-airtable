@@ -1,0 +1,8 @@
+# Prompt for extracting keywords from research task descriptions
+system_message: "You are a research assistant that extracts relevant keywords."
+
+user_template: |
+  Extract 5-10 relevant keywords from this research task description.
+  Return only the keywords as a comma-separated list.
+  
+  Task: {description}
