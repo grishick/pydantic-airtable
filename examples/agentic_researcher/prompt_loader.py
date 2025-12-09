@@ -4,7 +4,6 @@ Prompt loader utility for the Agentic Researcher
 This module provides utilities to load and format prompts from external YAML files.
 """
 
-import os
 import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -151,16 +150,19 @@ class PromptLoader:
         
         return system_message, user_message
     
-    def format_qa_answering(self, research_context: str, question: str) -> str:
+    def format_qa_answering(self, question: str, research_context: str) -> tuple[str, str]:
         """
         Format the Q&A answering prompt
         
         Returns:
-            Formatted user message for Q&A
+            Tuple of (system_message, user_message)
         """
         prompt_data = self.load_prompt("qa_answering")
         
-        return prompt_data["user_template"].format(
+        system_message = prompt_data.get("system_message", "You are a helpful research assistant.")
+        user_message = prompt_data["user_template"].format(
             research_context=research_context,
             question=question
         )
+        
+        return system_message, user_message

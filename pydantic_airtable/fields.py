@@ -2,7 +2,7 @@
 AirTable field definitions and type mappings
 """
 
-from typing import Any, Dict, Optional, Type
+from typing import Any, Optional, Type
 from datetime import datetime, date
 from pydantic import Field
 from enum import Enum

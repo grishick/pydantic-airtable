@@ -139,37 +139,6 @@ export AIRTABLE_ACCESS_TOKEN="pat_your_token"
 ### **Issue**: OpenAI rate limiting errors
 **Solution**: The library includes built-in retry logic, but ensure you have sufficient OpenAI credits
 
-## 🔄 **Upgrading**
-
-### **From v0.1.x to v0.2.x**
-```bash
-pip install --upgrade openai>=2.8.1
-```
-
-No breaking changes - all v0.1.x code continues to work. New features:
-- Table/base creation
-- Schema management
-- Agentic Researcher
-
-### **OpenAI Library Migration**
-If upgrading from older OpenAI versions:
-
-**Old (pre-1.0)**:
-```python
-import openai
-openai.api_key = "sk-..."
-response = openai.ChatCompletion.create(...)
-```
-
-**New (1.0+)**:
-```python
-from openai import OpenAI
-client = OpenAI(api_key="sk-...")
-response = client.chat.completions.create(...)
-```
-
-Our library uses the **new pattern** and requires OpenAI 2.8.1+.
-
 ## 📚 **Next Steps**
 
 1. **Quick Start**: Run `python examples/simple_usage.py`

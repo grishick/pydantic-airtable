@@ -3,8 +3,7 @@ AirTable Table Management - Create, update, and manage AirTable tables
 """
 
 import requests
-from typing import Any, Dict, List, Optional, Type, get_type_hints
-from datetime import datetime, date
+from typing import Any, Dict, List, Optional, Type
 from pydantic import BaseModel
 from enum import Enum
 

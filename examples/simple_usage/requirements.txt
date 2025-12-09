@@ -1,0 +1,10 @@
+# Simple Usage Example Dependencies
+
+# Install the pydantic-airtable package from parent directory
+-e ../../
+
+# Environment variable management (optional but recommended)
+python-dotenv>=1.0.0
+
+# Note: All other dependencies (pydantic, requests, etc.) 
+# are automatically included via the main package

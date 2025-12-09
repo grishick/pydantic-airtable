@@ -2,21 +2,34 @@
 Table and Base Management Example
 
 This example demonstrates how to create AirTable bases and tables
-directly from Pydantic models, and manage table schemas.
+directly from Pydantic models, and manage table schemas using the
+streamlined pydantic-airtable API.
 """
 
-import os
-from datetime import datetime
-from typing import Optional, List
-from enum import Enum
-
 import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+from datetime import datetime
+from typing import Optional
+from enum import Enum
+from pydantic import BaseModel
+from dotenv import load_dotenv
 
-from pydantic_airtable import AirTableModel, AirTableConfig, AirTableField, BaseManager, TableManager
-from pydantic_airtable.fields import AirTableFieldType
+# Add parent directory to path for local development
+sys.path.insert(0, "../../")
 
+from pydantic_airtable import (
+    airtable_model, 
+    configure_from_env, 
+    airtable_field,
+    AirTableFieldType,
+    AirTableManager,
+    AirTableConfig
+)
+
+# Load environment variables
+load_dotenv()
+
+# Configure from environment
+configure_from_env()
 
 # Define Enums for better type safety
 class TaskStatus(str, Enum):
@@ -33,436 +46,360 @@ class Priority(str, Enum):
     URGENT = "Urgent"
 
 
-# Example 1: Simple Task Model
-class Task(AirTableModel):
-    """Task model that can create its own table"""
+# Example 1: Simple Task Model with Smart Field Detection
+@airtable_model(table_name="Tasks")
+class Task(BaseModel):
+    """Task model with automatic field type detection"""
     
-    AirTableConfig = AirTableConfig(
-        table_name="Tasks"
-    )
+    title: str                                  # -> SINGLE_LINE_TEXT
+    description: Optional[str] = None           # -> LONG_TEXT (detected from name)
+    status: TaskStatus = TaskStatus.PENDING     # -> SELECT (enum auto-detected)
+    priority: Priority = Priority.MEDIUM        # -> SELECT (enum auto-detected)
+    completed: bool = False                     # -> CHECKBOX
+    due_date: Optional[datetime] = None         # -> DATETIME
+    created_at: Optional[datetime] = None       # -> DATETIME
     
-    title: str = AirTableField(
-        description="Task title",
-        airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT
-    )
-    
-    description: str = AirTableField(
-        description="Detailed task description",
-        airtable_field_type=AirTableFieldType.LONG_TEXT
-    )
-    
-    status: TaskStatus = AirTableField(
-        default=TaskStatus.PENDING,
-        description="Current task status",
-        airtable_field_type=AirTableFieldType.SELECT
-    )
-    
-    priority: Priority = AirTableField(
-        default=Priority.MEDIUM,
-        description="Task priority level",
-        airtable_field_type=AirTableFieldType.SELECT
-    )
-    
-    due_date: Optional[datetime] = AirTableField(
-        default=None,
-        description="Task due date",
-        airtable_field_type=AirTableFieldType.DATETIME
-    )
-    
-    assignee_email: Optional[str] = AirTableField(
-        default=None,
-        description="Assignee email address",
-        airtable_field_type=AirTableFieldType.EMAIL
-    )
-    
-    estimated_hours: Optional[float] = AirTableField(
-        default=None,
-        description="Estimated hours to complete",
-        airtable_field_type=AirTableFieldType.NUMBER
+    # Manual override for specific field configuration
+    tags: Optional[str] = airtable_field(
+        field_type=AirTableFieldType.MULTI_SELECT,
+        choices=["urgent", "important", "work", "personal", "review"],
+        default=None
     )
 
 
-# Example 2: User Model with relationships
-class User(AirTableModel):
-    """User model with various field types"""
+# Example 2: User Model with Smart Email/Phone Detection
+@airtable_model(table_name="Users")
+class User(BaseModel):
+    """User model demonstrating smart field detection"""
     
-    AirTableConfig = AirTableConfig(
-        table_name="Users"
-    )
-    
-    name: str = AirTableField(
-        description="Full name",
-        airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT
-    )
-    
-    email: str = AirTableField(
-        description="Email address",
-        airtable_field_type=AirTableFieldType.EMAIL
-    )
-    
-    phone: Optional[str] = AirTableField(
-        default=None,
-        description="Phone number",
-        airtable_field_type=AirTableFieldType.PHONE
-    )
-    
-    website: Optional[str] = AirTableField(
-        default=None,
-        description="Personal website",
-        airtable_field_type=AirTableFieldType.URL
-    )
-    
-    is_active: bool = AirTableField(
-        default=True,
-        description="User is active",
-        airtable_field_type=AirTableFieldType.CHECKBOX
-    )
-    
-    join_date: datetime = AirTableField(
-        default_factory=datetime.now,
-        description="Date joined",
-        airtable_field_type=AirTableFieldType.DATE
-    )
+    name: str                    # -> SINGLE_LINE_TEXT
+    email: str                   # -> EMAIL (detected from field name!)
+    phone: Optional[str] = None  # -> PHONE (detected from field name!)
+    bio: Optional[str] = None    # -> LONG_TEXT (detected from field name!)
+    website: Optional[str] = None # -> URL (detected from field name!)
+    is_admin: bool = False       # -> CHECKBOX
+    salary: Optional[float] = None # -> NUMBER
 
 
-def demo_base_management():
-    """Demonstrate base management operations"""
+# Example 3: Project Model with Custom Field Configuration
+@airtable_model(table_name="Projects")
+class Project(BaseModel):
+    """Project model with mixed auto-detection and manual configuration"""
     
-    print("🏗️  Base Management Demo")
-    print("=" * 40)
+    name: str                    # Auto-detected
+    description: str             # Auto-detected as LONG_TEXT
+    budget: Optional[float] = airtable_field(
+        field_type=AirTableFieldType.CURRENCY,
+        default=None
+    )
+    completion_rate: Optional[float] = airtable_field(
+        field_type=AirTableFieldType.PERCENT,
+        default=None
+    )
+    status: str = airtable_field(
+        field_type=AirTableFieldType.SELECT,
+        choices=["Planning", "Active", "On Hold", "Completed"],
+        default="Planning"
+    )
+    team_size: Optional[int] = None      # -> NUMBER
+    start_date: Optional[datetime] = None # -> DATETIME
+    end_date: Optional[datetime] = None   # -> DATETIME
+
+
+def demonstrate_table_creation():
+    """Demonstrate automatic table creation from models"""
     
-    access_token = os.getenv("AIRTABLE_ACCESS_TOKEN") or os.getenv("AIRTABLE_API_KEY")
-    if not access_token:
-        print("⚠️  No access token found. Set AIRTABLE_ACCESS_TOKEN environment variable.")
-        return
+    print("\n" + "="*60)
+    print("🏗️  TABLE CREATION DEMONSTRATION")
+    print("="*60)
     
-    base_manager = BaseManager(access_token)
+    models_to_create = [
+        ("Tasks", Task),
+        ("Users", User), 
+        ("Projects", Project)
+    ]
+    
+    failed_tables = []
+    
+    for table_name, model_class in models_to_create:
+        print(f"\n📋 Creating {table_name} table...")
+        
+        try:
+            # Try to access existing table
+            existing_records = model_class.all()
+            print(f"✅ {table_name} table already exists with {len(existing_records)} records")
+            
+        except Exception as check_error:
+            # Table doesn't exist, create it
+            print(f"⚠️  Table check failed: {check_error}")
+            print(f"🔧 Attempting to create {table_name} table...")
+            
+            try:
+                result = model_class.create_table()
+                print(f"✅ Created {table_name} table successfully!")
+                print(f"   Table ID: {result.get('id', 'Unknown')}")
+                
+                # Wait a moment for table to be ready
+                import time
+                time.sleep(1)
+                
+                # Verify we can access it
+                try:
+                    test_records = model_class.all()
+                    print(f"✅ Verified table access - found {len(test_records)} records")
+                except Exception as verify_error:
+                    print(f"⚠️  Table created but access verification failed: {verify_error}")
+                
+            except Exception as e:
+                print(f"❌ Failed to create {table_name} table: {e}")
+                print(f"   Error type: {type(e).__name__}")
+                failed_tables.append(table_name)
+    
+    # Return success status
+    if failed_tables:
+        print(f"\n⚠️  Failed to set up tables: {', '.join(failed_tables)}")
+        return False
+    else:
+        print(f"\n✅ All tables set up successfully!")
+        return True
+
+
+def demonstrate_crud_operations():
+    """Demonstrate CRUD operations with the new models"""
+    
+    print("\n" + "="*60)
+    print("📝 CRUD OPERATIONS DEMONSTRATION") 
+    print("="*60)
+    
+    # Create sample tasks
+    print("\n1️⃣ Creating sample tasks...")
+    
+    # Debug: Show what table name we're using
+    print(f"🔍 Debug: Task table name is '{Task._get_table_name()}'")
     
     try:
-        # List existing bases
-        print("\\n📋 Listing existing bases...")
-        bases = base_manager.list_bases()
-        print(f"Found {len(bases)} bases:")
-        for base in bases[:3]:  # Show first 3
-            print(f"  - {base['name']} (ID: {base['id']})")
-        
-        # Create a new base (if you have permissions)
-        print("\\n🆕 Creating new base...")
-        
-        # Define table schemas for the new base
-        task_table_config = {
-            "name": "Tasks",
-            "description": "Project tasks and assignments",
-            "fields": [
-                {"name": "Title", "type": "singleLineText"},
-                {"name": "Status", "type": "singleSelect", "options": {"choices": [
-                    {"name": "Pending"}, {"name": "In Progress"}, {"name": "Completed"}
-                ]}},
-                {"name": "Priority", "type": "singleSelect", "options": {"choices": [
-                    {"name": "Low"}, {"name": "Medium"}, {"name": "High"}, {"name": "Urgent"}
-                ]}},
-                {"name": "Due Date", "type": "dateTime"},
-                {"name": "Assignee", "type": "email"}
-            ]
-        }
-        
-        user_table_config = {
-            "name": "Users", 
-            "description": "User information and contacts",
-            "fields": [
-                {"name": "Name", "type": "singleLineText"},
-                {"name": "Email", "type": "email"},
-                {"name": "Phone", "type": "phoneNumber"},
-                {"name": "Is Active", "type": "checkbox"},
-                {"name": "Join Date", "type": "date"}
-            ]
-        }
-        
-        new_base = base_manager.create_base(
-            name="Project Management Demo",
-            tables=[task_table_config, user_table_config]
-        )
-        
-        print(f"✅ Created base: {new_base['name']} (ID: {new_base['id']})")
-        created_base_id = new_base['id']
-        
-        # Get schema of the new base
-        print("\\n📊 Getting base schema...")
-        schema = base_manager.get_base_schema(created_base_id)
-        print(f"Base has {len(schema.get('tables', []))} tables:")
-        for table in schema.get('tables', []):
-            field_count = len(table.get('fields', []))
-            print(f"  - {table['name']}: {field_count} fields")
-        
-        return created_base_id
-        
-    except Exception as e:
-        print(f"❌ Base management error: {e}")
-        print("Note: Creating bases requires special permissions in AirTable")
-        return None
-
-
-def demo_table_management():
-    """Demonstrate table management operations"""
-    
-    print("\\n🔧 Table Management Demo")
-    print("=" * 40)
-    
-    access_token = os.getenv("AIRTABLE_ACCESS_TOKEN") or os.getenv("AIRTABLE_API_KEY")
-    base_id = os.getenv("AIRTABLE_BASE_ID")
-    
-    if not access_token or not base_id:
-        print("⚠️  Need AIRTABLE_ACCESS_TOKEN and AIRTABLE_BASE_ID environment variables")
-        return
-    
-    table_manager = TableManager(access_token, base_id)
-    
-    try:
-        # List existing tables
-        print("\\n📋 Listing existing tables...")
-        tables = table_manager.list_tables()
-        print(f"Found {len(tables)} tables:")
-        for table in tables:
-            field_count = len(table.get('fields', []))
-            print(f"  - {table['name']}: {field_count} fields (ID: {table['id']})")
-        
-        # Create table from Pydantic model
-        print("\\n🆕 Creating table from Pydantic model...")
-        
-        # This will create a table based on the Task model
-        created_table = table_manager.create_table_from_pydantic(
-            Task,
-            table_name="Demo_Tasks",
-            description="Tasks created from Pydantic model"
-        )
-        
-        print(f"✅ Created table: {created_table['name']} (ID: {created_table['id']})")
-        
-        # Validate model against table  
-        print("\\n✅ Validating Task model against created table...")
-        validation = table_manager.validate_pydantic_model_against_table(Task, "Demo_Tasks")
-        
-        if validation['is_valid']:
-            print("✅ Model matches table schema perfectly!")
-        else:
-            print("⚠️  Model/table validation issues:")
-            if validation['missing_in_table']:
-                print(f"  - Missing in table: {validation['missing_in_table']}")
-            if validation['missing_in_model']:
-                print(f"  - Missing in model: {validation['missing_in_model']}")
-            if validation['type_mismatches']:
-                print(f"  - Type mismatches: {validation['type_mismatches']}")
-        
-        # Create User table  
-        print("\\n🆕 Creating User table...")
-        user_table = table_manager.create_table_from_pydantic(
-            User,
-            table_name="Demo_Users",
-            description="Users created from Pydantic model"
-        )
-        print(f"✅ Created table: {user_table['name']} (ID: {user_table['id']})")
-        
-        return created_table['id'], user_table['id']
-        
-    except Exception as e:
-        print(f"❌ Table management error: {e}")
-        return None, None
-
-
-def demo_model_table_integration():
-    """Demonstrate how models can create and manage their own tables"""
-    
-    print("\\n🔗 Model-Table Integration Demo")
-    print("=" * 40)
-    
-    access_token = os.getenv("AIRTABLE_ACCESS_TOKEN") or os.getenv("AIRTABLE_API_KEY")
-    base_id = os.getenv("AIRTABLE_BASE_ID")
-    
-    if not access_token or not base_id:
-        print("⚠️  Need AIRTABLE_ACCESS_TOKEN and AIRTABLE_BASE_ID environment variables")
-        return
-    
-    try:
-        # Update the Task model config to use our environment
-        Task.AirTableConfig.access_token = access_token
-        Task.AirTableConfig.base_id = base_id
-        Task.AirTableConfig.table_name = "Integrated_Tasks"
-        
-        # Model creates its own table
-        print("\\n🆕 Task model creating its own table...")
-        table_result = Task.create_table_in_airtable(
-            description="Tasks table created by the model itself"
-        )
-        print(f"✅ Model created table: {table_result['name']}")
-        
-        # Now we can use the model normally
-        print("\\n📝 Creating sample tasks...")
         task1 = Task.create(
-            title="Set up development environment",
-            description="Install all required tools and dependencies",
+            title="Design user interface",
+            description="Create wireframes and mockups for the new dashboard",
+            status=TaskStatus.IN_PROGRESS,
             priority=Priority.HIGH,
-            assignee_email="dev@company.com",
-            estimated_hours=4.0
+            due_date=datetime(2024, 12, 31)
         )
         
         task2 = Task.create(
-            title="Write unit tests",
-            description="Comprehensive test coverage for core functionality", 
-            priority=Priority.MEDIUM,
-            assignee_email="qa@company.com",
-            estimated_hours=8.0
+            title="Write documentation", 
+            description="Complete API documentation and user guides",
+            status=TaskStatus.PENDING,
+            priority=Priority.MEDIUM
         )
         
-        print(f"✅ Created task: {task1.title} (ID: {task1.id})")
-        print(f"✅ Created task: {task2.title} (ID: {task2.id})")
+        print(f"✅ Created tasks: {task1.title} and {task2.title}")
         
-        # Demonstrate schema validation
-        print("\\n✅ Validating model schema...")
-        validation = Task.validate_table_schema()
-        if validation['is_valid']:
-            print("✅ Model schema is perfectly synchronized with AirTable!")
-        else:
-            print("⚠️  Schema validation issues found")
-        
-        # Query the created tasks
-        print("\\n📊 Querying created tasks...")
-        all_tasks = Task.all()
-        print(f"Found {len(all_tasks)} total tasks:")
-        
-        for task in all_tasks:
-            print(f"  - {task.title} [{task.status.value}] (Priority: {task.priority.value})")
-        
-    except Exception as e:
-        print(f"❌ Integration error: {e}")
+    except Exception as task_error:
+        print(f"❌ Failed to create tasks: {task_error}")
+        print(f"   Error type: {type(task_error).__name__}")
+        print("   This might be due to:")
+        print("   - Table doesn't exist (creation failed)")
+        print("   - Insufficient permissions") 
+        print("   - Table name mismatch")
+        return  # Skip rest of CRUD operations
+    
+    # Create sample users
+    print("\n2️⃣ Creating sample users...")
+    
+    user1 = User.create(
+        name="Alice Johnson",
+        email="alice@example.com",  # Auto-detected as EMAIL type
+        phone="555-0123",           # Auto-detected as PHONE type 
+        bio="Senior software engineer with 8 years experience",
+        website="https://alice.dev",  # Auto-detected as URL type
+        is_admin=True,
+        salary=95000.0
+    )
+    
+    user2 = User.create(
+        name="Bob Smith",
+        email="bob@example.com",
+        bio="Product manager focused on user experience",
+        is_admin=False,
+        salary=85000.0
+    )
+    
+    print(f"✅ Created users: {user1.name} and {user2.name}")
+    
+    # Create sample project
+    print("\n3️⃣ Creating sample project...")
+    
+    project = Project.create(
+        name="Mobile App Redesign",
+        description="Complete overhaul of the mobile application user interface and user experience",
+        budget=150000.0,        # CURRENCY field
+        completion_rate=0.25,   # PERCENT field  
+        status="Active",        # SELECT field
+        team_size=5,
+        start_date=datetime(2024, 1, 1),
+        end_date=datetime(2024, 6, 30)
+    )
+    
+    print(f"✅ Created project: {project.name}")
+    
+    # Demonstrate querying
+    print("\n4️⃣ Demonstrating queries...")
+    
+    # Find high priority tasks
+    high_priority_tasks = Task.find_by(priority=Priority.HIGH)
+    print(f"📊 High priority tasks: {len(high_priority_tasks)}")
+    
+    # Find admin users
+    admin_users = User.find_by(is_admin=True)
+    print(f"📊 Admin users: {len(admin_users)}")
+    
+    # Find active projects
+    active_projects = Project.find_by(status="Active")
+    print(f"📊 Active projects: {len(active_projects)}")
+    
+    # Demonstrate updates
+    print("\n5️⃣ Demonstrating updates...")
+    
+    task1.status = TaskStatus.COMPLETED
+    task1.completed = True
+    task1.save()
+    print(f"✅ Marked task '{task1.title}' as completed")
+    
+    project.completion_rate = 0.50
+    project.save()
+    print(f"✅ Updated project completion rate to 50%")
 
 
-def demo_schema_synchronization():
-    """Demonstrate schema synchronization features"""
+def demonstrate_table_management():
+    """Demonstrate advanced table management features"""
     
-    print("\\n🔄 Schema Synchronization Demo")
-    print("=" * 40)
+    print("\n" + "="*60)
+    print("⚙️  TABLE MANAGEMENT DEMONSTRATION")
+    print("="*60)
     
-    # This demonstrates how to handle evolving models
-    class EvolvingTask(AirTableModel):
-        """A task model that evolves over time"""
-        
-        AirTableConfig = AirTableConfig(
-            table_name="Evolving_Tasks"
-        )
-        
-        # Original fields
-        title: str = AirTableField(airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT)
-        status: TaskStatus = AirTableField(default=TaskStatus.PENDING, airtable_field_type=AirTableFieldType.SELECT)
-        
-        # New field added later
-        complexity: Optional[int] = AirTableField(
-            default=None,
-            description="Task complexity rating (1-10)",
-            airtable_field_type=AirTableFieldType.NUMBER
-        )
-        
-        # Another new field
-        tags: Optional[str] = AirTableField(
-            default=None,
-            description="Comma-separated tags",
-            airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT
-        )
+    # Get the manager
+    config = AirTableConfig.from_env()
+    manager = AirTableManager(config)
     
-    access_token = os.getenv("AIRTABLE_ACCESS_TOKEN") or os.getenv("AIRTABLE_API_KEY")
-    base_id = os.getenv("AIRTABLE_BASE_ID")
-    
-    if not access_token or not base_id:
-        print("⚠️  Need environment variables")
-        return
-    
+    print("\n1️⃣ Listing all tables in base...")
     try:
-        EvolvingTask.AirTableConfig.access_token = access_token
-        EvolvingTask.AirTableConfig.base_id = base_id
+        base_schema = manager.get_base_schema()
+        tables = base_schema.get('tables', [])
         
-        # Create initial table with basic fields
-        print("\\n🆕 Creating initial table...")
-        table_result = EvolvingTask.create_table_in_airtable(
-            description="Table that will evolve over time"
-        )
-        print(f"✅ Created table: {table_result['name']}")
-        
-        # Now sync the full model (which has additional fields)
-        print("\\n🔄 Synchronizing evolved model...")
-        sync_result = EvolvingTask.sync_table_schema(
-            create_missing_fields=True,
-            update_field_types=False
-        )
-        
-        print("📊 Sync Results:")
-        results = sync_result['sync_results']
-        if results['fields_added']:
-            print(f"  ✅ Added fields: {', '.join(results['fields_added'])}")
-        if results['fields_updated']:
-            print(f"  🔄 Updated fields: {', '.join(results['fields_updated'])}")
-        if results['fields_unchanged']:
-            print(f"  ➡️ Unchanged fields: {', '.join(results['fields_unchanged'])}")
-        if results['warnings']:
-            print(f"  ⚠️ Warnings: {results['warnings']}")
-        
-        print("\\n✅ Schema synchronization complete!")
+        print(f"📊 Found {len(tables)} tables in base:")
+        for table in tables:
+            fields_count = len(table.get('fields', []))
+            print(f"   📋 {table['name']}: {fields_count} fields")
         
     except Exception as e:
-        print(f"❌ Sync error: {e}")
+        print(f"❌ Failed to list tables: {e}")
+    
+    # Demonstrate table synchronization
+    print("\n2️⃣ Synchronizing model schemas with tables...")
+    
+    models_to_sync = [Task, User, Project]
+    
+    for model_class in models_to_sync:
+        table_name = model_class._get_table_name()
+        print(f"\n🔄 Synchronizing {table_name} table...")
+        
+        try:
+            sync_result = model_class.sync_table(
+                create_missing_fields=True,
+                update_field_types=False
+            )
+            
+            print(f"✅ Sync completed for {table_name}:")
+            print(f"   📝 Fields created: {len(sync_result.get('fields_created', []))}")
+            print(f"   🔄 Fields updated: {len(sync_result.get('fields_updated', []))}")
+            print(f"   ⏭️  Fields skipped: {len(sync_result.get('fields_skipped', []))}")
+            
+        except Exception as e:
+            print(f"❌ Sync failed for {table_name}: {e}")
+
+
+def demonstrate_base_operations():
+    """Demonstrate base-level operations"""
+    
+    print("\n" + "="*60)
+    print("🗄️  BASE OPERATIONS DEMONSTRATION") 
+    print("="*60)
+    
+    config = AirTableConfig.from_env()
+    manager = AirTableManager(config)
+    
+    print("\n1️⃣ Listing accessible bases...")
+    try:
+        bases = manager.list_bases()
+        print(f"📊 Found {len(bases)} accessible bases:")
+        
+        for base in bases[:3]:  # Show first 3 bases
+            print(f"   🗄️  {base['name']} (ID: {base['id']})")
+            
+        if len(bases) > 3:
+            print(f"   ... and {len(bases) - 3} more bases")
+            
+    except Exception as e:
+        print(f"❌ Failed to list bases: {e}")
+    
+    print(f"\n2️⃣ Getting schema for current base ({config.base_id})...")
+    try:
+        schema = manager.get_base_schema()
+        tables = schema.get('tables', [])
+        
+        print(f"📋 Base contains {len(tables)} tables:")
+        for table in tables:
+            fields = table.get('fields', [])
+            print(f"   📋 {table['name']}: {len(fields)} fields")
+        
+    except Exception as e:
+        print(f"❌ Failed to get base schema: {e}")
 
 
 def main():
-    """Main demo function"""
+    """Main demonstration function"""
     
-    print("🚀 AirTable Schema Management Demo")
-    print("=" * 50)
+    print("🚀 Pydantic AirTable - Table Management Example")
+    print("=" * 60)
     
-    access_token = os.getenv("AIRTABLE_ACCESS_TOKEN") or os.getenv("AIRTABLE_API_KEY")
-    base_id = os.getenv("AIRTABLE_BASE_ID")
+    print("\nThis example demonstrates:")
+    print("✨ Smart field type detection")
+    print("🏗️  Automatic table creation from models") 
+    print("📝 CRUD operations with complex models")
+    print("⚙️  Table schema management")
+    print("🗄️  Base-level operations")
     
-    if not access_token:
-        print("⚠️  Please set AIRTABLE_ACCESS_TOKEN environment variable")
-        print("Get your Personal Access Token from:")
-        print("https://airtable.com/developers/web/api/authentication")
-        print("")
-        print("export AIRTABLE_ACCESS_TOKEN='pat_your_token'")
-        if not base_id:
-            print("export AIRTABLE_BASE_ID='app_your_base'  # Optional for base creation")
-        return
-    
-    print("🔑 Authentication: ✅")
-    print(f"🏗️  Base ID: {'✅' if base_id else '❌ (required for table operations)'}")
-    print("")
-    
-    # Run demos
     try:
-        # Demo 1: Base management (requires special permissions)
-        created_base_id = demo_base_management()
+        # Run all demonstrations
+        table_setup_success = demonstrate_table_creation()
         
-        # Demo 2: Table management (requires existing base)
-        if base_id:
-            task_table_id, user_table_id = demo_table_management()
-            
-            # Demo 3: Model integration
-            demo_model_table_integration()
-            
-            # Demo 4: Schema synchronization
-            demo_schema_synchronization()
+        # Only proceed with CRUD if tables were set up successfully
+        if table_setup_success is not False:
+            demonstrate_crud_operations()
+            demonstrate_table_management()
+            demonstrate_base_operations()
+        else:
+            print("\n⚠️  Skipping CRUD operations due to table setup failures")
+            print("🔧 Please check your AirTable permissions and try again")
         
-        print("\\n🎉 All demos completed!")
-        print("\\n💡 Key Features Demonstrated:")
-        print("  • ✅ Create AirTable bases programmatically")
-        print("  • ✅ Create tables from Pydantic models")
-        print("  • ✅ Automatic field type mapping")
-        print("  • ✅ Schema validation and synchronization")
-        print("  • ✅ Model-driven table management")
-        print("  • ✅ Support for Enums, complex types, and constraints")
+        print("\n" + "="*60)
+        print("🎉 All demonstrations completed successfully!")
+        print("="*60)
+        
+        print("\n💡 Key takeaways:")
+        print("   ✅ Models automatically detect field types from names and Python types")
+        print("   ✅ Tables can be created directly from model definitions")
+        print("   ✅ CRUD operations work seamlessly with complex data types")
+        print("   ✅ Schema synchronization keeps AirTable in sync with model changes")
+        print("   ✅ Base operations provide visibility into your AirTable workspace")
         
     except Exception as e:
-        print(f"\\n❌ Demo error: {e}")
-        print("\\n💡 Common Issues:")
-        print("  • Ensure your PAT has base/table creation permissions")
-        print("  • Some operations require workspace admin privileges")
-        print("  • Table creation requires an existing base")
+        print(f"\n❌ Error during demonstration: {e}")
+        print("\n💡 Common issues:")
+        print("   - Ensure .env file has AIRTABLE_ACCESS_TOKEN and AIRTABLE_BASE_ID")
+        print("   - Verify your Personal Access Token has the required permissions")
+        print("   - Check that your base ID is correct and accessible")
 
 
 if __name__ == "__main__":

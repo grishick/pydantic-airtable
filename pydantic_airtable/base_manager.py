@@ -2,11 +2,9 @@
 AirTable Base Management - Create, list, and manage AirTable bases
 """
 
-import json
 import requests
 from typing import Any, Dict, List, Optional
 from .exceptions import APIError
-from .client import AirTableClient
 
 
 class BaseManager:
@@ -67,6 +65,20 @@ class BaseManager:
         data = self._handle_response(response)
         return data.get("bases", [])
     
+    def list_workspaces(self) -> List[Dict[str, Any]]:
+        """
+        List all workspaces accessible with the current access token
+        
+        Note: This endpoint requires an AirTable Enterprise account.
+        It will not work with free/personal accounts.
+        
+        Returns:
+            List of workspace information dictionaries containing 'id' and 'name'
+        """
+        response = self.session.get(f"{self.META_API_URL}/workspaces")
+        data = self._handle_response(response)
+        return data.get("workspaces", [])
+    
     def get_base_schema(self, base_id: str) -> Dict[str, Any]:
         """
         Get the schema of a specific base
@@ -92,25 +104,49 @@ class BaseManager:
         Args:
             name: Name of the new base
             tables: List of table configurations
-            workspace_id: Optional workspace ID to create base in
+            workspace_id: Workspace ID to create base in. If not provided,
+                         will automatically use the first available workspace.
             
         Returns:
             Created base information
+            
+        Raises:
+            APIError: If no workspaces are available or API call fails
         """
+        # If no workspace_id provided, fetch the first available workspace
+        if not workspace_id:
+            print("🔍 No workspace ID provided, fetching available workspaces...")
+            try:
+                workspaces = self.list_workspaces()
+                if not workspaces:
+                    raise APIError(
+                        message="No workspaces available. Please create a workspace in AirTable first, "
+                                "or provide a workspace_id parameter.",
+                        status_code=400
+                    )
+                workspace_id = workspaces[0]["id"]
+                workspace_name = workspaces[0].get("name", "Unknown")
+                print(f"✅ Auto-selected workspace: {workspace_name} (ID: {workspace_id})")
+            except APIError:
+                raise
+            except Exception as e:
+                raise APIError(
+                    message=f"Failed to fetch workspaces: {str(e)}. "
+                            "Ensure your token has 'workspaces:read' scope.",
+                    status_code=400
+                )
+        
         payload = {
             "name": name,
-            "tables": tables
+            "tables": tables,
+            "workspaceId": workspace_id
         }
         
-        if workspace_id:
-            payload["workspaceId"] = workspace_id
-        
         # Debug: Print the payload being sent
-        print(f"🔍 Debug: Creating base with payload:")
+        print(f"🔍 Creating base with payload:")
         print(f"   Name: {name}")
         print(f"   Tables: {len(tables)} table(s)")
-        print(f"   Workspace ID: {workspace_id or 'None'}")
-        print(f"   Full payload: {json.dumps(payload, indent=2)}")
+        print(f"   Workspace ID: {workspace_id}")
         
         response = self.session.post(f"{self.META_API_URL}/bases", json=payload)
         return self._handle_response(response)

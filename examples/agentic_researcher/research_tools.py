@@ -9,13 +9,10 @@ This module provides various tools for different research types:
 - Technical information gathering
 """
 
-import asyncio
 import aiohttp
-import json
-import re
 import time
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from datetime import datetime
+from typing import List, Dict, Any
 from bs4 import BeautifulSoup
 
 try:

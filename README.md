@@ -1,558 +1,482 @@
-# Pydantic AirTable
+# 🚀 Pydantic AirTable
 
-A Python library for managing AirTable data using Pydantic objects, similar to how SQLAlchemy manages relational databases. This library combines the power of Pydantic's data validation with AirTable's flexible database capabilities.
+**The most intuitive way to integrate Pydantic models with AirTable**
 
-## 🚀 Features
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Pydantic v2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://pydantic.dev/)
+[![AirTable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- **Pydantic Integration**: Use familiar Pydantic models with automatic validation
-- **Type Safety**: Full type hints and runtime type checking
-- **CRUD Operations**: Create, read, update, and delete records with simple method calls
-- **Field Mapping**: Automatic mapping between Python field names and AirTable column names
-- **Batch Operations**: Efficient batch create and update operations
-- **Query Interface**: Intuitive querying with filtering and sorting
-- **Rate Limiting**: Built-in handling of AirTable API rate limits
-- **Error Handling**: Comprehensive error handling with custom exceptions
-- **🆕 Base Management**: Create and manage AirTable bases programmatically
-- **🆕 Table Management**: Create, update, and delete tables from Pydantic models
-- **🆕 Schema Sync**: Synchronize Pydantic models with existing AirTable schemas
-- **🆕 Auto-Schema Generation**: Automatically generate AirTable schemas from Python types
+## ✨ Clean, Intuitive AirTable Integration
+
+Transform your Pydantic models into fully-functional AirTable integrations with just **8 lines of code**:
+
+```python
+from pydantic_airtable import airtable_model, configure_from_env
+from pydantic import BaseModel
+
+configure_from_env()  # Auto-loads from .env
+
+@airtable_model(table_name="Users")
+class User(BaseModel):
+    name: str                    # Auto-detects as SINGLE_LINE_TEXT
+    email: str                   # Auto-detects as EMAIL  
+    age: Optional[int] = None    # Auto-detects as NUMBER
+    is_active: bool = True       # Auto-detects as CHECKBOX
+
+# That's it! Now you have full CRUD operations
+user = User.create(name="Alice", email="alice@example.com", age=28)
+users = User.all()
+alice = User.find_by(name="Alice")
+```
+
+## 🌟 Key Features
+
+| Feature | Description | Example |
+|---------|-------------|---------|
+| **Smart Detection** | Auto-detects field types from naming patterns | `email: str` → EMAIL field |
+| **Zero Config** | Works with just environment variables | `AIRTABLE_ACCESS_TOKEN=pat_...` |
+| **Table Creation** | Creates tables from model definitions | `User.create_table()` |
+| **Intuitive CRUD** | Simple, predictable methods | `User.create()`, `User.all()`, `user.save()` |
+| **Advanced Filtering** | Clean query syntax | `User.find_by(is_active=True)` |
+| **Batch Operations** | Efficient bulk operations | `User.bulk_create([...])` |
 
 ## 📦 Installation
 
 ```bash
-pip install -r requirements.txt
+pip install pydantic-airtable
 ```
 
-**📚 Detailed Installation Guide**: See [INSTALLATION.md](INSTALLATION.md) for complete setup instructions, troubleshooting, and version compatibility information.
+## 🚀 Quick Start
 
-## 🔧 Setup
+### 1. Setup (One Time)
 
-### 1. Get AirTable Credentials
-
-1. Create an AirTable account and base
-2. **Generate a Personal Access Token (PAT)** from [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
-   - ⚠️ **Important**: AirTable has deprecated API keys. You must use Personal Access Tokens (PATs)
-   - PATs start with `pat_` and provide better security and granular permissions
-3. Get your Base ID from the AirTable API documentation for your base
-
-### 2. Set Environment Variables
-
-```bash
-export AIRTABLE_ACCESS_TOKEN="pat_your_personal_access_token"
-export AIRTABLE_BASE_ID="app_your_base_id"
+Create a `.env` file:
+```env
+AIRTABLE_ACCESS_TOKEN=pat_your_personal_access_token
+AIRTABLE_BASE_ID=app_your_base_id
 ```
 
-**Important**: AirTable has [deprecated API keys](https://airtable.com/developers/web/api/authentication) in favor of Personal Access Tokens (PATs). Always use PATs which start with `pat_`.
+Get your credentials:
+- **Personal Access Token**: [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
+- **Base ID**: Found in your AirTable base URL
 
-For backward compatibility, `AIRTABLE_API_KEY` is still supported but will show deprecation warnings.
-
-Alternatively, you can pass these values directly when creating `AirTableConfig`.
-
-## 📚 Usage
-
-### Basic Model Definition
+### 2. Define Your Model
 
 ```python
-from datetime import datetime
+from pydantic_airtable import airtable_model, configure_from_env
+from pydantic import BaseModel
 from typing import Optional
-from pydantic_airtable import AirTableModel, AirTableConfig, AirTableField
-from pydantic_airtable.fields import AirTableFieldType
+from datetime import datetime
 
-class User(AirTableModel):
-    # Configure AirTable connection
-    AirTableConfig = AirTableConfig(
-        table_name="Users"  # AirTable table name
-    )
-    
-    # Define fields with Pydantic validation
-    name: str = AirTableField(
-        description="User's full name",
-        airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT
-    )
-    
-    email: str = AirTableField(
-        description="User's email address",
-        airtable_field_type=AirTableFieldType.EMAIL
-    )
-    
-    age: Optional[int] = AirTableField(
-        default=None,
-        description="User's age",
-        airtable_field_type=AirTableFieldType.NUMBER
-    )
-    
-    is_active: bool = AirTableField(
-        default=True,
-        description="Whether user is active",
-        airtable_field_type=AirTableFieldType.CHECKBOX
-    )
+# One-line configuration
+configure_from_env()
+
+@airtable_model(table_name="Users")
+class User(BaseModel):
+    # Smart field detection - no manual types needed!
+    name: str                    # → SINGLE_LINE_TEXT
+    email: str                   # → EMAIL (detected from field name)
+    phone: str                   # → PHONE (detected from field name)  
+    website: str                 # → URL (detected from field name)
+    bio: str                     # → LONG_TEXT (detected from field name)
+    age: Optional[int] = None    # → NUMBER
+    is_active: bool = True       # → CHECKBOX
+    created_at: datetime         # → DATETIME
 ```
 
-### CRUD Operations
+### 3. Use It!
 
 ```python
-# Create a new record
-user = User.create(
-    name="John Doe",
-    email="john@example.com",
-    age=30
+# Create table automatically
+User.create_table()  
+
+# Create records
+alice = User.create(
+    name="Alice Johnson",
+    email="alice@example.com", 
+    phone="555-0123",
+    age=28
 )
-print(f"Created user with ID: {user.id}")
 
-# Get a record by ID
-user = User.get("rec123456789")
-print(f"Retrieved user: {user.name}")
+bob = User.create(
+    name="Bob Smith", 
+    email="bob@example.com",
+    website="https://bobsmith.dev"
+)
 
-# Update a record
-user.age = 31
-user.save()
-
-# Delete a record
-user.delete()
-```
-
-### Querying Records
-
-```python
-# Get all records
+# Query records  
 all_users = User.all()
-
-# Filter by field values
 active_users = User.find_by(is_active=True)
-john_users = User.find_by(name="John Doe")
+alice = User.first(name="Alice Johnson")
 
-# Get first matching record
-first_user = User.first(is_active=True)
+# Update records
+alice.age = 29
+alice.save()
 
-# Advanced filtering with AirTable formulas
-young_users = User.filter(
-    filter_by_formula="AND({Age} < 25, {Is Active} = TRUE())",
-    max_records=10,
-    sort=[{"field": "Age", "direction": "asc"}]
-)
-```
-
-### Batch Operations
-
-```python
-# Batch create multiple records
+# Batch operations
 users_data = [
-    {"name": "Alice Smith", "email": "alice@example.com", "age": 25},
-    {"name": "Bob Johnson", "email": "bob@example.com", "age": 35},
-    {"name": "Carol Wilson", "email": "carol@example.com", "age": 28},
+    {"name": "Charlie", "email": "charlie@example.com"},
+    {"name": "Diana", "email": "diana@example.com"},
 ]
-
-created_users = User.bulk_create(users_data)
-print(f"Created {len(created_users)} users")
+User.bulk_create(users_data)
 ```
 
-### 🆕 Table and Base Management
+## 🧠 Smart Field Detection
 
-#### Creating Tables from Pydantic Models
+The system automatically detects AirTable field types:
+
+| Python Code | Detected Type | Reason |
+|-------------|---------------|--------|
+| `email: str` | EMAIL | Field name contains "email" |
+| `phone: str` | PHONE | Field name contains "phone" |
+| `website: str` | URL | Field name contains "website" |
+| `description: str` | LONG_TEXT | Field name suggests long text |
+| `price: float` | CURRENCY | Field name suggests money |
+| `completion_rate: float` | PERCENT | Field name suggests percentage |
+| `is_active: bool` | CHECKBOX | Boolean type |
+| `created_at: datetime` | DATETIME | DateTime type |
+| `Priority: Enum` | SELECT | Enum type |
+| `tags: List[str]` | MULTI_SELECT | List type |
+
+## ⚙️ Advanced Usage
+
+### Override Auto-Detection
 
 ```python
-from pydantic_airtable import BaseManager, TableManager
+from pydantic_airtable import airtable_field, AirTableFieldType
+
+@airtable_model(table_name="Projects")
+class Project(BaseModel):
+    name: str  # Auto-detected as SINGLE_LINE_TEXT
+    
+    # Override detection with explicit configuration
+    status: str = airtable_field(
+        field_type=AirTableFieldType.SELECT,
+        choices=["Planning", "In Progress", "Done"]
+    )
+    
+    # Custom field name in AirTable
+    description: str = airtable_field(
+        field_name="Project Description",
+        field_type=AirTableFieldType.LONG_TEXT
+    )
+```
+
+### Multiple Configurations
+
+```python
+# Per-model configuration
+user_config = AirTableConfig(
+    access_token="pat_user_token", 
+    base_id="app_user_base"
+)
+
+@airtable_model(config=user_config, table_name="Users")
+class User(BaseModel):
+    name: str
+    email: str
+
+# Or inline configuration  
+@airtable_model(
+    table_name="Projects",
+    access_token="pat_project_token",
+    base_id="app_project_base"
+)
+class Project(BaseModel):
+    name: str
+    description: str
+```
+
+### Table Management
+
+```python
+# Create table from model
+result = User.create_table()
+print(f"Created table: {result['id']}")
+
+# Sync model changes to existing table
+sync_result = User.sync_table(
+    create_missing_fields=True,
+    update_field_types=False
+)
+print(f"Added {len(sync_result['fields_created'])} new fields")
+
+# Check if table exists
+try:
+    users = User.all()
+    print("Table exists and accessible")
+except Exception:
+    print("Table needs to be created")
+    User.create_table()
+```
+
+## 📚 Complete Examples
+
+### Simple Task Manager
+
+```python
+from pydantic_airtable import airtable_model, configure_from_env
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
 from enum import Enum
+
+configure_from_env()
 
 class Priority(str, Enum):
     LOW = "Low"
     MEDIUM = "Medium" 
     HIGH = "High"
 
-class Task(AirTableModel):
-    AirTableConfig = AirTableConfig(table_name="Tasks")
+@airtable_model(table_name="Tasks")
+class Task(BaseModel):
+    title: str
+    description: Optional[str] = None
+    priority: Priority = Priority.MEDIUM  # → SELECT field
+    completed: bool = False               # → CHECKBOX field  
+    due_date: Optional[datetime] = None   # → DATETIME field
     
-    title: str = AirTableField(airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT)
-    priority: Priority = AirTableField(airtable_field_type=AirTableFieldType.SELECT)
-    due_date: Optional[datetime] = AirTableField(airtable_field_type=AirTableFieldType.DATETIME)
+# Usage
+Task.create_table()
 
-# Method 1: Model creates its own table
-table_info = Task.create_table_in_airtable(
-    description="Tasks table created from Pydantic model"
+task = Task.create(
+    title="Implement user authentication",
+    description="Add JWT-based auth system", 
+    priority=Priority.HIGH,
+    due_date=datetime(2024, 12, 31)
 )
-print(f"Created table: {table_info['name']}")
 
-# Method 2: Using TableManager directly
-table_manager = TableManager(access_token, base_id)
-table_info = table_manager.create_table_from_pydantic(
-    Task, 
-    table_name="MyTasks",
-    description="Custom task table"
-)
+# Find high priority incomplete tasks
+urgent_tasks = Task.find_by(priority=Priority.HIGH, completed=False)
 ```
 
-#### Creating AirTable Bases
+### Customer Relationship Management
 
 ```python
-base_manager = BaseManager(access_token)
+@airtable_model(table_name="Customers")
+class Customer(BaseModel):
+    # Contact info (smart detection)
+    name: str                           # → SINGLE_LINE_TEXT
+    email: str                          # → EMAIL  
+    phone: str                          # → PHONE
+    website: Optional[str] = None       # → URL
+    
+    # Business info
+    company: Optional[str] = None       # → SINGLE_LINE_TEXT
+    title: Optional[str] = None         # → SINGLE_LINE_TEXT
+    
+    # Relationship tracking
+    status: str = "Lead"                # → SINGLE_LINE_TEXT
+    notes: Optional[str] = None         # → LONG_TEXT (detected)
+    
+    # Financials  
+    deal_value: Optional[float] = None  # → CURRENCY (if named 'price', 'cost', etc.)
 
-# Create a new base with tables
-new_base = base_manager.create_base(
-    name="Project Management",
-    tables=[
-        {
-            "name": "Tasks",
-            "fields": [
-                {"name": "Title", "type": "singleLineText"},
-                {"name": "Status", "type": "singleSelect", "options": {"choices": [
-                    {"name": "Pending"}, {"name": "In Progress"}, {"name": "Completed"}
-                ]}},
-                {"name": "Due Date", "type": "dateTime"}
-            ]
-        }
-    ]
-)
-print(f"Created base: {new_base['name']} (ID: {new_base['id']})")
+# Usage
+Customer.create_table()
 
-# List all accessible bases
-bases = base_manager.list_bases()
-for base in bases:
-    print(f"Base: {base['name']} (ID: {base['id']})")
-```
-
-#### Schema Synchronization
-
-```python
-# Validate model matches table
-validation = Task.validate_table_schema()
-if validation['is_valid']:
-    print("✅ Model matches table schema!")
-else:
-    print("⚠️ Schema mismatches found")
-
-# Sync model with table (add missing fields)
-sync_result = Task.sync_table_schema(
-    create_missing_fields=True,
-    update_field_types=False
-)
-print(f"Added fields: {sync_result['sync_results']['fields_added']}")
-```
-
-### 🤖 Agentic Researcher Example
-
-The library includes a comprehensive AI research assistant that demonstrates advanced schema management:
-
-```python
-from examples.agentic_researcher import AgenticResearcher
-import asyncio
-
-# Initialize with OpenAI and AirTable credentials
-researcher = AgenticResearcher(
-    openai_api_key="your_openai_key",
-    airtable_access_token="pat_your_token"
-    # Will create new base automatically
+customer = Customer.create(
+    name="Jane Doe",
+    email="jane@example.com", 
+    phone="555-0199",
+    website="https://example.com",
+    company="Example Corp",
+    title="CTO",
+    deal_value=50000.00
 )
 
-# Create and execute research
-async def main():
-    # Create research task
-    task = await researcher.create_research_task(
-        title="AI Impact on Software Development",
-        description="Analyze current trends and productivity impacts",
-        priority=ResearchPriority.HIGH
-    )
-    
-    # Execute full research workflow
-    final_summary = await researcher.execute_full_research(task)
-    
-    # Ask questions about findings
-    answer = await researcher.answer_question(
-        "What are the key benefits identified?", 
-        task.id
-    )
-    
-asyncio.run(main())
+# Find all customers with websites
+web_customers = Customer.find_by(website__not_empty=True)
 ```
 
-**Features:**
-- **📊 Structured Data Models**: ResearchTask, ResearchStep, ResearchResult
-- **🏗️ Auto-Schema Creation**: Creates AirTable base and tables automatically
-- **🤖 AI-Powered Research**: Uses OpenAI for research planning and execution
-- **📝 Complete Workflow**: Task creation → Step planning → Execution → Summarization
-- **❓ Q&A System**: Answer questions using research context
-- **🔄 Progress Tracking**: Real-time status updates in AirTable
+## 🎛️ Configuration Options
 
-**Run the example:**
+### Environment Variables
+
 ```bash
-# Install latest OpenAI library
-pip install openai>=2.8.1
+# Required
+AIRTABLE_ACCESS_TOKEN=pat_your_token    # Personal Access Token
+AIRTABLE_BASE_ID=app_your_base         # Base ID
 
-# Set environment variables
-export OPENAI_API_KEY="your_key"
-export AIRTABLE_ACCESS_TOKEN="pat_your_token"
-
-# Automated demo
-python examples/agentic_researcher/agentic_researcher.py --demo
-
-# Interactive mode
-python examples/agentic_researcher/agentic_researcher.py --interactive
+# Optional  
+AIRTABLE_TABLE_NAME=DefaultTable       # Default table name
 ```
 
-**Note**: Requires OpenAI API key and uses latest OpenAI Python library (2.8.1) with `gpt-4o` model for optimal performance.
-```
-
-## 🤖 AI Agent Task Management Example
-
-The library includes a comprehensive example for managing AI agent tasks. Here's a quick overview:
+### Programmatic Configuration
 
 ```python
-from datetime import datetime
-from examples.agent_tasks import AgentTask, TaskStatus, TaskPriority
+from pydantic_airtable import AirTableConfig, set_global_config
 
-# Create a task
-task = AgentTask.create(
-    name="Process Customer Emails",
-    description="Analyze and categorize incoming customer support emails",
-    agent_id="agent_001",
-    priority=TaskPriority.HIGH
+# Method 1: From environment
+configure_from_env()
+
+# Method 2: Explicit configuration
+config = AirTableConfig(
+    access_token="pat_your_token",
+    base_id="app_your_base",
+    table_name="DefaultTable"  # optional
 )
+set_global_config(config)
 
-# Execute task lifecycle
-task.start_execution()
-# ... do work ...
-task.complete_execution("Processed 45 emails successfully", execution_time=23.5)
-
-# Query tasks
-pending_tasks = AgentTask.get_pending_tasks(agent_id="agent_001")
-failed_tasks = AgentTask.get_failed_tasks()
-agent_stats = AgentTask.get_agent_stats("agent_001")
+# Method 3: Per-model configuration
+@airtable_model(config=config, table_name="SpecificTable")
+class MyModel(BaseModel):
+    pass
 ```
-
-## 🛠 Advanced Features
-
-### Custom Field Names
-
-Map Python field names to different AirTable column names:
-
-```python
-class Product(AirTableModel):
-    AirTableConfig = AirTableConfig(table_name="Products")
-    
-    product_name: str = AirTableField(
-        airtable_field_name="Product Name",  # Different column name in AirTable
-        airtable_field_type=AirTableFieldType.SINGLE_LINE_TEXT
-    )
-```
-
-### Read-Only Fields
-
-Mark fields as read-only to exclude them from create/update operations:
-
-```python
-class Record(AirTableModel):
-    AirTableConfig = AirTableConfig(table_name="Records")
-    
-    auto_number: int = AirTableField(
-        read_only=True,  # Won't be sent in create/update requests
-        airtable_field_type=AirTableFieldType.AUTO_NUMBER
-    )
-```
-
-### Field Type Auto-Detection
-
-The library automatically detects AirTable field types based on Python types:
-
-```python
-class AutoDetected(AirTableModel):
-    AirTableConfig = AirTableConfig(table_name="Auto")
-    
-    # These will be auto-detected:
-    text_field: str          # -> SINGLE_LINE_TEXT
-    number_field: int        # -> NUMBER
-    float_field: float       # -> NUMBER
-    checkbox_field: bool     # -> CHECKBOX
-    datetime_field: datetime # -> DATETIME
-```
-
-## 🔍 Field Types
-
-Supported AirTable field types with automatic mapping:
-
-- `SINGLE_LINE_TEXT` - Short text (from `str`)
-- `LONG_TEXT` - Multi-line text (explicit)
-- `NUMBER` - Numeric values (from `int`, `float`)
-- `CHECKBOX` - Boolean values (from `bool`)
-- `DATE` - Date values (from `date`)
-- `DATETIME` - Date and time values (from `datetime`)
-- `EMAIL` - Email addresses (explicit)
-- `URL` - Web URLs (explicit) 
-- `PHONE` - Phone numbers (explicit)
-- `SELECT` - Single select dropdown (from `Enum`)
-- `MULTI_SELECT` - Multiple select (explicit)
-- `AUTO_NUMBER` - Auto-incrementing numbers
-- `CREATED_TIME` - Record creation timestamp
-- `MODIFIED_TIME` - Record modification timestamp
-- And more...
-
-### 🔄 Automatic Type Detection
-
-The library automatically maps Python types to AirTable field types:
-
-```python
-class AutoMappedModel(AirTableModel):
-    # These types are automatically detected:
-    text_field: str                    # -> SINGLE_LINE_TEXT
-    number_field: int                  # -> NUMBER  
-    decimal_field: float               # -> NUMBER
-    flag_field: bool                   # -> CHECKBOX
-    date_field: date                   # -> DATE
-    timestamp_field: datetime          # -> DATETIME
-    priority: MyEnum                   # -> SELECT (with enum choices)
-    
-    # These require explicit field types:
-    email: str = AirTableField(airtable_field_type=AirTableFieldType.EMAIL)
-    website: str = AirTableField(airtable_field_type=AirTableFieldType.URL)
-    phone: str = AirTableField(airtable_field_type=AirTableFieldType.PHONE)
-```
-
-## 🚨 Error Handling
-
-The library provides specific exceptions for different error conditions:
-
-```python
-from pydantic_airtable.exceptions import (
-    AirTableError,
-    RecordNotFoundError,
-    ValidationError,
-    APIError,
-    ConfigurationError
-)
-
-try:
-    user = User.get("invalid_id")
-except RecordNotFoundError:
-    print("User not found")
-except APIError as e:
-    print(f"API Error: {e.message} (Status: {e.status_code})")
-```
-
-## ⚡ Performance Tips
-
-1. **Batch Operations**: Use `bulk_create()` for creating multiple records
-2. **Field Selection**: Specify `fields` parameter in queries to reduce data transfer
-3. **Pagination**: Use `max_records` and `page_size` for large datasets
-4. **Rate Limits**: The library handles rate limiting automatically with exponential backoff
-5. **🆕 Schema Validation**: Use `validate_table_schema()` to catch mismatches early
-6. **🆕 Incremental Sync**: Use `sync_table_schema()` to add fields without recreating tables
 
 ## 🧪 Testing
 
-Run the test suite:
+```python
+import pytest
+from pydantic_airtable import configure_from_env
 
-```bash
-python -m pytest tests/ -v
+# Setup test configuration
+@pytest.fixture(autouse=True)
+def setup_airtable():
+    configure_from_env(
+        access_token="pat_test_token",
+        base_id="app_test_base"  
+    )
+
+def test_user_creation():
+    user = User.create(name="Test User", email="test@example.com")
+    assert user.name == "Test User"
+    assert user.id is not None
+    
+    # Cleanup
+    user.delete()
 ```
 
-Run the example demos (require environment variables):
+## 🔧 Development Setup
 
 ```bash
-# Basic CRUD operations
-python examples/simple_usage/simple_usage.py
+# Clone repository
+git clone https://github.com/your-repo/pydantic-airtable.git
+cd pydantic-airtable
 
-# AI agent task management
-python examples/agent_tasks/agent_tasks.py
+# Install development dependencies
+pip install -e ".[dev]"
 
-# 🆕 Table and base management
-python examples/table_management/table_management.py
+# Run tests
+pytest
 
-# 🤖 Agentic Researcher (requires OpenAI API key)
-python examples/agentic_researcher/agentic_researcher.py --demo
-python examples/agentic_researcher/agentic_researcher.py --interactive
+# Run examples
+cd examples/simple_usage
+python simple_usage.py
 ```
 
-**📚 Detailed Examples**: See [examples/README.md](examples/README.md) for comprehensive documentation of each example with learning paths and troubleshooting guides.
+## 📖 API Reference
 
-## 📝 Configuration Options
+### Model Decorator
 
-### AirTableConfig Parameters
+```python
+@airtable_model(
+    table_name: str,              # AirTable table name
+    config: AirTableConfig = None,   # Configuration object
+    access_token: str = None,     # Direct token specification
+    base_id: str = None          # Direct base ID specification
+)
+```
 
-- `access_token`: AirTable Personal Access Token (PAT) - **REQUIRED** (or use `AIRTABLE_ACCESS_TOKEN` env var)
-- `base_id`: AirTable Base ID (or use `AIRTABLE_BASE_ID` env var)  
-- `table_name`: Name of the table in AirTable
-- `api_key`: **DEPRECATED** - Use `access_token` instead. Will show deprecation warnings.
+### Model Methods
 
-### AirTableField Parameters
+```python
+# Class methods
+User.create(**data) -> User                    # Create new record
+User.get(record_id: str) -> User              # Get by ID
+User.all(**filters) -> List[User]             # Get all records
+User.find_by(**filters) -> List[User]         # Find by field values
+User.first(**filters) -> Optional[User]       # Get first match
+User.bulk_create(data_list) -> List[User]     # Create multiple records
+User.create_table() -> dict                   # Create table from model
+User.sync_table(**options) -> dict            # Sync model to existing table
 
-- `airtable_field_name`: Custom field name in AirTable
-- `airtable_field_type`: Specific AirTable field type
-- `read_only`: Exclude from create/update operations
-- All standard Pydantic Field parameters are supported
+# Instance methods  
+user.save() -> User                           # Save changes
+user.delete() -> dict                         # Delete record
+```
+
+### Field Utilities
+
+```python
+from pydantic_airtable import airtable_field, AirTableFieldType
+
+field = airtable_field(
+    field_type: AirTableFieldType = None,     # Override auto-detection
+    field_name: str = None,                   # Custom AirTable field name  
+    read_only: bool = False,                  # Read-only field
+    choices: List[str] = None,                # For SELECT/MULTI_SELECT
+    **pydantic_field_kwargs                   # Standard Pydantic Field options
+)
+```
+
+## ❓ Troubleshooting
+
+### Common Issues
+
+**Issue**: `ConfigurationError: AirTable Personal Access Token is required`
+```python
+# Solution: Set environment variables or configure explicitly
+configure_from_env()  # Loads from .env file
+# OR
+configure_from_env(access_token="pat_...", base_id="app_...")
+```
+
+**Issue**: `APIError: Table 'Users' not found`
+```python  
+# Solution: Create the table first
+User.create_table()
+```
+
+**Issue**: Field type not detected correctly
+```python
+# Solution: Override with explicit type
+from pydantic_airtable import airtable_field, AirTableFieldType
+
+class User(BaseModel):
+    description: str = airtable_field(
+        field_type=AirTableFieldType.LONG_TEXT
+    )
+```
+
+### Performance Tips
+
+- Use `bulk_create()` for multiple records
+- Cache model instances when possible  
+- Use `find_by()` instead of filtering `all()` results
+- Set up proper indexes in AirTable for frequently queried fields
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Development Priorities
+
+1. **Additional Field Types**: Support for more AirTable field types
+2. **Advanced Querying**: More sophisticated filtering and sorting
+3. **Performance Optimizations**: Caching and batch operations
+4. **Documentation**: More examples and tutorials
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙋 Support
+## 🙏 Acknowledgments
 
-For questions, bug reports, or feature requests, please open an issue on the GitHub repository.
+- [Pydantic](https://pydantic.dev/) for the excellent data validation library
+- [AirTable](https://airtable.com/) for the powerful database/spreadsheet platform  
+- The Python community for continuous inspiration and feedback
 
-## 🔗 Related Projects
+## 🔗 Links
 
-- [Pydantic](https://pydantic-docs.helpmanual.io/) - Data validation using Python type hints
-- [AirTable API](https://airtable.com/developers/web/api/introduction) - AirTable REST API documentation
-
-## 🎯 What's New in v0.2.0
-
-### 🆕 **Schema Management** 
-- **Create AirTable tables** directly from Pydantic models
-- **Automatic field type detection** from Python types
-- **Enum support** for select fields with automatic choice generation
-- **Schema validation** to ensure model-table compatibility
-
-### 🏗️ **Base Management**
-- **Create AirTable bases** programmatically 
-- **List and manage** existing bases
-- **Get base schemas** with full table and field information
-
-### 🔄 **Schema Synchronization**
-- **Sync models with tables** - add missing fields automatically
-- **Validate schemas** to catch mismatches before runtime
-- **Non-destructive updates** - only add fields, never remove data
-
-### 🎛️ **Advanced Table Operations**
-- **Update table schemas** with new fields
-- **Delete tables** when needed
-- **Full CRUD operations** on table structure
-
-### 🔧 **Developer Experience**
-- **Model-driven approach** - tables create themselves from models
-- **Type-safe operations** with full Pydantic validation
-- **Comprehensive error handling** with helpful messages
-- **Backward compatibility** with existing v0.1.x code
-
-### 📚 **New Examples**
-- **`table_management.py`** - Complete schema management workflow
-- **Base creation** examples with multiple tables
-- **Schema sync** demonstrations
-- **Model evolution** patterns
-
-## 📁 **Complete Example Library**
-
-The library now includes three comprehensive examples:
-
-| Example | Description | Key Features |
-|---------|-------------|--------------|
-| **[`simple_usage/`](examples/simple_usage/)** | Basic CRUD operations | Model creation, querying, batch operations |
-| **[`agent_tasks/`](examples/agent_tasks/)** | AI agent task management | Status tracking, metrics, business logic |
-| **[`table_management/`](examples/table_management/)** | Schema management | Table creation, validation, synchronization |
-| **[`agentic_researcher/`](examples/agentic_researcher/)** 🤖 | AI research assistant | Full AI workflow, base creation, Q&A system |
-
-All based on AirTable's official APIs:
-- [Create Table](https://airtable.com/developers/web/api/create-table)
-- [Update Table](https://airtable.com/developers/web/api/update-table)  
-- [Create Base](https://airtable.com/developers/web/api/create-base)
-- [Get Base Schema](https://airtable.com/developers/web/api/get-base-schema)
-- [List Bases](https://airtable.com/developers/web/api/list-bases)
+- [Documentation](https://pydantic-airtable.readthedocs.io/)
+- [Examples](./examples/)
+- [API Reference](https://pydantic-airtable.readthedocs.io/en/latest/api/)
+- [Issue Tracker](https://github.com/your-repo/pydantic-airtable/issues)
 
 ---
 
-**Made with ❤️ for seamless AirTable integration with Python**
+**Made with ❤️ for the Python community**
+
+*Transform your AirTable integration from complex to simple with just 8 lines of code!* 🚀

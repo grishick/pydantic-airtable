@@ -1,208 +1,241 @@
-# Pydantic AirTable Examples
+# 📚 Pydantic AirTable Examples
 
-This directory contains comprehensive examples demonstrating the capabilities of the Pydantic AirTable library, from basic CRUD operations to sophisticated AI-powered applications.
+This directory contains comprehensive examples demonstrating the capabilities of pydantic-airtable.
 
-## 📁 Example Structure
+## 🚀 Quick Start Examples
 
-Each example is organized in its own subdirectory with:
-- **Main script** - The executable example
-- **README.md** - Detailed documentation and usage instructions
-- **Self-contained** - Can be run independently
+### [Simple Usage](./simple_usage/)
+**Perfect for beginners** - Shows the core features in just 8 lines of code!
 
-## 🚀 Examples Overview
-
-### 1. [Simple Usage](simple_usage/)
-**Foundation patterns for basic operations**
-
-- ✅ **Difficulty**: Beginner
-- ✅ **Prerequisites**: AirTable PAT only
-- ✅ **Time**: 5 minutes
+```python
+@airtable_model(table_name="Users")
+class User(BaseModel):
+    name: str        # Auto-detects as SINGLE_LINE_TEXT
+    email: str       # Auto-detects as EMAIL
+    age: Optional[int] = None  # Auto-detects as NUMBER
+```
 
 **What you'll learn:**
-- Basic model definition with automatic field type mapping
-- CRUD operations (Create, Read, Update, Delete)
-- Simple querying and filtering
-- Batch operations for efficiency
+- Smart field type detection
+- Automatic table creation
+- Basic CRUD operations
+- Environment-based configuration
 
+**Run it:**
 ```bash
 cd simple_usage
+pip install -r requirements.txt
 python simple_usage.py
 ```
 
-### 2. [Agent Tasks](agent_tasks/)
-**Sophisticated business logic with state management**
+---
 
-- 🔶 **Difficulty**: Intermediate
-- ✅ **Prerequisites**: AirTable PAT only
-- ✅ **Time**: 10 minutes
+## 🏗️ Advanced Examples
 
-**What you'll learn:**
-- Complex data models with enums and relationships
-- Business logic methods built into models
-- Task lifecycle management and state transitions
-- Performance metrics and analytics
-- Advanced querying patterns
-
-```bash
-cd agent_tasks
-python agent_tasks.py
-```
-
-### 3. [Table Management](table_management/)
-**Schema creation and database management**
-
-- 🔶 **Difficulty**: Intermediate
-- ✅ **Prerequisites**: AirTable PAT with base creation permissions
-- ✅ **Time**: 15 minutes
+### [Table Management](./table_management/)
+**Advanced schema management** - Learn to manage complex table structures and relationships.
 
 **What you'll learn:**
-- Creating AirTable bases and tables programmatically
-- Automatic schema generation from Pydantic models
-- Schema validation and synchronization
-- Model evolution and migration patterns
-- Infrastructure as Code principles
+- Creating tables from Pydantic models
+- Field type customization and overrides
+- Base and table schema management
+- Synchronizing model changes to AirTable
+- Handling complex data types (Enums, nested structures)
 
+**Features demonstrated:**
+- Multiple model types (Task, User, Project)
+- Custom field configurations
+- Table synchronization
+- Base-level operations
+
+**Run it:**
 ```bash
 cd table_management
+pip install -r requirements.txt
 python table_management.py
 ```
 
-### 4. [Agentic Researcher](agentic_researcher/) 🤖
-**AI-powered research assistant with full workflow automation**
+---
 
-- 🔴 **Difficulty**: Advanced
-- ⚠️ **Prerequisites**: OpenAI API key + AirTable PAT
-- ⚠️ **Time**: 30+ minutes
+### [Agentic Researcher](./agentic_researcher/)
+**AI-powered research system** - A complete application integrating OpenAI, web search, and AirTable.
 
 **What you'll learn:**
-- AI workflow orchestration with OpenAI GPT-4o
-- Complex multi-model data relationships
-- Automatic infrastructure provisioning
-- Context-aware AI interactions
-- Production-ready error handling and resilience
+- Complex multi-model applications
+- AI integration with OpenAI GPT-4
+- Real-time web search integration
+- Interactive command-line interfaces
+- YAML-based prompt management
+- Async operations and error handling
 
+**Features:**
+- 🤖 AI-powered research task planning
+- 🔍 Real web search using DuckDuckGo
+- 📊 Progress tracking and analytics
+- ❓ Interactive Q&A about research
+- 📋 Comprehensive result management
+
+**Run it:**
 ```bash
 cd agentic_researcher
-python agentic_researcher.py --demo
-python agentic_researcher.py --interactive
+pip install -r requirements.txt
+python agentic_researcher.py
 ```
-
-## 🎯 Learning Path
-
-### For Beginners
-1. **Start with [Simple Usage](simple_usage/)** - Learn the basics
-2. **Try [Agent Tasks](agent_tasks/)** - Understand business logic patterns
-3. **Explore [Table Management](table_management/)** - Master schema management
-
-### For Advanced Users
-1. **Review [Table Management](table_management/)** - Understand infrastructure patterns
-2. **Dive into [Agentic Researcher](agentic_researcher/)** - See AI integration in action
-3. **Build your own** - Combine patterns for your use case
-
-## 🔧 Prerequisites
-
-### Required for All Examples
-- **Python 3.8+**
-- **AirTable Personal Access Token (PAT)**
-  - Get from: [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
-  - Set: `export AIRTABLE_ACCESS_TOKEN="pat_your_token"`
-
-### Additional for AI Examples
-- **OpenAI API Key** (for Agentic Researcher)
-  - Get from: [OpenAI Platform](https://platform.openai.com/api-keys)
-  - Set: `export OPENAI_API_KEY="sk-your_key"`
-
-### Optional
-- **AirTable Base ID** (will create new base if not provided)
-  - Set: `export AIRTABLE_BASE_ID="app_your_base"`
-
-## 📊 Feature Comparison
-
-| Feature | Simple Usage | Agent Tasks | Table Management | Agentic Researcher |
-|---------|-------------|-------------|------------------|-------------------|
-| **CRUD Operations** | ✅ Basic | ✅ Advanced | ✅ Advanced | ✅ Advanced |
-| **Business Logic** | ❌ | ✅ Rich | ✅ Schema-focused | ✅ AI-powered |
-| **Enums & Types** | ✅ Basic | ✅ Extensive | ✅ Comprehensive | ✅ Comprehensive |
-| **Schema Management** | ❌ | ❌ | ✅ Full | ✅ Automatic |
-| **Base Creation** | ❌ | ❌ | ✅ Yes | ✅ Automatic |
-| **AI Integration** | ❌ | ❌ | ❌ | ✅ Full |
-| **Error Handling** | ✅ Basic | ✅ Good | ✅ Comprehensive | ✅ Production |
-| **Analytics** | ❌ | ✅ Metrics | ✅ Schema | ✅ Research |
-
-## 🚀 Quick Start Commands
-
-```bash
-# Set up environment (required for all examples)
-export AIRTABLE_ACCESS_TOKEN="pat_your_personal_access_token"
-
-# Optional: Use existing base
-export AIRTABLE_BASE_ID="app_your_base_id"
-
-# For AI examples: Add OpenAI key
-export OPENAI_API_KEY="sk-your_openai_key"
-
-# Run any example
-cd [example_name]
-python [example_name].py
-```
-
-## 🎨 Customization Ideas
-
-### Extend Simple Usage
-- Add more field types (URL, phone, attachment)
-- Implement custom validation rules
-- Add relationship fields between models
-
-### Enhance Agent Tasks
-- Add task dependencies and workflows
-- Implement priority queues
-- Add notification systems
-
-### Advanced Table Management
-- Multi-environment deployments (dev/staging/prod)
-- Schema versioning and rollback
-- Automated testing for schema changes
-
-### Agentic Researcher Extensions
-- Multiple research methodologies
-- Integration with external APIs
-- Custom AI models and prompts
-- Research collaboration features
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-**"ConfigurationError: Personal Access Token not provided"**
-```bash
-export AIRTABLE_ACCESS_TOKEN="pat_your_token"
-```
-
-**"Permission denied" when creating bases/tables**
-- Ensure your PAT has base creation permissions
-- Some operations require workspace admin privileges
-
-**OpenAI API errors in Agentic Researcher**
-- Verify your OpenAI API key is valid
-- Check your OpenAI account has sufficient credits
-- The library includes retry logic for transient failures
-
-### Getting Help
-
-1. **Check the README** in each example directory
-2. **Review error messages** - they often contain helpful guidance
-3. **Start simple** - begin with Simple Usage before advanced examples
-4. **Check permissions** - ensure your PAT has necessary access levels
-
-## 📚 Additional Resources
-
-- **[Main README](../README.md)** - Library overview and installation
-- **[Installation Guide](../INSTALLATION.md)** - Detailed setup instructions
-- **[Authentication Migration](../AUTHENTICATION_MIGRATION.md)** - PAT migration guide
-- **[AirTable API Docs](https://airtable.com/developers/web/api/introduction)** - Official API reference
-- **[OpenAI API Docs](https://platform.openai.com/docs)** - AI integration reference
 
 ---
 
-**Start with Simple Usage and work your way up to building sophisticated AI-powered applications with structured data management!** 🚀
+## 🛠️ Setup Instructions
 
+### 1. Prerequisites
+All examples require:
+```bash
+# Python 3.8+
+python --version
+
+# AirTable credentials
+# Get your Personal Access Token: https://airtable.com/developers/web/api/authentication
+```
+
+### 2. Environment Setup
+Create a `.env` file in each example directory:
+```env
+AIRTABLE_ACCESS_TOKEN=pat_your_personal_access_token
+AIRTABLE_BASE_ID=app_your_base_id
+```
+
+For the Agentic Researcher, also add:
+```env
+OPENAI_API_KEY=sk_your_openai_api_key
+```
+
+### 3. Installation
+Each example has its own `requirements.txt`:
+```bash
+cd [example-directory]
+pip install -r requirements.txt
+```
+
+## 📖 Learning Path
+
+**Recommended order for learning:**
+
+1. **[Simple Usage](./simple_usage/)** - Start here to understand the basics
+2. **[Table Management](./table_management/)** - Learn advanced schema management
+3. **[Agentic Researcher](./agentic_researcher/)** - See a real-world application
+
+## 🎯 Common Use Cases by Example
+
+| Use Case | Example | Key Features |
+|----------|---------|-------------|
+| **User Management** | Simple Usage | Basic CRUD, field detection |
+| **Task Tracking** | Table Management | Status enums, priorities, dates |
+| **CRM System** | Table Management | Contact info, relationships |
+| **Content Management** | Table Management | Rich text, attachments |
+| **AI Applications** | Agentic Researcher | OpenAI integration, complex workflows |
+| **Research Tools** | Agentic Researcher | Web scraping, data analysis |
+| **Automation Systems** | Agentic Researcher | Multi-step processes, progress tracking |
+
+## 💡 Tips for Success
+
+### Field Type Detection
+The library automatically detects field types from naming patterns:
+- `email` → EMAIL
+- `phone` → PHONE  
+- `website` → URL
+- `description` → LONG_TEXT
+- `price` → CURRENCY
+- `rate` → PERCENT
+
+### Performance Optimization
+- Use `bulk_create()` for multiple records
+- Use `find_by()` for filtered queries
+- Cache model instances when possible
+- Set up AirTable indexes for frequent queries
+
+### Error Handling
+```python
+try:
+    user = User.create(name="Alice", email="alice@example.com")
+except APIError as e:
+    print(f"AirTable API error: {e}")
+except ValidationError as e:
+    print(f"Data validation error: {e}")
+```
+
+### Testing
+```python
+# Setup test configuration
+configure_from_env(
+    access_token="pat_test_token",
+    base_id="app_test_base"
+)
+
+# Test your models
+def test_user_creation():
+    user = User.create(name="Test", email="test@example.com")
+    assert user.id is not None
+    user.delete()  # Cleanup
+```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Missing credentials:**
+```bash
+# Check your .env file
+cat .env
+
+# Verify environment variables are loaded
+python -c "import os; print(os.getenv('AIRTABLE_ACCESS_TOKEN'))"
+```
+
+**Table not found:**
+```python
+# Create table from model
+User.create_table()
+
+# Or check if it exists
+try:
+    users = User.all()
+    print("Table exists")
+except APIError:
+    print("Table needs to be created")
+```
+
+**Import errors:**
+```bash
+# Install package in development mode
+pip install -e ../../
+
+# Check dependencies
+pip list | grep pydantic
+```
+
+### Getting Help
+
+1. **Check the logs** - All examples include detailed error messages
+2. **Review the model definitions** - Ensure field types are correct
+3. **Verify AirTable permissions** - Your PAT needs appropriate scopes
+4. **Test with simple examples first** - Start with Simple Usage
+
+## 🚀 Next Steps
+
+After running these examples:
+
+1. **Explore the source code** - Understand how each feature works
+2. **Modify the examples** - Try adding your own fields and models
+3. **Build your own application** - Use the examples as templates
+4. **Share your creations** - Contribute back to the community!
+
+## 📚 Additional Resources
+
+- **[Main Documentation](../README.md)** - Complete API reference
+- **[AirTable API Docs](https://airtable.com/developers/web/api/introduction)** - Official AirTable documentation
+- **[Pydantic Docs](https://pydantic.dev/)** - Learn more about Pydantic models
+
+---
+
+**Happy coding! 🎉**
+
+*These examples showcase the power and simplicity of pydantic-airtable. From basic CRUD to AI-powered applications, see how easy it is to build with AirTable.*

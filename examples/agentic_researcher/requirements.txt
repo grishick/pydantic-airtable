@@ -1,0 +1,21 @@
+# Agentic Researcher Example Dependencies
+
+# Install the pydantic-airtable package from parent directory
+-e ../../
+
+# OpenAI for AI-powered research
+openai>=2.8.1
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Web search and content extraction
+ddgs>=3.3.0
+beautifulsoup4>=4.12.0
+aiohttp>=3.8.0
+
+# YAML for prompt management
+PyYAML>=6.0.0
+
+# Note: All other core dependencies (pydantic, requests, etc.) 
+# are automatically included via the main package
