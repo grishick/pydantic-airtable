@@ -352,8 +352,8 @@ def test_user_creation():
 
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/pydantic-airtable.git
-cd pydantic-airtable
+git clone https://github.com/Airtable/pydantic-at.git
+cd pydantic-at
 
 # Install development dependencies
 pip install -e ".[dev]"

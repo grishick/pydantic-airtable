@@ -27,7 +27,7 @@ Quick Start:
 from .models import AirTableModel, airtable_model
 from .config import AirTableConfig, configure_from_env, set_global_config, get_global_config
 from .field_types import airtable_field, FieldTypeResolver
-from .fields import AirTableFieldType
+from .fields import AirTableFieldType, AirTableField
 from .manager import AirTableManager
 from .exceptions import (
     AirTableError, 
@@ -59,6 +59,7 @@ __all__ = [
     
     # Field utilities
     "airtable_field",
+    "AirTableField",
     "AirTableFieldType",
     "FieldTypeResolver",
     

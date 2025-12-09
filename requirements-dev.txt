@@ -1,0 +1,9 @@
+# Development dependencies for pydantic-airtable
+-r requirements.txt
+
+# Testing
+pytest>=7.0.0
+
+# Environment management (for running examples)
+python-dotenv>=1.0.0
+
