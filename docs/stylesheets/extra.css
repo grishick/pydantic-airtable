@@ -1,0 +1,130 @@
+/* Custom styles for Pydantic AirTable documentation */
+
+/* Root variables */
+:root {
+  --md-primary-fg-color: #7c3aed;
+  --md-primary-fg-color--light: #a78bfa;
+  --md-primary-fg-color--dark: #5b21b6;
+  --md-accent-fg-color: #f59e0b;
+}
+
+/* Dark mode colors */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #a78bfa;
+  --md-primary-fg-color--light: #c4b5fd;
+  --md-primary-fg-color--dark: #7c3aed;
+  --md-accent-fg-color: #fbbf24;
+}
+
+/* Header styling */
+.md-header {
+  background-color: var(--md-primary-fg-color);
+}
+
+/* Navigation tabs */
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Code blocks */
+.highlight code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Inline code */
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85em;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  font-size: 0.9rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Admonitions */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: var(--md-accent-fg-color);
+}
+
+.md-typeset .admonition.tip > .admonition-title,
+.md-typeset details.tip > summary {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+/* Feature grid for home page */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Hero section styling */
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+/* Better blockquote styling */
+.md-typeset blockquote {
+  border-left-color: var(--md-accent-fg-color);
+  background-color: rgba(245, 158, 11, 0.05);
+  padding: 0.5em 1em;
+}
+
+/* Badge styling */
+.md-typeset img[src*="badge"] {
+  margin-right: 0.25em;
+}
+
+/* Footer */
+.md-footer {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus states */
+.md-typeset a:focus {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+}
+
+/* Code annotation styling */
+.md-typeset .md-annotation__index {
+  background-color: var(--md-accent-fg-color);
+}
+
+/* Search highlight */
+.md-search-result__article--document::before {
+  background-color: var(--md-primary-fg-color);
+}
+
+/* Tab styling */
+.md-typeset .tabbed-set > input:checked + label {
+  border-color: var(--md-accent-fg-color);
+}
+
+/* Custom emoji sizing */
+.md-typeset .twemoji {
+  height: 1.2em;
+  vertical-align: text-bottom;
+}

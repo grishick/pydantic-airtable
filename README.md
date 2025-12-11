@@ -352,8 +352,8 @@ def test_user_creation():
 
 ```bash
 # Clone repository
-git clone https://github.com/Airtable/pydantic-at.git
-cd pydantic-at
+git clone https://github.com/pydantic-airtable/pydantic-airtable.git
+cd pydantic-airtable
 
 # Install development dependencies
 pip install -e ".[dev]"
@@ -447,33 +447,25 @@ class User(BaseModel):
 - Use `find_by()` instead of filtering `all()` results
 - Set up proper indexes in AirTable for frequently queried fields
 
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Development Priorities
-
-1. **Additional Field Types**: Support for more AirTable field types
-2. **Advanced Querying**: More sophisticated filtering and sorting
-3. **Performance Optimizations**: Caching and batch operations
-4. **Documentation**: More examples and tutorials
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 📖 Documentation
 
-- [Pydantic](https://pydantic.dev/) for the excellent data validation library
-- [AirTable](https://airtable.com/) for the powerful database/spreadsheet platform  
-- The Python community for continuous inspiration and feedback
+Full documentation is available at **[pydantic-airtable.readthedocs.io](https://pydantic-airtable.readthedocs.io/)**
+
+- [Getting Started](https://pydantic-airtable.readthedocs.io/getting-started/quickstart/)
+- [User Guide](https://pydantic-airtable.readthedocs.io/guide/models/)
+- [API Reference](https://pydantic-airtable.readthedocs.io/api/)
+- [Examples](https://pydantic-airtable.readthedocs.io/examples/)
 
 ## 🔗 Links
 
 - [Documentation](https://pydantic-airtable.readthedocs.io/)
 - [Examples](./examples/)
-- [API Reference](https://pydantic-airtable.readthedocs.io/en/latest/api/)
-- [Issue Tracker](https://github.com/your-repo/pydantic-airtable/issues)
+- [AirTable API Reference](https://airtable.com/developers/web/api/introduction)
+- [Issue Tracker](https://github.com/pydantic-airtable/pydantic-airtable/issues)
 
 ---
 

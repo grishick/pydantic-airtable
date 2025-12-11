@@ -21,7 +21,7 @@ pip install pydantic>=2.0.0 requests>=2.28.0 python-dateutil>=2.8.0 openai>=2.8.
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd pydantic-at
+cd pydantic-airtable
 
 # Install in development mode
 pip install -e .

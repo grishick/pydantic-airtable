@@ -1,6 +1,6 @@
 # Table and Base Management Example
 
-This example demonstrates the powerful schema management capabilities of the Pydantic AirTable library, including creating bases and tables programmatically.
+This example demonstrates the schema management capabilities of the Pydantic AirTable library, including creating bases and tables programmatically.
 
 ## 🎯 What This Example Shows
 
@@ -210,6 +210,5 @@ prod_base = base_manager.create_base("MyApp-Prod", tables)
 ## 📚 Related Examples
 
 - **[Simple Usage](../simple_usage/)**: Foundation CRUD operations
-- **[Agent Tasks](../agent_tasks/)**: Complex business logic patterns
 - **[Agentic Researcher](../agentic_researcher/)**: Full AI application with schema management
 

@@ -1,6 +1,6 @@
 # Agentic Researcher Example
 
-This example demonstrates a sophisticated AI-powered research assistant that combines OpenAI's language models with AirTable's database capabilities to conduct structured research workflows.
+This example demonstrates an AI-powered research assistant that combines OpenAI's language models with AirTable's database capabilities to conduct structured research workflows.
 
 ## 🎯 What This Example Shows
 
@@ -399,7 +399,6 @@ The system provides comprehensive analytics:
 ## 📚 Related Examples
 
 - **[Simple Usage](../simple_usage/)**: Foundation patterns
-- **[Agent Tasks](../agent_tasks/)**: Business logic and state management
 - **[Table Management](../table_management/)**: Schema creation and evolution
 
 ---
