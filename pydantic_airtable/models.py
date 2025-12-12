@@ -28,8 +28,11 @@ class AirTableModel(BaseModel):
     created_time: Optional[datetime] = None
     
     # Pydantic configuration
+    # Use extra='ignore' to allow fields from Airtable that aren't defined in the model
+    # This is important because Airtable can have auto-generated fields (like inverse
+    # LINKED_RECORD fields) that the model doesn't need to know about
     model_config = ConfigDict(
-        extra='forbid',
+        extra='ignore',
         validate_assignment=True,
         use_enum_values=True
     )

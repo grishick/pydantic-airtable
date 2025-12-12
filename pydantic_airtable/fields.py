@@ -3,36 +3,55 @@ AirTable field definitions and type mappings
 """
 
 from typing import Any, Optional, Type
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pydantic import Field
 from enum import Enum
 
 
 class AirTableFieldType(str, Enum):
     """AirTable field types"""
+    # Text fields
     SINGLE_LINE_TEXT = "singleLineText"
-    LONG_TEXT = "multilineText"  
-    NUMBER = "number"
-    CURRENCY = "currency"
-    PERCENT = "percent"
-    DATE = "date"
-    DATETIME = "dateTime"
-    CHECKBOX = "checkbox"
-    SELECT = "singleSelect"
-    MULTI_SELECT = "multipleSelects"
+    LONG_TEXT = "multilineText"
     EMAIL = "email"
     URL = "url"
     PHONE = "phoneNumber"
-    ATTACHMENT = "multipleAttachments"
-    FORMULA = "formula"
+    
+    # Numeric fields
+    NUMBER = "number"
+    CURRENCY = "currency"
+    PERCENT = "percent"
+    RATING = "rating"
+    DURATION = "duration"
+    
+    # Date/Time fields
+    DATE = "date"
+    DATETIME = "dateTime"
+    
+    # Selection fields
+    CHECKBOX = "checkbox"
+    SELECT = "singleSelect"
+    MULTI_SELECT = "multipleSelects"
+    
+    # Relational fields
+    LINKED_RECORD = "multipleRecordLinks"
+    LOOKUP = "lookup"
     ROLLUP = "rollup"
     COUNT = "count"
-    LOOKUP = "lookup"
+    
+    # Special fields
+    ATTACHMENT = "multipleAttachments"
+    BARCODE = "barcode"
+    BUTTON = "button"
+    USER = "multipleCollaborators"
+    
+    # Computed/System fields
+    FORMULA = "formula"
+    AUTO_NUMBER = "autoNumber"
     CREATED_TIME = "createdTime"
     MODIFIED_TIME = "lastModifiedTime"
     CREATED_BY = "createdBy"
     MODIFIED_BY = "lastModifiedBy"
-    AUTO_NUMBER = "autoNumber"
 
 
 def AirTableField(
@@ -71,6 +90,7 @@ class TypeMapper:
         bool: AirTableFieldType.CHECKBOX,
         datetime: AirTableFieldType.DATETIME,
         date: AirTableFieldType.DATE,
+        timedelta: AirTableFieldType.DURATION,
     }
 
     @classmethod
@@ -90,6 +110,12 @@ class TypeMapper:
         elif field_type == AirTableFieldType.DATE:
             if isinstance(value, (datetime, date)):
                 return value.strftime("%Y-%m-%d")
+        elif field_type == AirTableFieldType.DURATION:
+            # AirTable stores duration as total seconds (integer)
+            if isinstance(value, timedelta):
+                return int(value.total_seconds())
+            elif isinstance(value, (int, float)):
+                return int(value)
         elif field_type == AirTableFieldType.CHECKBOX:
             return bool(value)
         elif field_type in [AirTableFieldType.NUMBER, AirTableFieldType.CURRENCY, AirTableFieldType.PERCENT]:
@@ -115,6 +141,10 @@ class TypeMapper:
                     return datetime.strptime(value, "%Y-%m-%d").date()
                 except ValueError:
                     return value
+        elif field_type == AirTableFieldType.DURATION:
+            # AirTable returns duration as total seconds (integer)
+            if isinstance(value, (int, float)):
+                return timedelta(seconds=value)
         elif field_type == AirTableFieldType.CHECKBOX:
             return bool(value)
 

@@ -17,7 +17,20 @@ class AirTableFieldType(str, Enum):
     PERCENT = "percent"
     DATE = "date"
     DATETIME = "dateTime"
+    DURATION = "duration"
+    RATING = "rating"
     CHECKBOX = "checkbox"
+    
+    # Relational fields
+    LINKED_RECORD = "multipleRecordLinks"
+    LOOKUP = "lookup"
+    ROLLUP = "rollup"
+    COUNT = "count"
+    
+    # Special fields
+    BARCODE = "barcode"
+    BUTTON = "button"
+    USER = "multipleCollaborators"
     SELECT = "singleSelect"
     MULTI_SELECT = "multipleSelects"
     EMAIL = "email"
@@ -52,6 +65,12 @@ class AirTableFieldType(str, Enum):
 #### Date/Time Fields
 - `DATE` - Date only
 - `DATETIME` - Date and time
+- `DURATION` - Time duration (stored in seconds)
+- `RATING` - Star rating (1-5 or 1-10)
+- `LINKED_RECORD` - Links to records in another table
+- `USER` - Collaborator/user references
+- `BUTTON` - Triggers automations (read-only)
+- `BARCODE` - Stores barcode text
 
 #### Selection Fields
 - `SELECT` - Single select dropdown
@@ -311,6 +330,54 @@ Different field types support different options when creating tables:
     "timeZone": "utc"
 }
 ```
+
+### Duration
+
+```python
+{
+    "durationFormat": "h:mm"  # Options: h:mm, h:mm:ss, h:mm:ss.S, h:mm:ss.SS, h:mm:ss.SSS
+}
+```
+
+### Rating
+
+```python
+{
+    "max": 5,              # Maximum rating (1-10)
+    "icon": "star",        # Options: star, heart, thumbs-up, flag, dot
+    "color": "yellowBright"
+}
+```
+
+### Linked Record
+
+```python
+{
+    "linked_table_id": "tblXXXXXXX",  # Required: ID of table to link to
+    "single_record": False,           # Optional: prefer single record link
+    "inverse_link_field_id": "fldXXX" # Optional: inverse link field
+}
+```
+
+### User
+
+```python
+{
+    "should_notify": False  # Whether to notify users when assigned
+}
+```
+
+### Button
+
+```python
+{
+    "label": "Click"  # Button label text
+}
+```
+
+### Barcode
+
+No additional options required.
 
 ---
 

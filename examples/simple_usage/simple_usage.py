@@ -9,7 +9,14 @@ from pydantic import BaseModel
 # Add parent directory to path for local development  
 sys.path.insert(0, "../../")
 
-from pydantic_airtable import airtable_model, configure_from_env, airtable_field, AirTableFieldType
+from pydantic_airtable import (
+    airtable_model, 
+    configure_from_env, 
+    airtable_field, 
+    AirTableFieldType,
+    AirTableConfig,
+    AirTableManager
+)
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -43,15 +50,19 @@ def main():
     print("=" * 50)
     
     try:
-        # Automatic table creation if it doesn't exist
-        print("🔍 Ensuring Users table exists...")
-        try:
-            # Try a simple operation first
-            existing_users = User.all()
-            print(f"✅ Table exists with {len(existing_users)} existing users")
-        except Exception:
-            # Table doesn't exist, create it
-            print("🔧 Creating Users table from model...")
+        # Check if table exists by looking at base schema (more efficient than fetching records)
+        print("🔍 Checking if Users table exists...")
+        config = AirTableConfig.from_env()
+        manager = AirTableManager(config)
+        schema = manager.get_base_schema()
+        
+        table_exists = any(t['name'] == 'Users' for t in schema.get('tables', []))
+        
+        if table_exists:
+            print("✅ Users table already exists")
+        else:
+            print("ℹ️  Users table does not exist yet")
+            print("🔧 Creating Users table from model definition...")
             User.create_table()
             print("✅ Users table created successfully!")
         

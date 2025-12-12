@@ -209,22 +209,33 @@ class AgenticResearcher:
             ("Research_Results", ResearchResult)
         ]
         
+        # Get base schema once (more efficient than checking each table separately)
+        try:
+            config = AirTableConfig.from_env()
+            manager = AirTableManager(config)
+            schema = manager.get_base_schema()
+            existing_tables = {t['name']: t['id'] for t in schema.get('tables', [])}
+        except Exception as e:
+            print(f"⚠️  Could not fetch base schema: {e}")
+            existing_tables = {}
+        
         for table_name, model_class in models:
             try:
-                # Try to access existing table
-                existing_records = model_class.all()
-                results["tables_existing"].append(table_name)
-                print(f"✅ {table_name} table exists ({len(existing_records)} records)")
-                
-            except Exception:
-                # Table doesn't exist, create it
-                try:
+                if table_name in existing_tables:
+                    # Table already exists
+                    results["tables_existing"].append(table_name)
+                    print(f"✅ {table_name} table already exists (ID: {existing_tables[table_name]})")
+                else:
+                    # Table doesn't exist - create it
+                    print(f"ℹ️  {table_name} table does not exist yet")
+                    print(f"🔧 Creating {table_name} table from model definition...")
                     result = model_class.create_table()
                     results["tables_created"].append(table_name)
                     print(f"✅ Created {table_name} table (ID: {result.get('id')})")
-                except Exception as e:
-                    results["errors"].append(f"{table_name}: {str(e)}")
-                    print(f"❌ Failed to create {table_name}: {e}")
+                    
+            except Exception as e:
+                results["errors"].append(f"{table_name}: {str(e)}")
+                print(f"❌ Failed to setup {table_name}: {e}")
         
         return results
     
@@ -346,46 +357,6 @@ class AgenticResearcher:
             
         return step
     
-    async def generate_final_summary(self, task: ResearchTask) -> ResearchResult:
-        """
-        Generate final research summary
-        
-        Args:
-            task: Completed research task
-            
-        Returns:
-            ResearchResult with final summary
-        """
-        print(f"📄 Generating final summary for: {task.title}")
-        
-        # Get all completed steps
-        steps = ResearchStep.find_by(task_id=task.id, status=TaskStatus.COMPLETED)
-        
-        # Generate comprehensive summary using AI
-        summary_content = await self._generate_final_summary(task, steps)
-        
-        # Create final result
-        result = ResearchResult.create(
-            task_id=task.id,
-            result_type="Final Summary",
-            title=f"Research Summary: {task.title}",
-            content=summary_content,
-            is_final_summary=True,
-            confidence_level=0.9,
-            source_count=sum(step.source_count for step in steps),
-            word_count=len(summary_content.split()),
-            generated_at=datetime.now()
-        )
-        
-        # Update task status
-        task.status = TaskStatus.COMPLETED
-        task.completed_at = datetime.now()
-        task.progress = 100.0
-        task.save()
-        
-        print(f"✅ Generated final summary (ID: {result.id})")
-        return result
-                
     async def answer_question(self, task_id: str, question: str) -> str:
         """
         Answer questions about research using stored data
@@ -463,9 +434,10 @@ class AgenticResearcher:
             source_count=sum(step.source_count for step in completed_steps)
         )
         
-        # Update task status
+        # Update task status and progress
         task.status = TaskStatus.COMPLETED
         task.completed_at = datetime.now()
+        task.progress = 100.0
         task.save()
         
         print(f"✅ Generated final summary (ID: {final_result.id})")

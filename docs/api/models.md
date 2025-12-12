@@ -333,7 +333,6 @@ from pydantic import ConfigDict
 @airtable_model(table_name="Users")
 class User(BaseModel):
     model_config = ConfigDict(
-        extra='forbid',
         validate_assignment=True,
         str_strip_whitespace=True
     )
@@ -348,11 +347,22 @@ The `AirTableModel` base class sets these defaults:
 
 ```python
 model_config = ConfigDict(
-    extra='forbid',           # Reject unknown fields
+    extra='ignore',           # Ignore unknown fields from Airtable
     validate_assignment=True, # Validate on assignment
     use_enum_values=True      # Use enum values, not names
 )
 ```
+
+!!! note "Why `extra='ignore'`?"
+    Airtable can have fields that aren't defined in your model, such as:
+    
+    - Auto-generated inverse LINKED_RECORD fields
+    - Formula fields
+    - Rollup/Lookup fields
+    - Fields added by other users
+    
+    Using `extra='ignore'` allows these fields to exist in Airtable without
+    causing validation errors in your Python code.
 
 ---
 

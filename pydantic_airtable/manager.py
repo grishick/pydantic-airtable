@@ -3,7 +3,7 @@ Unified AirTable manager combining base and table operations
 """
 
 from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from enum import Enum
 
 from .http_client import BaseHTTPClient
@@ -387,6 +387,49 @@ class AirTableManager:
                 "precision": json_schema_extra.get("precision", 0)
             }
         
+        elif field_type == AirTableFieldType.DURATION:
+            # Duration format: h:mm, h:mm:ss, h:mm:ss.S, h:mm:ss.SS, h:mm:ss.SSS
+            return {
+                "durationFormat": json_schema_extra.get("duration_format", "h:mm")
+            }
+        
+        elif field_type == AirTableFieldType.RATING:
+            # Rating: max (1-10), icon (star, heart, thumbs-up, flag, dot)
+            return {
+                "max": json_schema_extra.get("max", 5),
+                "icon": json_schema_extra.get("icon", "star"),
+                "color": json_schema_extra.get("color", "yellowBright")
+            }
+        
+        elif field_type == AirTableFieldType.LINKED_RECORD:
+            # Linked record requires linkedTableId
+            options = {}
+            linked_table_id = json_schema_extra.get("linked_table_id")
+            if linked_table_id:
+                options["linkedTableId"] = linked_table_id
+            if json_schema_extra.get("single_record"):
+                options["prefersSingleRecordLink"] = True
+            inverse_field = json_schema_extra.get("inverse_link_field_id")
+            if inverse_field:
+                options["inverseLinkFieldId"] = inverse_field
+            return options if options else None
+        
+        elif field_type == AirTableFieldType.USER:
+            # User/Collaborator field
+            return {
+                "shouldNotify": json_schema_extra.get("should_notify", False)
+            }
+        
+        elif field_type == AirTableFieldType.BUTTON:
+            # Button field - triggers automations
+            return {
+                "label": json_schema_extra.get("label", "Click")
+            }
+        
+        elif field_type == AirTableFieldType.BARCODE:
+            # Barcode field - no required options
+            return None
+        
         return None
     
     def _python_type_to_airtable_type(self, python_type: Type) -> AirTableFieldType:
@@ -414,6 +457,7 @@ class AirTableManager:
             bool: AirTableFieldType.CHECKBOX,
             datetime: AirTableFieldType.DATETIME,
             date: AirTableFieldType.DATE,
+            timedelta: AirTableFieldType.DURATION,
             list: AirTableFieldType.MULTI_SELECT,
         }
         

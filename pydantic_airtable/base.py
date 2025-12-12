@@ -89,8 +89,11 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
     with AirTable CRUD operations.
     """
 
+    # Use extra='ignore' to allow fields from Airtable that aren't defined in the model
+    # This is important because Airtable can have auto-generated fields (like inverse
+    # LINKED_RECORD fields) that the model doesn't need to know about
     model_config = ConfigDict(
-        extra='forbid',
+        extra='ignore',
         validate_assignment=True,
         arbitrary_types_allowed=True,
         str_strip_whitespace=True,

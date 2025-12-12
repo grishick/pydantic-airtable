@@ -290,17 +290,28 @@ class User(BaseModel):
 
 ### Extra Fields
 
-By default, extra fields are forbidden:
+By default, extra fields from Airtable are **ignored**. This is important because
+Airtable tables often have fields that your model doesn't define:
+
+- Auto-generated inverse LINKED_RECORD fields
+- Formula, Rollup, or Lookup fields  
+- Fields added by other collaborators
 
 ```python
 @airtable_model(table_name="Users")
 class User(BaseModel):
     name: str
+    email: str
 
-# This raises an error
-user = User.create(name="Alice", unknown_field="value")
-# ValidationError: Extra inputs are not permitted
+# If Airtable has extra fields like "Tasks" (inverse link) or "created_by",
+# they are silently ignored when loading records
+users = User.all()  # Works even if Airtable has more fields than the model
 ```
+
+!!! note "Creating Records"
+    When **creating** records, you should only pass fields defined in your model.
+    Extra fields passed to `create()` will be sent to Airtable but won't be
+    validated by Pydantic.
 
 ---
 

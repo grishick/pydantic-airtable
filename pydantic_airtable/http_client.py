@@ -4,11 +4,21 @@ Unified HTTP client for all AirTable operations
 
 import json
 import time
+from importlib.metadata import version, PackageNotFoundError
 from typing import Any, Dict, Optional
 import requests
 from urllib.parse import quote
 
 from .exceptions import APIError, RecordNotFoundError
+
+
+def _get_user_agent() -> str:
+    """Get the User-Agent string for API requests"""
+    try:
+        pkg_version = version("pydantic-airtable")
+    except PackageNotFoundError:
+        pkg_version = "dev"
+    return f"pydantic-airtable/{pkg_version}"
 
 
 class BaseHTTPClient:
@@ -34,7 +44,8 @@ class BaseHTTPClient:
         self.session = requests.Session()
         self.session.headers.update({
             "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": _get_user_agent()
         })
     
     def _handle_response(self, response: requests.Response) -> Dict[str, Any]:

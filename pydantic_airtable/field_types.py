@@ -4,7 +4,7 @@ Streamlined field type system with smart detection and minimal boilerplate
 
 import re
 from typing import Any, Dict, Optional, Type, Union, get_origin, get_args
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from enum import Enum
 from pydantic import Field
 from pydantic.fields import FieldInfo
@@ -26,34 +26,103 @@ class FieldTypeResolver:
         bool: AirTableFieldType.CHECKBOX,
         datetime: AirTableFieldType.DATETIME,
         date: AirTableFieldType.DATE,
+        timedelta: AirTableFieldType.DURATION,
         list: AirTableFieldType.MULTI_SELECT,
     }
     
     # Field name patterns for smart detection
+    # Using anchors and boundaries to avoid false substring matches
+    # Patterns use: ^ (start), $ (end), _ (word separator) to be more precise
+    
     EMAIL_PATTERNS = [
-        r'email', r'e_mail', r'mail', r'contact'
+        r'email',           # Contains 'email' anywhere
+        r'e_mail',          # e_mail format
+        r'_mail$',          # Ends with _mail
+        r'^mail_',          # Starts with mail_
     ]
     
     URL_PATTERNS = [
-        r'url', r'link', r'website', r'site', r'href'
+        r'website',         # Contains 'website'
+        r'homepage',        # Contains 'homepage'
+        r'_url$',           # Ends with _url
+        r'^url_',           # Starts with url_
+        r'_url_',           # Contains _url_
+        r'_link$',          # Ends with _link
+        r'^link_',          # Starts with link_
+        r'_href',           # Contains _href
     ]
     
     PHONE_PATTERNS = [
-        r'phone', r'tel', r'mobile', r'cell'
+        r'phone',           # Contains 'phone'
+        r'telephone',       # Contains 'telephone'
+        r'mobile',          # Contains 'mobile'
+        r'cellphone',       # Contains 'cellphone'
+        r'cell_phone',      # cell_phone format
+        r'^tel$',           # Exactly 'tel'
+        r'_tel$',           # Ends with _tel
+        r'^tel_',           # Starts with tel_
     ]
     
     LONG_TEXT_PATTERNS = [
-        r'description', r'comment', r'note', r'bio', r'summary', 
-        r'content', r'body', r'message', r'detail'
+        r'description',     # Contains 'description'
+        r'comment',         # Contains 'comment'
+        r'summary',         # Contains 'summary'
+        r'content',         # Contains 'content'
+        r'message',         # Contains 'message'
+        r'^bio$',           # Exactly 'bio'
+        r'_bio$',           # Ends with _bio
+        r'^bio_',           # Starts with bio_
+        r'^notes?$',        # Exactly 'note' or 'notes'
+        r'_notes?$',        # Ends with _note or _notes
+        r'^notes?_',        # Starts with note_ or notes_
+        r'_body$',          # Ends with _body
+        r'_detail',         # Contains _detail
     ]
     
     CURRENCY_PATTERNS = [
-        r'price', r'cost', r'amount', r'fee', r'salary', r'wage',
-        r'revenue', r'budget', r'payment'
+        r'price',           # Contains 'price'
+        r'^cost$',          # Exactly 'cost'
+        r'_cost$',          # Ends with _cost
+        r'^cost_',          # Starts with cost_
+        r'salary',          # Contains 'salary'
+        r'wage',            # Contains 'wage'
+        r'revenue',         # Contains 'revenue'
+        r'budget',          # Contains 'budget'
+        r'payment',         # Contains 'payment'
+        r'^amount$',        # Exactly 'amount'
+        r'_amount$',        # Ends with _amount
+        r'^fee$',           # Exactly 'fee'
+        r'_fee$',           # Ends with _fee
     ]
     
     PERCENT_PATTERNS = [
-        r'percent', r'percentage', r'rate', r'ratio'
+        r'percent',         # Contains 'percent' (also matches 'percentage')
+        r'^rate$',          # Exactly 'rate'
+        r'_rate$',          # Ends with _rate (e.g., conversion_rate)
+        r'^ratio$',         # Exactly 'ratio'
+        r'_ratio$',         # Ends with _ratio
+    ]
+    
+    DURATION_PATTERNS = [
+        r'duration',        # Contains 'duration'
+        r'elapsed',         # Contains 'elapsed'
+        r'time_spent',      # Contains 'time_spent'
+        r'time_taken',      # Contains 'time_taken'
+        r'^span$',          # Exactly 'span'
+        r'_span$',          # Ends with _span
+        r'^interval$',      # Exactly 'interval'
+        r'_interval$',      # Ends with _interval
+    ]
+    
+    RATING_PATTERNS = [
+        r'rating',          # Contains 'rating' (won't match 'rate' due to 'ing')
+        r'^stars?$',        # Exactly 'star' or 'stars'
+        r'_stars?$',        # Ends with _star or _stars
+        r'^score$',         # Exactly 'score'
+        r'_score$',         # Ends with _score
+        r'^rank$',          # Exactly 'rank'
+        r'_rank$',          # Ends with _rank
+        r'_ranking$',       # Ends with _ranking
     ]
     
     @classmethod
@@ -207,6 +276,14 @@ class FieldTypeResolver:
         if any(re.search(pattern, name_lower) for pattern in cls.PERCENT_PATTERNS):
             return AirTableFieldType.PERCENT
         
+        # Duration detection (for int/float fields named like durations)
+        if any(re.search(pattern, name_lower) for pattern in cls.DURATION_PATTERNS):
+            return AirTableFieldType.DURATION
+        
+        # Rating detection (for int fields named like ratings)
+        if any(re.search(pattern, name_lower) for pattern in cls.RATING_PATTERNS):
+            return AirTableFieldType.RATING
+        
         return AirTableFieldType.NUMBER
     
     @classmethod
@@ -250,6 +327,50 @@ class FieldTypeResolver:
                 "precision": kwargs.get("precision", 1)
             })
         
+        elif field_type == AirTableFieldType.DURATION:
+            # Duration format options: h:mm, h:mm:ss, h:mm:ss.S, h:mm:ss.SS, h:mm:ss.SSS
+            options.update({
+                "durationFormat": kwargs.get("duration_format", "h:mm")
+            })
+        
+        elif field_type == AirTableFieldType.RATING:
+            # Rating options: max value (1-10), icon (star, heart, thumbs-up, flag, dot)
+            options.update({
+                "max": kwargs.get("max", 5),
+                "icon": kwargs.get("icon", "star"),
+                "color": kwargs.get("color", "yellowBright")
+            })
+        
+        elif field_type == AirTableFieldType.LINKED_RECORD:
+            # Linked record requires the table ID to link to
+            linked_table_id = kwargs.get("linked_table_id")
+            if linked_table_id:
+                options["linkedTableId"] = linked_table_id
+            # Optional: prefer single record link
+            if kwargs.get("single_record"):
+                options["prefersSingleRecordLink"] = True
+            # Optional: inverse link field
+            inverse_field = kwargs.get("inverse_link_field_id")
+            if inverse_field:
+                options["inverseLinkFieldId"] = inverse_field
+        
+        elif field_type == AirTableFieldType.USER:
+            # User/Collaborator field options
+            options.update({
+                "shouldNotify": kwargs.get("should_notify", False)
+            })
+        
+        elif field_type == AirTableFieldType.BUTTON:
+            # Button field options - typically read-only, triggers actions
+            label = kwargs.get("label", "Click")
+            options.update({
+                "label": label
+            })
+        
+        elif field_type == AirTableFieldType.BARCODE:
+            # Barcode field - no special options needed for creation
+            pass
+        
         return options
 
 
@@ -259,6 +380,9 @@ def airtable_field(
     field_name: Optional[str] = None,
     read_only: bool = False,
     choices: Optional[list] = None,
+    linked_table_id: Optional[str] = None,
+    single_record: bool = False,
+    inverse_link_field_id: Optional[str] = None,
     **field_kwargs
 ) -> Any:
     """
@@ -269,6 +393,9 @@ def airtable_field(
         field_name: AirTable field name (uses Python name if None) 
         read_only: Whether field is read-only
         choices: For select/multi-select fields
+        linked_table_id: For LINKED_RECORD fields, the ID of the table to link to
+        single_record: For LINKED_RECORD fields, prefer single record link
+        inverse_link_field_id: For LINKED_RECORD fields, ID of inverse link field
         **field_kwargs: Additional Pydantic Field() arguments
         
     Returns:
@@ -288,6 +415,16 @@ def airtable_field(
     
     if choices:
         airtable_metadata['airtable_choices'] = choices
+    
+    # Linked record options
+    if linked_table_id:
+        airtable_metadata['linked_table_id'] = linked_table_id
+    
+    if single_record:
+        airtable_metadata['single_record'] = True
+    
+    if inverse_link_field_id:
+        airtable_metadata['inverse_link_field_id'] = inverse_link_field_id
     
     # Merge with existing json_schema_extra
     existing_extra = field_kwargs.get('json_schema_extra', {})

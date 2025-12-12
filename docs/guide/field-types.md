@@ -154,6 +154,24 @@ class Metrics(BaseModel):
 |-------------|---------------|
 | `datetime` | DATETIME |
 | `date` | DATE |
+| `timedelta` | DURATION |
+
+### Other Types
+
+| Python Type | AirTable Type | Notes |
+|-------------|---------------|-------|
+| `int` (with rating pattern) | RATING | For fields named `rating`, `stars`, `score`, `rank` |
+
+### Special Types (Explicit Only)
+
+These field types require explicit specification - they are not auto-detected:
+
+| AirTable Type | Description |
+|---------------|-------------|
+| LINKED_RECORD | Links to records in another table |
+| USER | Collaborator/user references |
+| BUTTON | Triggers automations (read-only) |
+| BARCODE | Stores barcode text |
 
 ### Complex Types
 
@@ -179,7 +197,17 @@ class AirTableFieldType(str, Enum):
     PERCENT = "percent"
     DATE = "date"
     DATETIME = "dateTime"
+    DURATION = "duration"
+    RATING = "rating"
     CHECKBOX = "checkbox"
+    
+    # Relational fields
+    LINKED_RECORD = "multipleRecordLinks"
+    
+    # Special fields
+    BARCODE = "barcode"
+    BUTTON = "button"
+    USER = "multipleCollaborators"
     SELECT = "singleSelect"
     MULTI_SELECT = "multipleSelects"
     EMAIL = "email"

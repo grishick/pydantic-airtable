@@ -4,11 +4,18 @@ Table and Base Management Example
 This example demonstrates how to create AirTable bases and tables
 directly from Pydantic models, and manage table schemas using the
 streamlined pydantic-airtable API.
+
+Features demonstrated:
+- Smart field type detection
+- Automatic table creation from models
+- LINKED_RECORD fields for relating tables (Tasks -> Projects)
+- CRUD operations with complex models
+- Table schema management
 """
 
 import sys
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from enum import Enum
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -22,7 +29,8 @@ from pydantic_airtable import (
     airtable_field,
     AirTableFieldType,
     AirTableManager,
-    AirTableConfig
+    AirTableConfig,
+    APIError
 )
 
 # Load environment variables
@@ -46,10 +54,20 @@ class Priority(str, Enum):
     URGENT = "Urgent"
 
 
-# Example 1: Simple Task Model with Smart Field Detection
+# Global variable to store Projects table ID for linked record field
+# This will be set after the Projects table is created
+_projects_table_id: Optional[str] = None
+
+
+def get_projects_table_id() -> Optional[str]:
+    """Get the Projects table ID (set after table creation)"""
+    return _projects_table_id
+
+
+# Example 1: Simple Task Model with Smart Field Detection and Project Link
 @airtable_model(table_name="Tasks")
 class Task(BaseModel):
-    """Task model with automatic field type detection"""
+    """Task model with automatic field type detection and project link"""
     
     title: str                                  # -> SINGLE_LINE_TEXT
     description: Optional[str] = None           # -> LONG_TEXT (detected from name)
@@ -63,6 +81,15 @@ class Task(BaseModel):
     tags: Optional[str] = airtable_field(
         field_type=AirTableFieldType.MULTI_SELECT,
         choices=["urgent", "important", "work", "personal", "review"],
+        default=None
+    )
+    
+    # LINKED_RECORD field - links tasks to projects
+    # Note: linked_table_id must be set after Projects table is created
+    # This field stores a list of record IDs from the Projects table
+    project_ids: Optional[List[str]] = airtable_field(
+        field_type=AirTableFieldType.LINKED_RECORD,
+        field_name="Projects",  # Display name in Airtable
         default=None
     )
 
@@ -104,56 +131,59 @@ class Project(BaseModel):
     team_size: Optional[int] = None      # -> NUMBER
     start_date: Optional[datetime] = None # -> DATETIME
     end_date: Optional[datetime] = None   # -> DATETIME
+    
+    # Note: When Tasks has a LINKED_RECORD to Projects, Airtable automatically
+    # creates an inverse "Tasks" field in the Projects table. This field is
+    # automatically ignored by pydantic-airtable (extra='ignore' in model config).
+    # If you want to access it, you can add a field like:
+    #
+    # task_ids: Optional[List[str]] = airtable_field(
+    #     field_type=AirTableFieldType.LINKED_RECORD,
+    #     field_name="Tasks",
+    #     read_only=True,
+    #     default=None,
+    #     alias="Tasks"
+    # )
 
 
 def demonstrate_table_creation():
-    """Demonstrate automatic table creation from models"""
+    """
+    Demonstrate automatic table creation from models.
+    
+    Creates tables in the correct order to handle LINKED_RECORD dependencies:
+    1. Projects table (no dependencies)
+    2. Users table (no dependencies)
+    3. Tasks table (depends on Projects for LINKED_RECORD field)
+    """
+    global _projects_table_id
     
     print("\n" + "="*60)
     print("🏗️  TABLE CREATION DEMONSTRATION")
     print("="*60)
     
-    models_to_create = [
-        ("Tasks", Task),
-        ("Users", User), 
-        ("Projects", Project)
-    ]
+    print("\n💡 Creating tables in order to handle LINKED_RECORD dependencies...")
+    print("   Projects → Users → Tasks (Tasks links to Projects)")
     
     failed_tables = []
     
-    for table_name, model_class in models_to_create:
-        print(f"\n📋 Creating {table_name} table...")
+    # Step 1: Create Projects table first (Tasks will link to it)
+    print(f"\n📋 Step 1: Creating Projects table...")
+    projects_table_id = _create_or_get_table(Project, "Projects", failed_tables)
+    
+    if projects_table_id:
+        _projects_table_id = projects_table_id
+        print(f"   📎 Stored Projects table ID for LINKED_RECORD: {projects_table_id}")
         
-        try:
-            # Try to access existing table
-            existing_records = model_class.all()
-            print(f"✅ {table_name} table already exists with {len(existing_records)} records")
-            
-        except Exception as check_error:
-            # Table doesn't exist, create it
-            print(f"⚠️  Table check failed: {check_error}")
-            print(f"🔧 Attempting to create {table_name} table...")
-            
-            try:
-                result = model_class.create_table()
-                print(f"✅ Created {table_name} table successfully!")
-                print(f"   Table ID: {result.get('id', 'Unknown')}")
-                
-                # Wait a moment for table to be ready
-                import time
-                time.sleep(1)
-                
-                # Verify we can access it
-                try:
-                    test_records = model_class.all()
-                    print(f"✅ Verified table access - found {len(test_records)} records")
-                except Exception as verify_error:
-                    print(f"⚠️  Table created but access verification failed: {verify_error}")
-                
-            except Exception as e:
-                print(f"❌ Failed to create {table_name} table: {e}")
-                print(f"   Error type: {type(e).__name__}")
-                failed_tables.append(table_name)
+        # Update Task model's linked_table_id for the project_ids field
+        _update_task_linked_table_id(projects_table_id)
+    
+    # Step 2: Create Users table (no dependencies)
+    print(f"\n📋 Step 2: Creating Users table...")
+    _create_or_get_table(User, "Users", failed_tables)
+    
+    # Step 3: Create Tasks table (with LINKED_RECORD to Projects)
+    print(f"\n📋 Step 3: Creating Tasks table (with link to Projects)...")
+    _create_or_get_table(Task, "Tasks", failed_tables)
     
     # Return success status
     if failed_tables:
@@ -164,36 +194,142 @@ def demonstrate_table_creation():
         return True
 
 
-def demonstrate_crud_operations():
-    """Demonstrate CRUD operations with the new models"""
+def _create_or_get_table(model_class, table_name: str, failed_tables: list) -> Optional[str]:
+    """
+    Create a table or get existing table ID.
+    
+    Checks the base schema to see if table exists (more efficient than
+    fetching records). Creates the table if it doesn't exist.
+    
+    Returns:
+        Table ID if successful, None otherwise
+    """
+    import time
+    
+    try:
+        # Check base schema to see if table already exists
+        config = AirTableConfig.from_env()
+        manager = AirTableManager(config)
+        schema = manager.get_base_schema()
+        
+        # Look for table in schema
+        for table in schema.get('tables', []):
+            if table['name'] == table_name:
+                table_id = table['id']
+                record_count = len(table.get('fields', []))
+                print(f"✅ {table_name} table already exists")
+                print(f"   Table ID: {table_id} ({record_count} fields)")
+                return table_id
+        
+        # Table not found in schema - create it
+        print(f"ℹ️  {table_name} table does not exist yet")
+        print(f"🔧 Creating {table_name} table from model definition...")
+        
+        result = model_class.create_table()
+        table_id = result.get('id', None)
+        print(f"✅ Created {table_name} table successfully!")
+        print(f"   Table ID: {table_id}")
+        
+        # Wait a moment for table to be ready
+        time.sleep(1)
+        
+        return table_id
+        
+    except APIError as e:
+        print(f"❌ API error while checking/creating {table_name} table: {e}")
+        print(f"   Status code: {e.status_code}")
+        failed_tables.append(table_name)
+        return None
+    
+    except Exception as e:
+        print(f"❌ Unexpected error for {table_name} table: {e}")
+        print(f"   Error type: {type(e).__name__}")
+        failed_tables.append(table_name)
+        return None
+
+
+def _update_task_linked_table_id(projects_table_id: str):
+    """
+    Update the Task model's project_ids field with the Projects table ID.
+    
+    This is necessary because the LINKED_RECORD field needs to know which
+    table to link to, and that table ID is only available after creation.
+    """
+    # Access the field info and update the linked_table_id
+    field_info = Task.model_fields.get('project_ids')
+    if field_info and field_info.json_schema_extra:
+        if isinstance(field_info.json_schema_extra, dict):
+            field_info.json_schema_extra['linked_table_id'] = projects_table_id
+            print(f"   ✅ Updated Task.project_ids with linked_table_id")
+
+
+def demonstrate_crud_operations() -> bool:
+    """
+    Demonstrate CRUD operations with the new models including LINKED_RECORD.
+    
+    Returns:
+        True if all operations succeeded, False otherwise
+    """
+    success = True
     
     print("\n" + "="*60)
     print("📝 CRUD OPERATIONS DEMONSTRATION") 
     print("="*60)
     
-    # Create sample tasks
-    print("\n1️⃣ Creating sample tasks...")
+    # Create sample project first (so we can link tasks to it)
+    print("\n1️⃣ Creating sample project first (for linking tasks)...")
+    
+    try:
+        project = Project.create(
+            name="Mobile App Redesign",
+            description="Complete overhaul of the mobile application user interface and user experience",
+            budget=150000.0,        # CURRENCY field
+            completion_rate=0.25,   # PERCENT field  
+            status="Active",        # SELECT field
+            team_size=5,
+            start_date=datetime(2024, 1, 1),
+            end_date=datetime(2024, 6, 30)
+        )
+        
+        print(f"✅ Created project: {project.name}")
+        print(f"   Project record ID: {project.id}")
+        
+    except Exception as project_error:
+        print(f"❌ Failed to create project: {project_error}")
+        print(f"   Error type: {type(project_error).__name__}")
+        project = None
+        success = False
+    
+    # Create sample tasks linked to the project
+    print("\n2️⃣ Creating sample tasks (linked to project)...")
     
     # Debug: Show what table name we're using
     print(f"🔍 Debug: Task table name is '{Task._get_table_name()}'")
     
     try:
+        # Create task linked to the project using LINKED_RECORD field
         task1 = Task.create(
             title="Design user interface",
             description="Create wireframes and mockups for the new dashboard",
             status=TaskStatus.IN_PROGRESS,
             priority=Priority.HIGH,
-            due_date=datetime(2024, 12, 31)
+            due_date=datetime(2024, 12, 31),
+            # Link to project using record ID (LINKED_RECORD field)
+            project_ids=[project.id] if project else None
         )
         
         task2 = Task.create(
             title="Write documentation", 
             description="Complete API documentation and user guides",
             status=TaskStatus.PENDING,
-            priority=Priority.MEDIUM
+            priority=Priority.MEDIUM,
+            # Also link to the same project
+            project_ids=[project.id] if project else None
         )
         
         print(f"✅ Created tasks: {task1.title} and {task2.title}")
+        if project:
+            print(f"   📎 Both tasks linked to project: {project.name}")
         
     except Exception as task_error:
         print(f"❌ Failed to create tasks: {task_error}")
@@ -202,77 +338,120 @@ def demonstrate_crud_operations():
         print("   - Table doesn't exist (creation failed)")
         print("   - Insufficient permissions") 
         print("   - Table name mismatch")
-        return  # Skip rest of CRUD operations
+        print("   - LINKED_RECORD field not properly configured")
+        return False  # Skip rest of CRUD operations
     
     # Create sample users
-    print("\n2️⃣ Creating sample users...")
+    print("\n3️⃣ Creating sample users...")
     
-    user1 = User.create(
-        name="Alice Johnson",
-        email="alice@example.com",  # Auto-detected as EMAIL type
-        phone="555-0123",           # Auto-detected as PHONE type 
-        bio="Senior software engineer with 8 years experience",
-        website="https://alice.dev",  # Auto-detected as URL type
-        is_admin=True,
-        salary=95000.0
-    )
-    
-    user2 = User.create(
-        name="Bob Smith",
-        email="bob@example.com",
-        bio="Product manager focused on user experience",
-        is_admin=False,
-        salary=85000.0
-    )
-    
-    print(f"✅ Created users: {user1.name} and {user2.name}")
-    
-    # Create sample project
-    print("\n3️⃣ Creating sample project...")
-    
-    project = Project.create(
-        name="Mobile App Redesign",
-        description="Complete overhaul of the mobile application user interface and user experience",
-        budget=150000.0,        # CURRENCY field
-        completion_rate=0.25,   # PERCENT field  
-        status="Active",        # SELECT field
-        team_size=5,
-        start_date=datetime(2024, 1, 1),
-        end_date=datetime(2024, 6, 30)
-    )
-    
-    print(f"✅ Created project: {project.name}")
+    try:
+        user1 = User.create(
+            name="Alice Johnson",
+            email="alice@example.com",  # Auto-detected as EMAIL type
+            phone="555-0123",           # Auto-detected as PHONE type 
+            bio="Senior software engineer with 8 years experience",
+            website="https://alice.dev",  # Auto-detected as URL type
+            is_admin=True,
+            salary=95000.0
+        )
+        
+        user2 = User.create(
+            name="Bob Smith",
+            email="bob@example.com",
+            bio="Product manager focused on user experience",
+            is_admin=False,
+            salary=85000.0
+        )
+        
+        print(f"✅ Created users: {user1.name} and {user2.name}")
+    except Exception as user_error:
+        print(f"❌ Failed to create users: {user_error}")
+        success = False
     
     # Demonstrate querying
     print("\n4️⃣ Demonstrating queries...")
     
-    # Find high priority tasks
-    high_priority_tasks = Task.find_by(priority=Priority.HIGH)
-    print(f"📊 High priority tasks: {len(high_priority_tasks)}")
-    
-    # Find admin users
-    admin_users = User.find_by(is_admin=True)
-    print(f"📊 Admin users: {len(admin_users)}")
-    
-    # Find active projects
-    active_projects = Project.find_by(status="Active")
-    print(f"📊 Active projects: {len(active_projects)}")
+    try:
+        # Find high priority tasks
+        high_priority_tasks = Task.find_by(priority=Priority.HIGH)
+        print(f"📊 High priority tasks: {len(high_priority_tasks)}")
+        
+        # Show linked project info for tasks
+        for task in high_priority_tasks:
+            if task.project_ids:
+                print(f"   📎 Task '{task.title}' linked to {len(task.project_ids)} project(s)")
+        
+        # Find admin users
+        admin_users = User.find_by(is_admin=True)
+        print(f"📊 Admin users: {len(admin_users)}")
+        
+        # Find active projects
+        active_projects = Project.find_by(status="Active")
+        print(f"📊 Active projects: {len(active_projects)}")
+    except Exception as query_error:
+        print(f"❌ Failed during queries: {query_error}")
+        success = False
     
     # Demonstrate updates
     print("\n5️⃣ Demonstrating updates...")
     
-    task1.status = TaskStatus.COMPLETED
-    task1.completed = True
-    task1.save()
-    print(f"✅ Marked task '{task1.title}' as completed")
+    try:
+        task1.status = TaskStatus.COMPLETED
+        task1.completed = True
+        task1.save()
+        print(f"✅ Marked task '{task1.title}' as completed")
+        
+        if project:
+            project.completion_rate = 0.50
+            project.save()
+            print(f"✅ Updated project completion rate to 50%")
+    except Exception as update_error:
+        print(f"❌ Failed during updates: {update_error}")
+        success = False
     
-    project.completion_rate = 0.50
-    project.save()
-    print(f"✅ Updated project completion rate to 50%")
+    # Demonstrate updating linked records
+    print("\n6️⃣ Demonstrating LINKED_RECORD operations...")
+    
+    # Create another project
+    try:
+        project2 = Project.create(
+            name="API Integration",
+            description="Build REST API integrations for third-party services",
+            budget=75000.0,
+            status="Planning",
+            team_size=3
+        )
+        print(f"✅ Created second project: {project2.name}")
+        
+        # Update task to link to multiple projects
+        if task2.project_ids:
+            task2.project_ids.append(project2.id)
+        else:
+            task2.project_ids = [project2.id]
+        task2.save()
+        print(f"✅ Updated task '{task2.title}' to link to multiple projects")
+        print(f"   📎 Now linked to {len(task2.project_ids)} project(s)")
+        
+    except Exception as e:
+        print(f"⚠️  Could not demonstrate multi-project linking: {e}")
+        success = False
+    
+    return success
 
 
-def demonstrate_table_management():
-    """Demonstrate advanced table management features"""
+def demonstrate_table_management() -> bool:
+    """
+    Demonstrate advanced table management features.
+    
+    This function shows how schema synchronization works by:
+    1. Listing current tables and their fields
+    2. Defining extended models with new fields
+    3. Synchronizing the extended models to add new fields to Airtable
+    
+    Returns:
+        True if all operations succeeded, False otherwise
+    """
+    success = True
     
     print("\n" + "="*60)
     print("⚙️  TABLE MANAGEMENT DEMONSTRATION")
@@ -294,15 +473,109 @@ def demonstrate_table_management():
         
     except Exception as e:
         print(f"❌ Failed to list tables: {e}")
+        success = False
     
-    # Demonstrate table synchronization
-    print("\n2️⃣ Synchronizing model schemas with tables...")
+    # Demonstrate table synchronization with EXTENDED models
+    # This shows how sync can add new fields to existing tables
+    print("\n2️⃣ Demonstrating schema evolution with extended models...")
+    print("   We'll define extended versions of our models with new fields,")
+    print("   then sync them to add those fields to the Airtable tables.")
     
-    models_to_sync = [Task, User, Project]
+    # Define extended Task model with new fields
+    @airtable_model(table_name="Tasks")
+    class TaskExtended(BaseModel):
+        """Extended Task model with additional fields for schema sync demo"""
+        # Original fields
+        title: str
+        description: Optional[str] = None
+        status: TaskStatus = TaskStatus.PENDING
+        priority: Priority = Priority.MEDIUM
+        completed: bool = False
+        due_date: Optional[datetime] = None
+        created_at: Optional[datetime] = None
+        tags: Optional[str] = airtable_field(
+            field_type=AirTableFieldType.MULTI_SELECT,
+            choices=["urgent", "important", "work", "personal", "review"],
+            default=None
+        )
+        project_ids: Optional[List[str]] = airtable_field(
+            field_type=AirTableFieldType.LINKED_RECORD,
+            field_name="Projects",
+            default=None
+        )
+        # NEW FIELDS for sync demonstration
+        estimated_hours: Optional[float] = airtable_field(
+            field_type=AirTableFieldType.NUMBER,
+            default=None
+        )
+        assigned_to: Optional[str] = None  # Will be detected as SINGLE_LINE_TEXT
+        notes: Optional[str] = None        # Will be detected as LONG_TEXT
     
-    for model_class in models_to_sync:
-        table_name = model_class._get_table_name()
-        print(f"\n🔄 Synchronizing {table_name} table...")
+    # Define extended User model with new fields
+    @airtable_model(table_name="Users")
+    class UserExtended(BaseModel):
+        """Extended User model with additional fields for schema sync demo"""
+        # Original fields
+        name: str
+        email: str
+        phone: Optional[str] = None
+        bio: Optional[str] = None
+        website: Optional[str] = None
+        is_admin: bool = False
+        salary: Optional[float] = None
+        # NEW FIELDS for sync demonstration
+        department: Optional[str] = None   # Will be SINGLE_LINE_TEXT
+        hire_date: Optional[datetime] = None  # Will be DATETIME
+        is_active: bool = True             # Will be CHECKBOX
+    
+    # Define extended Project model with new fields  
+    @airtable_model(table_name="Projects")
+    class ProjectExtended(BaseModel):
+        """Extended Project model with additional fields for schema sync demo"""
+        # Original fields
+        name: str
+        description: str
+        budget: Optional[float] = airtable_field(
+            field_type=AirTableFieldType.CURRENCY,
+            default=None
+        )
+        completion_rate: Optional[float] = airtable_field(
+            field_type=AirTableFieldType.PERCENT,
+            default=None
+        )
+        status: str = airtable_field(
+            field_type=AirTableFieldType.SELECT,
+            choices=["Planning", "Active", "On Hold", "Completed"],
+            default="Planning"
+        )
+        team_size: Optional[int] = None
+        start_date: Optional[datetime] = None
+        end_date: Optional[datetime] = None
+        # NEW FIELDS for sync demonstration
+        project_code: Optional[str] = None    # Will be SINGLE_LINE_TEXT
+        risk_level: Optional[str] = airtable_field(
+            field_type=AirTableFieldType.SELECT,
+            choices=["Low", "Medium", "High", "Critical"],
+            default=None
+        )
+        notes: Optional[str] = None           # Will be detected as LONG_TEXT
+    
+    print("\n   📋 Extended models defined with new fields:")
+    print("      • TaskExtended: +estimated_hours, +assigned_to, +notes")
+    print("      • UserExtended: +department, +hire_date, +is_active")
+    print("      • ProjectExtended: +project_code, +risk_level, +notes")
+    
+    # Sync extended models
+    extended_models = [
+        ("Tasks", TaskExtended),
+        ("Users", UserExtended),
+        ("Projects", ProjectExtended)
+    ]
+    
+    print("\n3️⃣ Synchronizing extended models to add new fields...")
+    
+    for table_name, model_class in extended_models:
+        print(f"\n🔄 Synchronizing {table_name} table with extended model...")
         
         try:
             sync_result = model_class.sync_table(
@@ -310,17 +583,48 @@ def demonstrate_table_management():
                 update_field_types=False
             )
             
+            fields_created = sync_result.get('fields_created', [])
+            fields_updated = sync_result.get('fields_updated', [])
+            fields_skipped = sync_result.get('fields_skipped', [])
+            
             print(f"✅ Sync completed for {table_name}:")
-            print(f"   📝 Fields created: {len(sync_result.get('fields_created', []))}")
-            print(f"   🔄 Fields updated: {len(sync_result.get('fields_updated', []))}")
-            print(f"   ⏭️  Fields skipped: {len(sync_result.get('fields_skipped', []))}")
+            print(f"   📝 Fields created: {len(fields_created)}")
+            if fields_created:
+                for field in fields_created:
+                    print(f"      • {field}")
+            print(f"   🔄 Fields updated: {len(fields_updated)}")
+            print(f"   ⏭️  Fields skipped: {len(fields_skipped)}")
             
         except Exception as e:
             print(f"❌ Sync failed for {table_name}: {e}")
+            success = False
+    
+    # Show final schema
+    print("\n4️⃣ Verifying updated table schemas...")
+    try:
+        updated_schema = manager.get_base_schema()
+        for table in updated_schema.get('tables', []):
+            if table['name'] in ['Tasks', 'Users', 'Projects']:
+                fields = table.get('fields', [])
+                print(f"\n   📋 {table['name']}: {len(fields)} fields")
+                for field in fields[:10]:  # Show first 10 fields
+                    print(f"      • {field['name']} ({field['type']})")
+                if len(fields) > 10:
+                    print(f"      ... and {len(fields) - 10} more fields")
+    except Exception as e:
+        print(f"⚠️  Could not verify schemas: {e}")
+    
+    return success
 
 
-def demonstrate_base_operations():
-    """Demonstrate base-level operations"""
+def demonstrate_base_operations() -> bool:
+    """
+    Demonstrate base-level operations.
+    
+    Returns:
+        True if all operations succeeded, False otherwise
+    """
+    success = True
     
     print("\n" + "="*60)
     print("🗄️  BASE OPERATIONS DEMONSTRATION") 
@@ -342,6 +646,7 @@ def demonstrate_base_operations():
             
     except Exception as e:
         print(f"❌ Failed to list bases: {e}")
+        success = False
     
     print(f"\n2️⃣ Getting schema for current base ({config.base_id})...")
     try:
@@ -355,6 +660,9 @@ def demonstrate_base_operations():
         
     except Exception as e:
         print(f"❌ Failed to get base schema: {e}")
+        success = False
+    
+    return success
 
 
 def main():
@@ -366,36 +674,63 @@ def main():
     print("\nThis example demonstrates:")
     print("✨ Smart field type detection")
     print("🏗️  Automatic table creation from models") 
+    print("🔗 LINKED_RECORD fields for relating tables (Tasks → Projects)")
     print("📝 CRUD operations with complex models")
     print("⚙️  Table schema management")
     print("🗄️  Base-level operations")
     
+    # Track overall success
+    all_success = True
+    
     try:
-        # Run all demonstrations
+        # Run all demonstrations and track success
         table_setup_success = demonstrate_table_creation()
+        if not table_setup_success:
+            all_success = False
         
         # Only proceed with CRUD if tables were set up successfully
-        if table_setup_success is not False:
-            demonstrate_crud_operations()
-            demonstrate_table_management()
-            demonstrate_base_operations()
+        if table_setup_success:
+            crud_success = demonstrate_crud_operations()
+            if not crud_success:
+                all_success = False
+            
+            mgmt_success = demonstrate_table_management()
+            if not mgmt_success:
+                all_success = False
+            
+            base_success = demonstrate_base_operations()
+            if not base_success:
+                all_success = False
         else:
             print("\n⚠️  Skipping CRUD operations due to table setup failures")
             print("🔧 Please check your AirTable permissions and try again")
+            all_success = False
         
+        # Print appropriate summary based on success
         print("\n" + "="*60)
-        print("🎉 All demonstrations completed successfully!")
-        print("="*60)
-        
-        print("\n💡 Key takeaways:")
-        print("   ✅ Models automatically detect field types from names and Python types")
-        print("   ✅ Tables can be created directly from model definitions")
-        print("   ✅ CRUD operations work seamlessly with complex data types")
-        print("   ✅ Schema synchronization keeps AirTable in sync with model changes")
-        print("   ✅ Base operations provide visibility into your AirTable workspace")
+        if all_success:
+            print("🎉 All demonstrations completed successfully!")
+            print("="*60)
+            
+            print("\n💡 Key takeaways:")
+            print("   ✅ Models automatically detect field types from names and Python types")
+            print("   ✅ Tables can be created directly from model definitions")
+            print("   ✅ LINKED_RECORD fields enable relationships between tables")
+            print("   ✅ Tasks can be linked to Projects using record IDs")
+            print("   ✅ CRUD operations work seamlessly with complex data types")
+            print("   ✅ Schema synchronization keeps AirTable in sync with model changes")
+            print("   ✅ Base operations provide visibility into your AirTable workspace")
+        else:
+            print("⚠️  Demonstrations completed with some errors")
+            print("="*60)
+            print("\n💡 Review the errors above and check:")
+            print("   - Ensure .env file has AIRTABLE_ACCESS_TOKEN and AIRTABLE_BASE_ID")
+            print("   - Verify your Personal Access Token has the required permissions")
+            print("   - Check that your base ID is correct and accessible")
+            print("   - For LINKED_RECORD issues, ensure Projects table exists first")
         
     except Exception as e:
-        print(f"\n❌ Error during demonstration: {e}")
+        print(f"\n❌ Unexpected error during demonstration: {e}")
         print("\n💡 Common issues:")
         print("   - Ensure .env file has AIRTABLE_ACCESS_TOKEN and AIRTABLE_BASE_ID")
         print("   - Verify your Personal Access Token has the required permissions")
