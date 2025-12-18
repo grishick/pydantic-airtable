@@ -11,7 +11,7 @@ setup(
     version="0.2.0",
     author="Your Name",
     author_email="your.email@example.com",
-    description="A Python library for managing AirTable data using Pydantic objects",
+    description="A Python library for managing Airtable data using Pydantic objects",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/pydantic-airtable",

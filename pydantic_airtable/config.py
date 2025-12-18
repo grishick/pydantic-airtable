@@ -1,5 +1,5 @@
 """
-Streamlined configuration management for AirTable connections
+Streamlined configuration management for Airtable connections
 """
 
 import os
@@ -10,13 +10,13 @@ from .exceptions import ConfigurationError
 
 
 @dataclass
-class AirTableConfig:
+class AirtableConfig:
     """
-    Simplified AirTable configuration
+    Simplified Airtable configuration
     
     Attributes:
-        access_token: AirTable Personal Access Token (required)
-        base_id: AirTable base ID (required) 
+        access_token: Airtable Personal Access Token (required)
+        base_id: Airtable base ID (required) 
         table_name: Default table name (optional)
     """
     access_token: str
@@ -27,13 +27,13 @@ class AirTableConfig:
         """Validate configuration after initialization"""
         if not self.access_token:
             raise ConfigurationError(
-                "AirTable Personal Access Token is required. "
+                "Airtable Personal Access Token is required. "
                 "Get yours from: https://airtable.com/developers/web/api/authentication"
             )
         
         if not self.base_id:
             raise ConfigurationError(
-                "AirTable Base ID is required. "
+                "Airtable Base ID is required. "
                 "Find it in your base URL: https://airtable.com/[BASE_ID]"
             )
         
@@ -59,7 +59,7 @@ class AirTableConfig:
         base_id: Optional[str] = None,
         table_name: Optional[str] = None,
         env_prefix: str = "AIRTABLE_"
-    ) -> 'AirTableConfig':
+    ) -> 'AirtableConfig':
         """
         Create configuration from environment variables with optional overrides
         
@@ -70,7 +70,7 @@ class AirTableConfig:
             env_prefix: Environment variable prefix (default: AIRTABLE_)
             
         Returns:
-            AirTableConfig instance
+            AirtableConfig instance
             
         Environment Variables:
             AIRTABLE_ACCESS_TOKEN: Personal Access Token
@@ -83,7 +83,7 @@ class AirTableConfig:
             table_name=table_name or os.getenv(f"{env_prefix}TABLE_NAME")
         )
     
-    def with_table(self, table_name: str) -> 'AirTableConfig':
+    def with_table(self, table_name: str) -> 'AirtableConfig':
         """
         Create a new config with a different table name
         
@@ -91,9 +91,9 @@ class AirTableConfig:
             table_name: New table name
             
         Returns:
-            New AirTableConfig instance
+            New AirtableConfig instance
         """
-        return AirTableConfig(
+        return AirtableConfig(
             access_token=self.access_token,
             base_id=self.base_id,
             table_name=table_name
@@ -115,32 +115,32 @@ class AirTableConfig:
         name = table_name or self.table_name
         if not name:
             raise ConfigurationError(
-                "Table name is required. Specify it in AirTableConfig or pass as argument."
+                "Table name is required. Specify it in AirtableConfig or pass as argument."
             )
         return name
 
 
 # Global configuration instance for convenience
-_global_config: Optional[AirTableConfig] = None
+_global_config: Optional[AirtableConfig] = None
 
 
-def set_global_config(config: AirTableConfig) -> None:
+def set_global_config(config: AirtableConfig) -> None:
     """
     Set global configuration for convenience
     
     Args:
-        config: AirTableConfig instance
+        config: AirtableConfig instance
     """
     global _global_config
     _global_config = config
 
 
-def get_global_config() -> AirTableConfig:
+def get_global_config() -> AirtableConfig:
     """
     Get global configuration
     
     Returns:
-        Global AirTableConfig instance
+        Global AirtableConfig instance
         
     Raises:
         ConfigurationError: If no global config set
@@ -148,12 +148,12 @@ def get_global_config() -> AirTableConfig:
     if _global_config is None:
         raise ConfigurationError(
             "No global configuration set. Call set_global_config() first or "
-            "use AirTableConfig.from_env() to create from environment variables."
+            "use AirtableConfig.from_env() to create from environment variables."
         )
     return _global_config
 
 
-def configure_from_env(**overrides) -> AirTableConfig:
+def configure_from_env(**overrides) -> AirtableConfig:
     """
     Convenience function to configure from environment and set as global
     
@@ -161,8 +161,8 @@ def configure_from_env(**overrides) -> AirTableConfig:
         **overrides: Override specific configuration values
         
     Returns:
-        AirTableConfig instance (also set as global)
+        AirtableConfig instance (also set as global)
     """
-    config = AirTableConfig.from_env(**overrides)
+    config = AirtableConfig.from_env(**overrides)
     set_global_config(config)
     return config

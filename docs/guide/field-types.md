@@ -1,12 +1,12 @@
 # Field Types
 
-Complete guide to AirTable field types and smart detection.
+Complete guide to Airtable field types and smart detection.
 
 ---
 
 ## Smart Detection Overview
 
-Pydantic AirTable automatically detects the appropriate AirTable field type based on:
+Pydantic Airtable automatically detects the appropriate Airtable field type based on:
 
 1. **Field name patterns** - Keywords in the field name
 2. **Python type** - The type annotation
@@ -141,7 +141,7 @@ class Metrics(BaseModel):
 
 ### Basic Types
 
-| Python Type | AirTable Type |
+| Python Type | Airtable Type |
 |-------------|---------------|
 | `str` | SINGLE_LINE_TEXT |
 | `int` | NUMBER |
@@ -150,7 +150,7 @@ class Metrics(BaseModel):
 
 ### Date/Time Types
 
-| Python Type | AirTable Type |
+| Python Type | Airtable Type |
 |-------------|---------------|
 | `datetime` | DATETIME |
 | `date` | DATE |
@@ -158,7 +158,7 @@ class Metrics(BaseModel):
 
 ### Other Types
 
-| Python Type | AirTable Type | Notes |
+| Python Type | Airtable Type | Notes |
 |-------------|---------------|-------|
 | `int` (with rating pattern) | RATING | For fields named `rating`, `stars`, `score`, `rank` |
 
@@ -166,7 +166,7 @@ class Metrics(BaseModel):
 
 These field types require explicit specification - they are not auto-detected:
 
-| AirTable Type | Description |
+| Airtable Type | Description |
 |---------------|-------------|
 | LINKED_RECORD | Links to records in another table |
 | USER | Collaborator/user references |
@@ -175,21 +175,21 @@ These field types require explicit specification - they are not auto-detected:
 
 ### Complex Types
 
-| Python Type | AirTable Type |
+| Python Type | Airtable Type |
 |-------------|---------------|
 | `Enum` | SELECT |
 | `List[str]` | MULTI_SELECT |
 
 ---
 
-## All AirTable Field Types
+## All Airtable Field Types
 
-The library supports these AirTable field types:
+The library supports these Airtable field types:
 
 ```python
-from pydantic_airtable import AirTableFieldType
+from pydantic_airtable import AirtableFieldType
 
-class AirTableFieldType(str, Enum):
+class AirtableFieldType(str, Enum):
     SINGLE_LINE_TEXT = "singleLineText"
     LONG_TEXT = "multilineText"
     NUMBER = "number"
@@ -234,7 +234,7 @@ Use `airtable_field()` to override automatic detection:
 ### Explicit Field Type
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 @airtable_model(table_name="Products")
 class Product(BaseModel):
@@ -242,31 +242,31 @@ class Product(BaseModel):
     
     # Override: 'code' would normally be SINGLE_LINE_TEXT
     code: str = airtable_field(
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT
     )
     
     # Override: 'notes' detected as LONG_TEXT, but we want single line
     notes: str = airtable_field(
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT
     )
 ```
 
 ### Custom Field Name
 
-Map Python field name to different AirTable field name:
+Map Python field name to different Airtable field name:
 
 ```python
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    # Python: 'full_name' → AirTable: 'Full Name'
+    # Python: 'full_name' → Airtable: 'Full Name'
     full_name: str = airtable_field(
         field_name="Full Name"
     )
     
-    # Python: 'desc' → AirTable: 'Description'
+    # Python: 'desc' → Airtable: 'Description'
     desc: str = airtable_field(
         field_name="Description",
-        field_type=AirTableFieldType.LONG_TEXT
+        field_type=AirtableFieldType.LONG_TEXT
     )
 ```
 
@@ -278,12 +278,12 @@ class Task(BaseModel):
     title: str
     
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["To Do", "In Progress", "Review", "Done"]
     )
     
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["Frontend", "Backend", "Database", "DevOps"]
     )
 ```
@@ -304,7 +304,7 @@ class Record(BaseModel):
     
     # Computed field
     formula_result: str = airtable_field(
-        field_type=AirTableFieldType.FORMULA,
+        field_type=AirtableFieldType.FORMULA,
         read_only=True
     )
 ```
@@ -326,7 +326,7 @@ is_active: bool  # icon="check", color="greenBright"
 
 ```python
 price: float = airtable_field(
-    field_type=AirTableFieldType.CURRENCY,
+    field_type=AirtableFieldType.CURRENCY,
     json_schema_extra={
         "precision": 2,      # Decimal places
         "symbol": "€"        # Currency symbol
@@ -338,7 +338,7 @@ price: float = airtable_field(
 
 ```python
 rate: float = airtable_field(
-    field_type=AirTableFieldType.PERCENT,
+    field_type=AirtableFieldType.PERCENT,
     json_schema_extra={
         "precision": 1       # Decimal places
     }
@@ -349,7 +349,7 @@ rate: float = airtable_field(
 
 ```python
 count: int = airtable_field(
-    field_type=AirTableFieldType.NUMBER,
+    field_type=AirtableFieldType.NUMBER,
     json_schema_extra={
         "precision": 0       # Integer (no decimals)
     }
@@ -378,7 +378,7 @@ class Task(BaseModel):
 
 ### Enum with Values
 
-AirTable displays the enum **value**, not the name:
+Airtable displays the enum **value**, not the name:
 
 ```python
 class Status(str, Enum):
@@ -387,7 +387,7 @@ class Status(str, Enum):
     APPROVED = "✅ Approved"
     REJECTED = "❌ Rejected"
 
-# In AirTable, you'll see: "📝 Draft", "👀 Under Review", etc.
+# In Airtable, you'll see: "📝 Draft", "👀 Under Review", etc.
 ```
 
 ### Optional Enum
@@ -411,7 +411,7 @@ class Task(BaseModel):
 Here's a comprehensive example showing various detections:
 
 ```python
-from pydantic_airtable import airtable_model, airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_model, airtable_field, AirtableFieldType
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
@@ -439,11 +439,11 @@ class Contact(BaseModel):
     # Explicit overrides
     internal_code: str = airtable_field(
         field_name="Internal Code",
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT
     )
     
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["VIP", "Partner", "Lead", "Customer"]
     )
 ```
@@ -462,7 +462,7 @@ status: str  # → SINGLE_LINE_TEXT
 
 # Solution: Use explicit type
 status: str = airtable_field(
-    field_type=AirTableFieldType.SELECT,
+    field_type=AirtableFieldType.SELECT,
     choices=["Active", "Inactive"]
 )
 ```
@@ -475,15 +475,15 @@ rate: float  # → PERCENT (because of 'rate' in name)
 
 # Solution: Override
 rate: float = airtable_field(
-    field_type=AirTableFieldType.NUMBER
+    field_type=AirtableFieldType.NUMBER
 )
 ```
 
 ### Field Name Conflict
 
 ```python
-# Problem: Python name differs from AirTable name
-# AirTable has "First Name" but Python can't use spaces
+# Problem: Python name differs from Airtable name
+# Airtable has "First Name" but Python can't use spaces
 
 first_name: str = airtable_field(
     field_name="First Name"

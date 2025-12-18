@@ -1,4 +1,4 @@
-# 📚 Pydantic AirTable Examples
+# 📚 Pydantic Airtable Examples
 
 This directory contains comprehensive examples demonstrating the capabilities of pydantic-airtable.
 
@@ -39,7 +39,7 @@ python simple_usage.py
 - Creating tables from Pydantic models
 - Field type customization and overrides
 - Base and table schema management
-- Synchronizing model changes to AirTable
+- Synchronizing model changes to Airtable
 - Handling complex data types (Enums, nested structures)
 
 **Features demonstrated:**
@@ -58,7 +58,7 @@ python table_management.py
 ---
 
 ### [Agentic Researcher](./agentic_researcher/)
-**AI-powered research system** - A complete application integrating OpenAI, web search, and AirTable.
+**AI-powered research system** - A complete application integrating OpenAI, web search, and Airtable.
 
 **What you'll learn:**
 - Complex multi-model applications
@@ -92,7 +92,7 @@ All examples require:
 # Python 3.8+
 python --version
 
-# AirTable credentials
+# Airtable credentials
 # Get your Personal Access Token: https://airtable.com/developers/web/api/authentication
 ```
 
@@ -150,14 +150,14 @@ The library automatically detects field types from naming patterns:
 - Use `bulk_create()` for multiple records
 - Use `find_by()` for filtered queries
 - Cache model instances when possible
-- Set up AirTable indexes for frequent queries
+- Set up Airtable indexes for frequent queries
 
 ### Error Handling
 ```python
 try:
     user = User.create(name="Alice", email="alice@example.com")
 except APIError as e:
-    print(f"AirTable API error: {e}")
+    print(f"Airtable API error: {e}")
 except ValidationError as e:
     print(f"Data validation error: {e}")
 ```
@@ -216,7 +216,7 @@ pip list | grep pydantic
 
 1. **Check the logs** - All examples include detailed error messages
 2. **Review the model definitions** - Ensure field types are correct
-3. **Verify AirTable permissions** - Your PAT needs appropriate scopes
+3. **Verify Airtable permissions** - Your PAT needs appropriate scopes
 4. **Test with simple examples first** - Start with Simple Usage
 
 ## 🚀 Next Steps
@@ -231,11 +231,11 @@ After running these examples:
 ## 📚 Additional Resources
 
 - **[Main Documentation](../README.md)** - Complete API reference
-- **[AirTable API Docs](https://airtable.com/developers/web/api/introduction)** - Official AirTable documentation
+- **[Airtable API Docs](https://airtable.com/developers/web/api/introduction)** - Official Airtable documentation
 - **[Pydantic Docs](https://pydantic.dev/)** - Learn more about Pydantic models
 
 ---
 
 **Happy coding! 🎉**
 
-*These examples showcase the power and simplicity of pydantic-airtable. From basic CRUD to AI-powered applications, see how easy it is to build with AirTable.*
+*These examples showcase the power and simplicity of pydantic-airtable. From basic CRUD to AI-powered applications, see how easy it is to build with Airtable.*

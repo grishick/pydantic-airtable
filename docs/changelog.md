@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Pydantic AirTable are documented here.
+All notable changes to Pydantic Airtable are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Core Features**
   - `@airtable_model` decorator for Pydantic model integration
-  - `AirTableModel` base class with full CRUD operations
+  - `AirtableModel` base class with full CRUD operations
   - Smart field type detection from Python types and field names
   - `airtable_field()` function for field customization
 
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `delete()` - Remove records
 
 - **Configuration**
-  - `AirTableConfig` dataclass
+  - `AirtableConfig` dataclass
   - `configure_from_env()` for environment-based setup
   - `set_global_config()` and `get_global_config()`
   - Per-model configuration support
@@ -37,10 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Table Management**
   - `create_table()` - Create tables from models
   - `sync_table()` - Synchronize model schemas
-  - `AirTableManager` for direct API access
+  - `AirtableManager` for direct API access
 
 - **Field Types**
-  - All standard AirTable field types
+  - All standard Airtable field types
   - Smart detection for email, phone, URL, etc.
   - Enum support for SELECT fields
   - List support for MULTI_SELECT fields
@@ -131,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. **Field helper renamed**
    ```python
    # Old (0.9.x)
-   AirTableField(type=...)
+   AirtableField(type=...)
    
    # New (1.0.0)
    airtable_field(field_type=...)

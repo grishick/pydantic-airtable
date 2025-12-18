@@ -1,6 +1,6 @@
 # Agentic Researcher Example
 
-An advanced AI-powered research assistant integrating OpenAI and AirTable.
+An advanced AI-powered research assistant integrating OpenAI and Airtable.
 
 ---
 
@@ -10,7 +10,7 @@ This example demonstrates a production-ready application featuring:
 
 - **OpenAI GPT-4 Integration** - AI-powered research planning and execution
 - **Real Web Search** - DuckDuckGo search for current information
-- **Structured Data Management** - Research tasks, steps, and results in AirTable
+- **Structured Data Management** - Research tasks, steps, and results in Airtable
 - **Interactive CLI** - Command-line interface for research workflows
 - **Customizable Prompts** - External YAML-based prompt templates
 
@@ -24,7 +24,7 @@ This example demonstrates a production-ready application featuring:
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  ┌──────────────┐    ┌──────────────┐    ┌────────────┐ │
-│  │   OpenAI     │    │   Research   │    │  AirTable  │ │
+│  │   OpenAI     │    │   Research   │    │  Airtable  │ │
 │  │   GPT-4o     │◄──►│   Engine     │◄──►│   Models   │ │
 │  └──────────────┘    └──────────────┘    └────────────┘ │
 │         │                   │                   │        │
@@ -171,7 +171,7 @@ Each step:
 1. Conducts web search based on query
 2. AI analyzes search results
 3. Generates structured findings
-4. Stores results in AirTable
+4. Stores results in Airtable
 
 ### 4. Final Summary
 

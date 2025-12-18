@@ -6,24 +6,24 @@ from typing import Any, Dict, List, Optional, Type, ClassVar, get_type_hints
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
-from .config import AirTableConfig, get_global_config
-from .manager import AirTableManager
+from .config import AirtableConfig, get_global_config
+from .manager import AirtableManager
 from .field_types import FieldTypeResolver
 from .exceptions import ConfigurationError
 
 
-class AirTableModel(BaseModel):
+class AirtableModel(BaseModel):
     """
-    Streamlined base class for AirTable models
+    Streamlined base class for Airtable models
     
     Provides CRUD operations with minimal configuration required
     """
     
     # Configuration will be set by decorator or class definition
-    _airtable_config: ClassVar[Optional[AirTableConfig]] = None
-    _airtable_manager: ClassVar[Optional[AirTableManager]] = None
+    _airtable_config: ClassVar[Optional[AirtableConfig]] = None
+    _airtable_manager: ClassVar[Optional[AirtableManager]] = None
     
-    # Standard AirTable fields
+    # Standard Airtable fields
     id: Optional[str] = None
     created_time: Optional[datetime] = None
     
@@ -38,7 +38,7 @@ class AirTableModel(BaseModel):
     )
     
     @classmethod
-    def _get_config(cls) -> AirTableConfig:
+    def _get_config(cls) -> AirtableConfig:
         """Get configuration for this model"""
         if cls._airtable_config:
             return cls._airtable_config
@@ -48,16 +48,16 @@ class AirTableModel(BaseModel):
             return get_global_config()
         except ConfigurationError:
             raise ConfigurationError(
-                f"No AirTable configuration found for {cls.__name__}. "
+                f"No Airtable configuration found for {cls.__name__}. "
                 "Use @airtable_model decorator or set global config."
             )
     
     @classmethod
-    def _get_manager(cls) -> AirTableManager:
-        """Get AirTable manager for this model"""
+    def _get_manager(cls) -> AirtableManager:
+        """Get Airtable manager for this model"""
         if not cls._airtable_manager:
             config = cls._get_config()
-            cls._airtable_manager = AirTableManager(config)
+            cls._airtable_manager = AirtableManager(config)
         return cls._airtable_manager
     
     @classmethod
@@ -71,7 +71,7 @@ class AirTableModel(BaseModel):
     # =================================================================
     
     @classmethod
-    def create(cls, **data) -> 'AirTableModel':
+    def create(cls, **data) -> 'AirtableModel':
         """
         Create a new record
         
@@ -81,7 +81,7 @@ class AirTableModel(BaseModel):
         Returns:
             Created model instance
         """
-        # Convert Python field names to AirTable field names
+        # Convert Python field names to Airtable field names
         airtable_data = cls._to_airtable_fields(data)
         
         manager = cls._get_manager()
@@ -93,12 +93,12 @@ class AirTableModel(BaseModel):
         return cls._from_airtable_record(response)
     
     @classmethod  
-    def get(cls, record_id: str) -> 'AirTableModel':
+    def get(cls, record_id: str) -> 'AirtableModel':
         """
         Get a record by ID
         
         Args:
-            record_id: AirTable record ID
+            record_id: Airtable record ID
             
         Returns:
             Model instance
@@ -113,7 +113,7 @@ class AirTableModel(BaseModel):
         return cls._from_airtable_record(response)
     
     @classmethod
-    def all(cls, **filters) -> List['AirTableModel']:
+    def all(cls, **filters) -> List['AirtableModel']:
         """
         Get all records
         
@@ -135,7 +135,7 @@ class AirTableModel(BaseModel):
         return records
     
     @classmethod
-    def find_by(cls, **filters) -> List['AirTableModel']:
+    def find_by(cls, **filters) -> List['AirtableModel']:
         """
         Find records by field values
         
@@ -145,7 +145,7 @@ class AirTableModel(BaseModel):
         Returns:
             List of matching model instances
         """
-        # Convert filters to AirTable formula
+        # Convert filters to Airtable formula
         formula_parts = []
         for field_name, value in filters.items():
             airtable_field_name = cls._get_airtable_field_name(field_name)
@@ -168,7 +168,7 @@ class AirTableModel(BaseModel):
         return cls.all()
     
     @classmethod
-    def first(cls, **filters) -> Optional['AirTableModel']:
+    def first(cls, **filters) -> Optional['AirtableModel']:
         """
         Get first record matching filters
         
@@ -182,7 +182,7 @@ class AirTableModel(BaseModel):
         return results[0] if results else None
     
     @classmethod
-    def bulk_create(cls, data_list: List[Dict[str, Any]]) -> List['AirTableModel']:
+    def bulk_create(cls, data_list: List[Dict[str, Any]]) -> List['AirtableModel']:
         """
         Create multiple records in batch
         
@@ -194,7 +194,7 @@ class AirTableModel(BaseModel):
         """
         created_records = []
         
-        # AirTable API supports up to 10 records per batch
+        # Airtable API supports up to 10 records per batch
         batch_size = 10
         
         for i in range(0, len(data_list), batch_size):
@@ -208,7 +208,7 @@ class AirTableModel(BaseModel):
         
         return created_records
     
-    def save(self) -> 'AirTableModel':
+    def save(self) -> 'AirtableModel':
         """
         Save changes to this record
         
@@ -256,7 +256,7 @@ class AirTableModel(BaseModel):
     @classmethod
     def create_table(cls, table_name: Optional[str] = None) -> Dict[str, Any]:
         """
-        Create AirTable table for this model
+        Create Airtable table for this model
         
         Args:
             table_name: Table name (uses model name if None)
@@ -334,13 +334,13 @@ class AirTableModel(BaseModel):
     
     @classmethod
     def _get_airtable_field_name(cls, python_field_name: str) -> str:
-        """Get AirTable field name for Python field name"""
+        """Get Airtable field name for Python field name"""
         mappings = cls._get_field_mappings()
         return mappings.get(python_field_name, {}).get('airtable_name', python_field_name)
     
     @classmethod
     def _to_airtable_fields(cls, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Convert Python field names/values to AirTable format"""
+        """Convert Python field names/values to Airtable format"""
         airtable_data = {}
         mappings = cls._get_field_mappings()
         
@@ -353,7 +353,7 @@ class AirTableModel(BaseModel):
                 continue
             
             airtable_name = mapping.get('airtable_name', python_name)
-            # Convert value to AirTable-compatible format
+            # Convert value to Airtable-compatible format
             airtable_data[airtable_name] = cls._serialize_value(value)
         
         return airtable_data
@@ -361,13 +361,13 @@ class AirTableModel(BaseModel):
     @classmethod
     def _serialize_value(cls, value: Any) -> Any:
         """
-        Serialize Python values to AirTable-compatible format
+        Serialize Python values to Airtable-compatible format
         
         Args:
             value: Python value to serialize
             
         Returns:
-            AirTable-compatible value
+            Airtable-compatible value
         """
         if value is None:
             return None
@@ -392,12 +392,12 @@ class AirTableModel(BaseModel):
         return value
     
     @classmethod
-    def _from_airtable_record(cls, record: Dict[str, Any]) -> 'AirTableModel':
-        """Convert AirTable record to model instance"""
+    def _from_airtable_record(cls, record: Dict[str, Any]) -> 'AirtableModel':
+        """Convert Airtable record to model instance"""
         fields = record.get('fields', {})
         mappings = cls._get_field_mappings()
         
-        # Reverse mapping: AirTable name -> Python name
+        # Reverse mapping: Airtable name -> Python name
         reverse_mappings = {
             mapping['airtable_name']: python_name 
             for python_name, mapping in mappings.items()
@@ -430,18 +430,18 @@ class AirTableModel(BaseModel):
 def airtable_model(
     *,
     table_name: Optional[str] = None,
-    config: Optional[AirTableConfig] = None,
+    config: Optional[AirtableConfig] = None,
     access_token: Optional[str] = None,
     base_id: Optional[str] = None
 ):
     """
-    Decorator to configure a model for AirTable integration
+    Decorator to configure a model for Airtable integration
     
     Args:
-        table_name: AirTable table name (uses class name if None)
-        config: AirTable configuration (creates from other params if None)
-        access_token: AirTable access token
-        base_id: AirTable base ID
+        table_name: Airtable table name (uses class name if None)
+        config: Airtable configuration (creates from other params if None)
+        access_token: Airtable access token
+        base_id: Airtable base ID
         
     Usage:
         @airtable_model(table_name="Users")
@@ -450,12 +450,12 @@ def airtable_model(
             email: str
             age: Optional[int] = None
     """
-    def decorator(cls: Type[BaseModel]) -> Type[AirTableModel]:
+    def decorator(cls: Type[BaseModel]) -> Type[AirtableModel]:
         # Create configuration
         if config:
             model_config = config
         elif access_token and base_id:
-            model_config = AirTableConfig(
+            model_config = AirtableConfig(
                 access_token=access_token,
                 base_id=base_id,
                 table_name=table_name or cls.__name__
@@ -469,10 +469,10 @@ def airtable_model(
                 # Create empty config, will try to load from env at runtime
                 model_config = None
         
-        # Create a new class that inherits from both the original class and AirTableModel
+        # Create a new class that inherits from both the original class and AirtableModel
         # This preserves all field definitions and methods properly
         
-        # Build class dictionary with AirTable-specific attributes
+        # Build class dictionary with Airtable-specific attributes
         class_dict = {
             '__module__': cls.__module__,
             '__qualname__': getattr(cls, '__qualname__', cls.__name__),
@@ -482,9 +482,9 @@ def airtable_model(
         
         # Create new class with multiple inheritance
         # This ensures all methods and fields are properly inherited
-        new_cls = type(cls.__name__, (cls, AirTableModel), class_dict)
+        new_cls = type(cls.__name__, (cls, AirtableModel), class_dict)
         
-        # Add AirTable-specific fields to annotations if not present
+        # Add Airtable-specific fields to annotations if not present
         if hasattr(cls, '__annotations__'):
             annotations = cls.__annotations__.copy()
         else:

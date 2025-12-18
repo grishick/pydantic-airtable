@@ -18,7 +18,7 @@ class User(BaseModel):
     is_active: bool = True       # Auto-detects as CHECKBOX
 ```
 
-Just **8 lines of code** to get a fully functional AirTable integration!
+Just **8 lines of code** to get a fully functional Airtable integration!
 
 ## 🏃 Quick Start
 
@@ -34,8 +34,8 @@ Just **8 lines of code** to get a fully functional AirTable integration!
    ```
 
 3. **Get your credentials:**
-   - **Personal Access Token**: Visit [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
-   - **Base ID**: Found in your AirTable base URL or API documentation
+   - **Personal Access Token**: Visit [Airtable Developer Hub](https://airtable.com/developers/web/api/authentication)
+   - **Base ID**: Found in your Airtable base URL or API documentation
 
 4. **Run the example:**
    ```bash
@@ -64,13 +64,13 @@ class User(BaseModel):
     age: Optional[int] = None    # -> number
     is_active: bool = True       # -> checkbox
     bio: Optional[str] = airtable_field(
-        field_type=AirTableFieldType.LONG_TEXT  # explicit override
+        field_type=AirtableFieldType.LONG_TEXT  # explicit override
     )
 ```
 
 ## 🧠 Smart Field Detection
 
-The system automatically detects AirTable field types:
+The system automatically detects Airtable field types:
 
 | Python Declaration | Detected Type | Reason |
 |--------------------|---------------|--------|
@@ -90,8 +90,8 @@ The example includes smart table management:
 
 1. **Table Detection**: Automatically checks if the "Users" table exists
 2. **Interactive Creation**: Creates tables from model definitions if needed
-3. **Schema Generation**: Maps Python types to appropriate AirTable field types
-4. **Field Mapping**: Handles the conversion between Python and AirTable field names
+3. **Schema Generation**: Maps Python types to appropriate Airtable field types
+4. **Field Mapping**: Handles the conversion between Python and Airtable field names
 
 ### Example Flow
 
@@ -106,11 +106,11 @@ The example includes smart table management:
 ✅ Created user: Alice Johnson (ID: recXXXXX)
 ```
 
-This eliminates the need to manually create tables in AirTable before running the script!
+This eliminates the need to manually create tables in Airtable before running the script!
 
 ## 💡 Key Learning Points
 
-- **Smart Type Mapping**: Python types automatically map to AirTable field types
+- **Smart Type Mapping**: Python types automatically map to Airtable field types
 - **Environment Configuration**: Simple setup through `.env` files
 - **Automatic Table Creation**: The script can create missing tables from Pydantic models
 - **Clean CRUD Operations**: Intuitive methods that work as expected
@@ -120,7 +120,7 @@ This eliminates the need to manually create tables in AirTable before running th
 ## 🔒 Security Notes
 
 - ⚠️ **Never commit `.env` files to version control** - they contain sensitive credentials
-- ✅ **Use Personal Access Tokens (PATs)** - the modern AirTable authentication method
+- ✅ **Use Personal Access Tokens (PATs)** - the modern Airtable authentication method
 - ✅ **Limit PAT permissions** to only required scopes and bases
 - 📁 **The `.gitignore` already excludes `.env` files** for your security
 
@@ -129,7 +129,7 @@ This eliminates the need to manually create tables in AirTable before running th
 ### Custom Field Configuration
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 @airtable_model(table_name="Projects")
 class Project(BaseModel):
@@ -137,11 +137,11 @@ class Project(BaseModel):
     
     # Override auto-detection
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Planning", "In Progress", "Done"]
     )
     
-    # Custom AirTable field name
+    # Custom Airtable field name
     description: str = airtable_field(
         field_name="Project Description"
     )
@@ -200,7 +200,7 @@ contact = Contact.create(
 
 - Use `bulk_create()` for creating multiple records efficiently
 - Use `find_by()` for filtered queries instead of filtering all results
-- Set up indexes in AirTable for frequently queried fields
+- Set up indexes in Airtable for frequently queried fields
 - Cache model instances when you need to access them multiple times
 
 ## 🚀 Next Steps
@@ -212,7 +212,7 @@ After running this example, try these advanced examples:
 
 ## 🎉 Summary
 
-This simple example shows how pydantic-airtable makes AirTable integration:
+This simple example shows how pydantic-airtable makes Airtable integration:
 
 - **Intuitive**: Just like working with regular Pydantic models
 - **Automatic**: Smart field detection reduces configuration
@@ -220,4 +220,4 @@ This simple example shows how pydantic-airtable makes AirTable integration:
 - **Reliable**: Built-in error handling and validation
 - **Secure**: Environment-based configuration keeps credentials safe
 
-Experience the future of AirTable integration! 🌟
+Experience the future of Airtable integration! 🌟

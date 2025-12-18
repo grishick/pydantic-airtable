@@ -1,5 +1,5 @@
 """
-Unified AirTable manager combining base and table operations
+Unified Airtable manager combining base and table operations
 """
 
 from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
@@ -7,25 +7,25 @@ from datetime import datetime, date, timedelta
 from enum import Enum
 
 from .http_client import BaseHTTPClient
-from .config import AirTableConfig
+from .config import AirtableConfig
 from .exceptions import APIError
-from .fields import AirTableFieldType
+from .fields import AirtableFieldType
 
 
-class AirTableManager:
+class AirtableManager:
     """
-    Unified manager for all AirTable operations
+    Unified manager for all Airtable operations
     
     Combines functionality from BaseManager and TableManager
     into a single, cohesive interface
     """
     
-    def __init__(self, config: AirTableConfig):
+    def __init__(self, config: AirtableConfig):
         """
-        Initialize AirTable manager
+        Initialize Airtable manager
         
         Args:
-            config: AirTable configuration
+            config: Airtable configuration
         """
         self.config = config
         self.client = BaseHTTPClient(config.access_token)
@@ -36,7 +36,7 @@ class AirTableManager:
     
     def create_base(self, name: str, tables: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Create a new AirTable base
+        Create a new Airtable base
         
         Args:
             name: Base name
@@ -270,19 +270,19 @@ class AirTableManager:
     
     def _convert_model_to_fields(self, model_class: Type) -> List[Dict[str, Any]]:
         """
-        Convert Pydantic model to AirTable field definitions
+        Convert Pydantic model to Airtable field definitions
         
         Args:
             model_class: Pydantic model class
             
         Returns:
-            List of AirTable field definitions
+            List of Airtable field definitions
         """
         fields = []
         type_hints = get_type_hints(model_class)
         
         # Skip internal fields
-        skip_fields = {'id', 'created_time', 'AirTableConfig'}
+        skip_fields = {'id', 'created_time', 'AirtableConfig'}
         
         for field_name, field_info in getattr(model_class, 'model_fields', {}).items():
             if field_name in skip_fields:
@@ -313,24 +313,24 @@ class AirTableManager:
         
         return fields
     
-    def _get_field_options(self, field_type: AirTableFieldType, json_schema_extra: Dict[str, Any], field_info=None, python_type=None) -> Optional[Dict[str, Any]]:
+    def _get_field_options(self, field_type: AirtableFieldType, json_schema_extra: Dict[str, Any], field_info=None, python_type=None) -> Optional[Dict[str, Any]]:
         """
-        Get field options for specific AirTable field types
+        Get field options for specific Airtable field types
         
         Args:
-            field_type: AirTable field type
+            field_type: Airtable field type
             json_schema_extra: Field metadata from Pydantic
             
         Returns:
             Field options dictionary or None
         """
-        if field_type == AirTableFieldType.CHECKBOX:
+        if field_type == AirtableFieldType.CHECKBOX:
             return {
                 "icon": json_schema_extra.get("icon", "check"),
                 "color": json_schema_extra.get("color", "greenBright")
             }
         
-        elif field_type == AirTableFieldType.SELECT:
+        elif field_type == AirtableFieldType.SELECT:
             choices = json_schema_extra.get("choices", json_schema_extra.get("airtable_choices", []))
             
             # If no explicit choices but python_type is an enum, extract enum values
@@ -352,48 +352,48 @@ class AirTableManager:
             # Return empty choices for enum-based selects
             return {"choices": []}
         
-        elif field_type == AirTableFieldType.MULTI_SELECT:
+        elif field_type == AirtableFieldType.MULTI_SELECT:
             choices = json_schema_extra.get("choices", json_schema_extra.get("airtable_choices", []))
             if choices:
                 return {"choices": [{"name": str(choice)} for choice in choices]}
             # Return empty choices - required for MULTI_SELECT
             return {"choices": []}
         
-        elif field_type == AirTableFieldType.CURRENCY:
+        elif field_type == AirtableFieldType.CURRENCY:
             return {
                 "precision": json_schema_extra.get("precision", 2),
                 "symbol": json_schema_extra.get("symbol", "$")
             }
         
-        elif field_type == AirTableFieldType.PERCENT:
+        elif field_type == AirtableFieldType.PERCENT:
             return {
                 "precision": json_schema_extra.get("precision", 1)
             }
         
-        elif field_type == AirTableFieldType.DATETIME:
+        elif field_type == AirtableFieldType.DATETIME:
             return {
                 "dateFormat": {"name": "iso"},
                 "timeFormat": {"name": "24hour"},
                 "timeZone": "utc"
             }
         
-        elif field_type == AirTableFieldType.DATE:
+        elif field_type == AirtableFieldType.DATE:
             return {
                 "dateFormat": {"name": "iso"}
             }
         
-        elif field_type == AirTableFieldType.NUMBER:
+        elif field_type == AirtableFieldType.NUMBER:
             return {
                 "precision": json_schema_extra.get("precision", 0)
             }
         
-        elif field_type == AirTableFieldType.DURATION:
+        elif field_type == AirtableFieldType.DURATION:
             # Duration format: h:mm, h:mm:ss, h:mm:ss.S, h:mm:ss.SS, h:mm:ss.SSS
             return {
                 "durationFormat": json_schema_extra.get("duration_format", "h:mm")
             }
         
-        elif field_type == AirTableFieldType.RATING:
+        elif field_type == AirtableFieldType.RATING:
             # Rating: max (1-10), icon (star, heart, thumbs-up, flag, dot)
             return {
                 "max": json_schema_extra.get("max", 5),
@@ -401,7 +401,7 @@ class AirTableManager:
                 "color": json_schema_extra.get("color", "yellowBright")
             }
         
-        elif field_type == AirTableFieldType.LINKED_RECORD:
+        elif field_type == AirtableFieldType.LINKED_RECORD:
             # Linked record requires linkedTableId
             options = {}
             linked_table_id = json_schema_extra.get("linked_table_id")
@@ -414,33 +414,33 @@ class AirTableManager:
                 options["inverseLinkFieldId"] = inverse_field
             return options if options else None
         
-        elif field_type == AirTableFieldType.USER:
+        elif field_type == AirtableFieldType.USER:
             # User/Collaborator field
             return {
                 "shouldNotify": json_schema_extra.get("should_notify", False)
             }
         
-        elif field_type == AirTableFieldType.BUTTON:
+        elif field_type == AirtableFieldType.BUTTON:
             # Button field - triggers automations
             return {
                 "label": json_schema_extra.get("label", "Click")
             }
         
-        elif field_type == AirTableFieldType.BARCODE:
+        elif field_type == AirtableFieldType.BARCODE:
             # Barcode field - no required options
             return None
         
         return None
     
-    def _python_type_to_airtable_type(self, python_type: Type) -> AirTableFieldType:
+    def _python_type_to_airtable_type(self, python_type: Type) -> AirtableFieldType:
         """
-        Map Python types to AirTable field types
+        Map Python types to Airtable field types
         
         Args:
             python_type: Python type
             
         Returns:
-            Corresponding AirTable field type
+            Corresponding Airtable field type
         """
         # Handle Optional types
         if hasattr(python_type, '__origin__') and python_type.__origin__ is Union:
@@ -451,26 +451,26 @@ class AirTableManager:
         
         # Basic type mapping
         type_mapping = {
-            str: AirTableFieldType.SINGLE_LINE_TEXT,
-            int: AirTableFieldType.NUMBER,
-            float: AirTableFieldType.NUMBER,
-            bool: AirTableFieldType.CHECKBOX,
-            datetime: AirTableFieldType.DATETIME,
-            date: AirTableFieldType.DATE,
-            timedelta: AirTableFieldType.DURATION,
-            list: AirTableFieldType.MULTI_SELECT,
+            str: AirtableFieldType.SINGLE_LINE_TEXT,
+            int: AirtableFieldType.NUMBER,
+            float: AirtableFieldType.NUMBER,
+            bool: AirtableFieldType.CHECKBOX,
+            datetime: AirtableFieldType.DATETIME,
+            date: AirtableFieldType.DATE,
+            timedelta: AirtableFieldType.DURATION,
+            list: AirtableFieldType.MULTI_SELECT,
         }
         
         # Handle string subtypes by field name patterns
         if python_type == str:
             # Could add email detection, URL detection, etc.
-            return AirTableFieldType.SINGLE_LINE_TEXT
+            return AirtableFieldType.SINGLE_LINE_TEXT
         
         # Handle enums
         if isinstance(python_type, type) and issubclass(python_type, Enum):
-            return AirTableFieldType.SELECT
+            return AirtableFieldType.SELECT
         
-        return type_mapping.get(python_type, AirTableFieldType.SINGLE_LINE_TEXT)
+        return type_mapping.get(python_type, AirtableFieldType.SINGLE_LINE_TEXT)
     
     # =================================================================
     # RECORD OPERATIONS (delegated to client with table-specific URLs)

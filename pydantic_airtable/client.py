@@ -1,5 +1,5 @@
 """
-AirTable API client for handling HTTP requests and responses
+Airtable API client for handling HTTP requests and responses
 """
 
 import json
@@ -11,20 +11,20 @@ import requests
 from .exceptions import APIError, RecordNotFoundError
 
 
-class AirTableClient:
+class AirtableClient:
     """
-    Client for interacting with the AirTable API
+    Client for interacting with the Airtable API
     """
 
     BASE_URL = "https://api.airtable.com/v0"
 
     def __init__(self, access_token: str, base_id: str, table_name: str, api_key: str = None):
         """
-        Initialize AirTable client
+        Initialize Airtable client
 
         Args:
-            access_token: AirTable Personal Access Token (PAT) - starts with 'pat'
-            base_id: AirTable base ID (starts with 'app')
+            access_token: Airtable Personal Access Token (PAT) - starts with 'pat'
+            base_id: Airtable base ID (starts with 'app')
             table_name: Name of the table in the base
             api_key: DEPRECATED - Use access_token instead. Will be removed in v1.0
         """
@@ -33,7 +33,7 @@ class AirTableClient:
             import warnings
             warnings.warn(
                 "The 'api_key' parameter is deprecated. Use 'access_token' instead. "
-                "API keys are deprecated by AirTable in favor of Personal Access Tokens (PATs). "
+                "API keys are deprecated by Airtable in favor of Personal Access Tokens (PATs). "
                 "See: https://airtable.com/developers/web/api/authentication",
                 DeprecationWarning,
                 stacklevel=2
@@ -96,13 +96,13 @@ class AirTableClient:
 
     def create_record(self, fields: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Create a new record in AirTable
+        Create a new record in Airtable
 
         Args:
             fields: Dictionary of field names to values
 
         Returns:
-            The created record data from AirTable
+            The created record data from Airtable
         """
         data = {"fields": fields}
         return self._rate_limit_retry(
@@ -116,10 +116,10 @@ class AirTableClient:
         Get a specific record by ID
 
         Args:
-            record_id: The AirTable record ID
+            record_id: The Airtable record ID
 
         Returns:
-            The record data from AirTable
+            The record data from Airtable
 
         Raises:
             RecordNotFoundError: If the record doesn't exist
@@ -139,11 +139,11 @@ class AirTableClient:
         Update an existing record
 
         Args:
-            record_id: The AirTable record ID
+            record_id: The Airtable record ID
             fields: Dictionary of field names to values
 
         Returns:
-            The updated record data from AirTable
+            The updated record data from Airtable
         """
         data = {"fields": fields}
         try:
@@ -162,10 +162,10 @@ class AirTableClient:
         Delete a record
 
         Args:
-            record_id: The AirTable record ID
+            record_id: The Airtable record ID
 
         Returns:
-            Confirmation data from AirTable
+            Confirmation data from Airtable
         """
         try:
             return self._rate_limit_retry(
@@ -191,14 +191,14 @@ class AirTableClient:
 
         Args:
             fields: List of field names to return
-            filter_by_formula: AirTable formula for filtering records
+            filter_by_formula: Airtable formula for filtering records
             max_records: Maximum number of records to return
             page_size: Number of records per page (max 100)
             sort: List of sort specifications [{"field": "Name", "direction": "asc"}]
             view: Name of view to use
 
         Returns:
-            List of record data from AirTable
+            List of record data from Airtable
         """
         all_records = []
         offset = None
@@ -213,7 +213,7 @@ class AirTableClient:
             if max_records:
                 params["maxRecords"] = max_records
             if page_size:
-                params["pageSize"] = min(page_size, 100)  # AirTable max is 100
+                params["pageSize"] = min(page_size, 100)  # Airtable max is 100
             if sort:
                 for i, sort_spec in enumerate(sort):
                     params[f"sort[{i}][field]"] = sort_spec["field"]
@@ -252,9 +252,9 @@ class AirTableClient:
             records: List of record field dictionaries
 
         Returns:
-            List of created record data from AirTable
+            List of created record data from Airtable
         """
-        # AirTable allows max 10 records per batch
+        # Airtable allows max 10 records per batch
         batch_size = 10
         all_created = []
 
@@ -283,9 +283,9 @@ class AirTableClient:
             updates: List of dicts with 'id' and 'fields' keys
 
         Returns:
-            List of updated record data from AirTable
+            List of updated record data from Airtable
         """
-        # AirTable allows max 10 records per batch
+        # Airtable allows max 10 records per batch
         batch_size = 10
         all_updated = []
 

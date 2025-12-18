@@ -1,6 +1,6 @@
 # Installation Guide
 
-## 📦 **Installing Pydantic AirTable**
+## 📦 **Installing Pydantic Airtable**
 
 ### **Prerequisites**
 - Python 3.8 or higher
@@ -32,10 +32,10 @@ pip install -r requirements.txt
 
 ## 🔑 **API Keys and Configuration**
 
-### **AirTable Setup**
+### **Airtable Setup**
 
 1. **Get Personal Access Token (PAT)**:
-   - Go to [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
+   - Go to [Airtable Developer Hub](https://airtable.com/developers/web/api/authentication)
    - Create a Personal Access Token
    - Your token will start with `pat_`
 
@@ -75,7 +75,7 @@ pip install -r requirements.txt
   - Model serialization
   - Custom validators
 
-### **AirTable API**
+### **Airtable API**
 - **Version**: REST API v0
 - **Authentication**: Personal Access Tokens (PATs)
 - **Features**: Base/table creation, CRUD operations, schema management
@@ -86,8 +86,8 @@ pip install -r requirements.txt
 ```bash
 python -c "
 import pydantic_airtable
-from pydantic_airtable import AirTableModel, AirTableConfig
-print('✅ Pydantic AirTable imported successfully')
+from pydantic_airtable import AirtableModel, AirtableConfig
+print('✅ Pydantic Airtable imported successfully')
 print(f'📦 Version: {pydantic_airtable.__version__}')
 "
 ```
@@ -106,12 +106,12 @@ print(f'📦 Version: {openai.__version__}')
 # Basic usage
 python examples/simple_usage.py
 
-# With AirTable credentials
+# With Airtable credentials
 export AIRTABLE_ACCESS_TOKEN="pat_your_token"
 export AIRTABLE_BASE_ID="app_your_base"
 python examples/table_management.py
 
-# With OpenAI + AirTable credentials
+# With OpenAI + Airtable credentials
 export OPENAI_API_KEY="sk-your_key"
 python examples/agentic_researcher.py --demo
 ```
@@ -130,7 +130,7 @@ pip install --upgrade pydantic>=2.0.0
 pip install --upgrade openai>=2.8.1
 ```
 
-### **Issue**: `ConfigurationError: AirTable Personal Access Token not provided`
+### **Issue**: `ConfigurationError: Airtable Personal Access Token not provided`
 **Solution**: Set environment variables
 ```bash
 export AIRTABLE_ACCESS_TOKEN="pat_your_token"
@@ -145,13 +145,13 @@ export AIRTABLE_ACCESS_TOKEN="pat_your_token"
 2. **Schema Management**: Try `python examples/table_management.py`
 3. **AI Research**: Explore `python examples/agentic_researcher.py --interactive`
 4. **Documentation**: Read the full [README.md](README.md)
-5. **API Reference**: Check the [AirTable API docs](https://airtable.com/developers/web/api/introduction)
+5. **API Reference**: Check the [Airtable API docs](https://airtable.com/developers/web/api/introduction)
 
 ## 💡 **Tips for Success**
 
 - **Use PATs**: Always use Personal Access Tokens, not deprecated API keys
 - **Set Timeouts**: The library includes reasonable timeouts for API calls
-- **Monitor Usage**: Track your OpenAI and AirTable API usage
+- **Monitor Usage**: Track your OpenAI and Airtable API usage
 - **Start Simple**: Begin with basic examples before trying advanced features
 - **Check Permissions**: Ensure your PAT has necessary base/table creation permissions
 

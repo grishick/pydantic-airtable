@@ -4,12 +4,12 @@ API documentation for field types and utilities.
 
 ---
 
-## AirTableFieldType
+## AirtableFieldType
 
-Enum of available AirTable field types.
+Enum of available Airtable field types.
 
 ```python
-class AirTableFieldType(str, Enum):
+class AirtableFieldType(str, Enum):
     SINGLE_LINE_TEXT = "singleLineText"
     LONG_TEXT = "multilineText"
     NUMBER = "number"
@@ -97,12 +97,12 @@ class AirTableFieldType(str, Enum):
 
 ## airtable_field
 
-Function to create a Pydantic field with AirTable metadata.
+Function to create a Pydantic field with Airtable metadata.
 
 ```python
 def airtable_field(
     *,
-    field_type: Optional[AirTableFieldType] = None,
+    field_type: Optional[AirtableFieldType] = None,
     field_name: Optional[str] = None,
     read_only: bool = False,
     choices: Optional[list] = None,
@@ -114,28 +114,28 @@ def airtable_field(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `field_type` | `AirTableFieldType` | `None` | Explicit AirTable field type |
-| `field_name` | `str` | `None` | Custom name in AirTable |
+| `field_type` | `AirtableFieldType` | `None` | Explicit Airtable field type |
+| `field_name` | `str` | `None` | Custom name in Airtable |
 | `read_only` | `bool` | `False` | Exclude from create/update |
 | `choices` | `list` | `None` | Options for SELECT fields |
 | `**field_kwargs` | - | - | Pydantic Field() arguments |
 
 ### Returns
 
-Pydantic `Field` with AirTable metadata in `json_schema_extra`.
+Pydantic `Field` with Airtable metadata in `json_schema_extra`.
 
 ### Examples
 
 #### Override Type
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 @airtable_model(table_name="Products")
 class Product(BaseModel):
     # Override auto-detection
     code: str = airtable_field(
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT
     )
 ```
 
@@ -144,7 +144,7 @@ class Product(BaseModel):
 ```python
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    # Python: user_name → AirTable: "Full Name"
+    # Python: user_name → Airtable: "Full Name"
     user_name: str = airtable_field(
         field_name="Full Name"
     )
@@ -156,7 +156,7 @@ class User(BaseModel):
 @airtable_model(table_name="Tasks")
 class Task(BaseModel):
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["To Do", "In Progress", "Done"]
     )
 ```
@@ -166,7 +166,7 @@ class Task(BaseModel):
 ```python
 @airtable_model(table_name="Records")
 class Record(BaseModel):
-    # Won't be sent to AirTable on create/update
+    # Won't be sent to Airtable on create/update
     auto_number: int = airtable_field(
         read_only=True,
         default=0
@@ -199,7 +199,7 @@ class Product(BaseModel):
     # Custom name, type, and validation
     price_usd: float = airtable_field(
         field_name="Price (USD)",
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         ge=0,
         description="Product price in USD"
     )
@@ -219,8 +219,8 @@ class FieldTypeResolver:
         field_name: str,
         python_type: Type,
         field_info: Optional[FieldInfo] = None,
-        explicit_type: Optional[AirTableFieldType] = None
-    ) -> AirTableFieldType
+        explicit_type: Optional[AirtableFieldType] = None
+    ) -> AirtableFieldType
 ```
 
 ### Detection Priority
@@ -244,7 +244,7 @@ class FieldTypeResolver:
 
 ### Python Type Mapping
 
-| Python Type | AirTable Type |
+| Python Type | Airtable Type |
 |-------------|---------------|
 | `str` | SINGLE_LINE_TEXT |
 | `int` | NUMBER |
@@ -257,14 +257,14 @@ class FieldTypeResolver:
 
 ---
 
-## AirTableField (Legacy)
+## AirtableField (Legacy)
 
 Alternative function for field creation. Use `airtable_field` instead.
 
 ```python
-def AirTableField(
+def AirtableField(
     airtable_field_name: Optional[str] = None,
-    airtable_field_type: Optional[AirTableFieldType] = None,
+    airtable_field_type: Optional[AirtableFieldType] = None,
     read_only: bool = False,
     **kwargs
 ) -> Any
@@ -389,7 +389,7 @@ No additional options required.
 from pydantic_airtable import (
     airtable_model,
     airtable_field,
-    AirTableFieldType
+    AirtableFieldType
 )
 from pydantic import BaseModel
 from typing import Optional, List
@@ -417,7 +417,7 @@ class Contact(BaseModel):
     
     # Explicit configuration
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["VIP", "Partner", "Lead"],
         default=[]
     )
@@ -425,7 +425,7 @@ class Contact(BaseModel):
     # Custom name
     annual_value: float = airtable_field(
         field_name="Annual Value ($)",
-        field_type=AirTableFieldType.CURRENCY
+        field_type=AirtableFieldType.CURRENCY
     )
     
     # Read-only

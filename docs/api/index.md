@@ -1,19 +1,19 @@
 # API Reference
 
-Complete API documentation for Pydantic AirTable.
+Complete API documentation for Pydantic Airtable.
 
 ---
 
 ## Overview
 
-Pydantic AirTable provides a clean API for integrating Pydantic models with AirTable:
+Pydantic Airtable provides a clean API for integrating Pydantic models with Airtable:
 
 | Module | Description |
 |--------|-------------|
 | [Models](models.md) | Model decorator and base class |
 | [Configuration](config.md) | Configuration classes and functions |
 | [Fields](fields.md) | Field types and utilities |
-| [Manager](manager.md) | AirTable manager for direct operations |
+| [Manager](manager.md) | Airtable manager for direct operations |
 | [Exceptions](exceptions.md) | Exception classes |
 
 ---
@@ -28,20 +28,20 @@ from pydantic_airtable import (
     airtable_model,
     
     # Configuration
-    AirTableConfig,
+    AirtableConfig,
     configure_from_env,
     set_global_config,
     get_global_config,
     
     # Field utilities
     airtable_field,
-    AirTableFieldType,
+    AirtableFieldType,
     
     # Manager
-    AirTableManager,
+    AirtableManager,
     
     # Exceptions
-    AirTableError,
+    AirtableError,
     APIError,
     RecordNotFoundError,
     ConfigurationError,
@@ -76,23 +76,23 @@ user.delete()
 
 ### airtable_model
 
-Decorator to enable AirTable integration:
+Decorator to enable Airtable integration:
 
 ```python
 @airtable_model(
-    table_name: str,              # AirTable table name
-    config: AirTableConfig = None, # Configuration object
+    table_name: str,              # Airtable table name
+    config: AirtableConfig = None, # Configuration object
     access_token: str = None,     # Direct token
     base_id: str = None           # Direct base ID
 )
 ```
 
-### AirTableConfig
+### AirtableConfig
 
 Configuration dataclass:
 
 ```python
-config = AirTableConfig(
+config = AirtableConfig(
     access_token: str,    # Personal Access Token
     base_id: str,         # Base ID
     table_name: str = None # Optional default table
@@ -105,20 +105,20 @@ Field customization function:
 
 ```python
 field = airtable_field(
-    field_type: AirTableFieldType = None,  # Override type
-    field_name: str = None,                # Custom AirTable name
+    field_type: AirtableFieldType = None,  # Override type
+    field_name: str = None,                # Custom Airtable name
     read_only: bool = False,               # Read-only field
     choices: list = None,                  # For SELECT fields
     **pydantic_kwargs                      # Pydantic Field args
 )
 ```
 
-### AirTableFieldType
+### AirtableFieldType
 
 Enum of available field types:
 
 ```python
-class AirTableFieldType(str, Enum):
+class AirtableFieldType(str, Enum):
     SINGLE_LINE_TEXT = "singleLineText"
     LONG_TEXT = "multilineText"
     NUMBER = "number"
@@ -149,7 +149,7 @@ class AirTableFieldType(str, Enum):
 | `find_by(**filters)` | Find by field values | List[Model] |
 | `first(**filters)` | Get first match | Model or None |
 | `bulk_create(data_list)` | Create multiple | List[Model] |
-| `create_table()` | Create AirTable table | dict |
+| `create_table()` | Create Airtable table | dict |
 | `sync_table(**opts)` | Sync schema | dict |
 
 ### Instance Methods
@@ -165,7 +165,7 @@ Every model includes:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | `Optional[str]` | AirTable record ID |
+| `id` | `Optional[str]` | Airtable record ID |
 | `created_time` | `Optional[datetime]` | Creation timestamp |
 
 ---
@@ -184,9 +184,9 @@ Every model includes:
 
 | Exception | When Raised |
 |-----------|-------------|
-| `AirTableError` | Base exception |
+| `AirtableError` | Base exception |
 | `ConfigurationError` | Configuration issues |
-| `APIError` | AirTable API errors |
+| `APIError` | Airtable API errors |
 | `RecordNotFoundError` | Record doesn't exist |
 | `ValidationError` | Pydantic validation fails |
 
@@ -194,7 +194,7 @@ Every model includes:
 
 ## Manager Methods
 
-The `AirTableManager` provides direct API access:
+The `AirtableManager` provides direct API access:
 
 | Method | Description |
 |--------|-------------|

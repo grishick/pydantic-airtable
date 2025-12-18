@@ -1,6 +1,6 @@
 # Multiple Bases
 
-Learn how to work with multiple AirTable bases in a single application.
+Learn how to work with multiple Airtable bases in a single application.
 
 ---
 
@@ -8,7 +8,7 @@ Learn how to work with multiple AirTable bases in a single application.
 
 Real-world applications often need to:
 
-- Connect to multiple AirTable bases
+- Connect to multiple Airtable bases
 - Use different credentials for different data
 - Support multi-tenant architectures
 - Separate development/staging/production data
@@ -51,21 +51,21 @@ class Product(BaseModel):
 Create reusable configuration objects:
 
 ```python
-from pydantic_airtable import airtable_model, AirTableConfig
+from pydantic_airtable import airtable_model, AirtableConfig
 from pydantic import BaseModel
 
 # Define configurations
-crm_config = AirTableConfig(
+crm_config = AirtableConfig(
     access_token="pat_crm_token",
     base_id="appCRMBase"
 )
 
-inventory_config = AirTableConfig(
+inventory_config = AirtableConfig(
     access_token="pat_inventory_token",
     base_id="appInventoryBase"
 )
 
-analytics_config = AirTableConfig(
+analytics_config = AirtableConfig(
     access_token="pat_analytics_token",
     base_id="appAnalyticsBase"
 )
@@ -103,28 +103,28 @@ Create a dedicated configuration module:
 ```python
 # config.py
 import os
-from pydantic_airtable import AirTableConfig
+from pydantic_airtable import AirtableConfig
 
-class AirTableConfigs:
-    """Centralized AirTable configurations"""
+class AirtableConfigs:
+    """Centralized Airtable configurations"""
     
     @staticmethod
-    def crm() -> AirTableConfig:
-        return AirTableConfig(
+    def crm() -> AirtableConfig:
+        return AirtableConfig(
             access_token=os.getenv("CRM_AIRTABLE_TOKEN"),
             base_id=os.getenv("CRM_AIRTABLE_BASE")
         )
     
     @staticmethod
-    def inventory() -> AirTableConfig:
-        return AirTableConfig(
+    def inventory() -> AirtableConfig:
+        return AirtableConfig(
             access_token=os.getenv("INVENTORY_AIRTABLE_TOKEN"),
             base_id=os.getenv("INVENTORY_AIRTABLE_BASE")
         )
     
     @staticmethod
-    def analytics() -> AirTableConfig:
-        return AirTableConfig(
+    def analytics() -> AirtableConfig:
+        return AirtableConfig(
             access_token=os.getenv("ANALYTICS_AIRTABLE_TOKEN"),
             base_id=os.getenv("ANALYTICS_AIRTABLE_BASE")
         )
@@ -134,14 +134,14 @@ class AirTableConfigs:
 # models.py
 from pydantic_airtable import airtable_model
 from pydantic import BaseModel
-from .config import AirTableConfigs
+from .config import AirtableConfigs
 
-@airtable_model(config=AirTableConfigs.crm(), table_name="Customers")
+@airtable_model(config=AirtableConfigs.crm(), table_name="Customers")
 class Customer(BaseModel):
     name: str
     email: str
 
-@airtable_model(config=AirTableConfigs.inventory(), table_name="Products")
+@airtable_model(config=AirtableConfigs.inventory(), table_name="Products")
 class Product(BaseModel):
     name: str
     price: float
@@ -152,9 +152,9 @@ class Product(BaseModel):
 ```python
 # config.py
 import os
-from pydantic_airtable import AirTableConfig
+from pydantic_airtable import AirtableConfig
 
-def get_config(base_name: str) -> AirTableConfig:
+def get_config(base_name: str) -> AirtableConfig:
     """Get configuration based on environment"""
     env = os.getenv("ENVIRONMENT", "development")
     
@@ -177,7 +177,7 @@ def get_config(base_name: str) -> AirTableConfig:
         }
     }
     
-    return AirTableConfig(
+    return AirtableConfig(
         access_token=token,
         base_id=base_ids[env][base_name]
     )
@@ -190,16 +190,16 @@ def get_config(base_name: str) -> AirTableConfig:
 ### Tenant-Specific Bases
 
 ```python
-from pydantic_airtable import airtable_model, AirTableConfig
+from pydantic_airtable import airtable_model, AirtableConfig
 from pydantic import BaseModel
 from typing import Type
 
 # Tenant registry
-TENANT_CONFIGS: dict[str, AirTableConfig] = {}
+TENANT_CONFIGS: dict[str, AirtableConfig] = {}
 
 def register_tenant(tenant_id: str, base_id: str, token: str):
-    """Register a tenant's AirTable configuration"""
-    TENANT_CONFIGS[tenant_id] = AirTableConfig(
+    """Register a tenant's Airtable configuration"""
+    TENANT_CONFIGS[tenant_id] = AirtableConfig(
         access_token=token,
         base_id=base_id
     )
@@ -216,7 +216,7 @@ def get_tenant_model(tenant_id: str, base_model: Type) -> Type:
         table_name=base_model.__name__
     )(base_model)
 
-# Base model definition (no AirTable connection)
+# Base model definition (no Airtable connection)
 class CustomerBase(BaseModel):
     name: str
     email: str
@@ -253,7 +253,7 @@ class TenantContext:
         return cls._current_tenant
     
     @classmethod
-    def get_config(cls) -> AirTableConfig:
+    def get_config(cls) -> AirtableConfig:
         return TENANT_CONFIGS[cls.get_tenant()]
 
 # Middleware/decorator for tenant context
@@ -282,23 +282,23 @@ def process_acme_data():
 When using the same token for multiple bases:
 
 ```python
-from pydantic_airtable import AirTableConfig
+from pydantic_airtable import AirtableConfig
 
 # Shared token
 SHARED_TOKEN = os.getenv("AIRTABLE_ACCESS_TOKEN")
 
 # Different bases
-sales_config = AirTableConfig(
+sales_config = AirtableConfig(
     access_token=SHARED_TOKEN,
     base_id="appSalesBase"
 )
 
-support_config = AirTableConfig(
+support_config = AirtableConfig(
     access_token=SHARED_TOKEN,
     base_id="appSupportBase"
 )
 
-marketing_config = AirTableConfig(
+marketing_config = AirtableConfig(
     access_token=SHARED_TOKEN,
     base_id="appMarketingBase"
 )
@@ -383,13 +383,13 @@ def sync_bases(source_model, target_model, key_field: str):
 
 ```python
 import pytest
-from pydantic_airtable import AirTableConfig, airtable_model
+from pydantic_airtable import AirtableConfig, airtable_model
 from pydantic import BaseModel
 
 @pytest.fixture
 def test_config():
     """Test configuration using test base"""
-    return AirTableConfig(
+    return AirtableConfig(
         access_token=os.getenv("TEST_AIRTABLE_TOKEN"),
         base_id=os.getenv("TEST_AIRTABLE_BASE")
     )
@@ -416,8 +416,8 @@ def test_create_user(test_user_model):
 from unittest.mock import MagicMock, patch
 
 def test_with_mock_config():
-    """Test without hitting real AirTable"""
-    mock_config = MagicMock(spec=AirTableConfig)
+    """Test without hitting real Airtable"""
+    mock_config = MagicMock(spec=AirtableConfig)
     mock_config.access_token = "pat_mock"
     mock_config.base_id = "appMock"
     

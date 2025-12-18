@@ -457,10 +457,10 @@ def bulk_create_strict(data: list[dict]):
 ## Performance Considerations
 
 !!! tip "Batch Size"
-    AirTable API supports up to 10 records per request. The library handles this automatically, but be aware of rate limits.
+    Airtable API supports up to 10 records per request. The library handles this automatically, but be aware of rate limits.
 
 !!! tip "Rate Limits"
-    AirTable has rate limits (5 requests per second per base). For large batches, add delays:
+    Airtable has rate limits (5 requests per second per base). For large batches, add delays:
     
     ```python
     import time

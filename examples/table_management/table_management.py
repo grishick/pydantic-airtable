@@ -1,7 +1,7 @@
 """
 Table and Base Management Example
 
-This example demonstrates how to create AirTable bases and tables
+This example demonstrates how to create Airtable bases and tables
 directly from Pydantic models, and manage table schemas using the
 streamlined pydantic-airtable API.
 
@@ -27,9 +27,9 @@ from pydantic_airtable import (
     airtable_model, 
     configure_from_env, 
     airtable_field,
-    AirTableFieldType,
-    AirTableManager,
-    AirTableConfig,
+    AirtableFieldType,
+    AirtableManager,
+    AirtableConfig,
     APIError
 )
 
@@ -79,7 +79,7 @@ class Task(BaseModel):
     
     # Manual override for specific field configuration
     tags: Optional[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["urgent", "important", "work", "personal", "review"],
         default=None
     )
@@ -88,7 +88,7 @@ class Task(BaseModel):
     # Note: linked_table_id must be set after Projects table is created
     # This field stores a list of record IDs from the Projects table
     project_ids: Optional[List[str]] = airtable_field(
-        field_type=AirTableFieldType.LINKED_RECORD,
+        field_type=AirtableFieldType.LINKED_RECORD,
         field_name="Projects",  # Display name in Airtable
         default=None
     )
@@ -116,15 +116,15 @@ class Project(BaseModel):
     name: str                    # Auto-detected
     description: str             # Auto-detected as LONG_TEXT
     budget: Optional[float] = airtable_field(
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         default=None
     )
     completion_rate: Optional[float] = airtable_field(
-        field_type=AirTableFieldType.PERCENT,
+        field_type=AirtableFieldType.PERCENT,
         default=None
     )
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Planning", "Active", "On Hold", "Completed"],
         default="Planning"
     )
@@ -138,7 +138,7 @@ class Project(BaseModel):
     # If you want to access it, you can add a field like:
     #
     # task_ids: Optional[List[str]] = airtable_field(
-    #     field_type=AirTableFieldType.LINKED_RECORD,
+    #     field_type=AirtableFieldType.LINKED_RECORD,
     #     field_name="Tasks",
     #     read_only=True,
     #     default=None,
@@ -208,8 +208,8 @@ def _create_or_get_table(model_class, table_name: str, failed_tables: list) -> O
     
     try:
         # Check base schema to see if table already exists
-        config = AirTableConfig.from_env()
-        manager = AirTableManager(config)
+        config = AirtableConfig.from_env()
+        manager = AirtableManager(config)
         schema = manager.get_base_schema()
         
         # Look for table in schema
@@ -458,8 +458,8 @@ def demonstrate_table_management() -> bool:
     print("="*60)
     
     # Get the manager
-    config = AirTableConfig.from_env()
-    manager = AirTableManager(config)
+    config = AirtableConfig.from_env()
+    manager = AirtableManager(config)
     
     print("\n1️⃣ Listing all tables in base...")
     try:
@@ -494,18 +494,18 @@ def demonstrate_table_management() -> bool:
         due_date: Optional[datetime] = None
         created_at: Optional[datetime] = None
         tags: Optional[str] = airtable_field(
-            field_type=AirTableFieldType.MULTI_SELECT,
+            field_type=AirtableFieldType.MULTI_SELECT,
             choices=["urgent", "important", "work", "personal", "review"],
             default=None
         )
         project_ids: Optional[List[str]] = airtable_field(
-            field_type=AirTableFieldType.LINKED_RECORD,
+            field_type=AirtableFieldType.LINKED_RECORD,
             field_name="Projects",
             default=None
         )
         # NEW FIELDS for sync demonstration
         estimated_hours: Optional[float] = airtable_field(
-            field_type=AirTableFieldType.NUMBER,
+            field_type=AirtableFieldType.NUMBER,
             default=None
         )
         assigned_to: Optional[str] = None  # Will be detected as SINGLE_LINE_TEXT
@@ -536,15 +536,15 @@ def demonstrate_table_management() -> bool:
         name: str
         description: str
         budget: Optional[float] = airtable_field(
-            field_type=AirTableFieldType.CURRENCY,
+            field_type=AirtableFieldType.CURRENCY,
             default=None
         )
         completion_rate: Optional[float] = airtable_field(
-            field_type=AirTableFieldType.PERCENT,
+            field_type=AirtableFieldType.PERCENT,
             default=None
         )
         status: str = airtable_field(
-            field_type=AirTableFieldType.SELECT,
+            field_type=AirtableFieldType.SELECT,
             choices=["Planning", "Active", "On Hold", "Completed"],
             default="Planning"
         )
@@ -554,7 +554,7 @@ def demonstrate_table_management() -> bool:
         # NEW FIELDS for sync demonstration
         project_code: Optional[str] = None    # Will be SINGLE_LINE_TEXT
         risk_level: Optional[str] = airtable_field(
-            field_type=AirTableFieldType.SELECT,
+            field_type=AirtableFieldType.SELECT,
             choices=["Low", "Medium", "High", "Critical"],
             default=None
         )
@@ -630,8 +630,8 @@ def demonstrate_base_operations() -> bool:
     print("🗄️  BASE OPERATIONS DEMONSTRATION") 
     print("="*60)
     
-    config = AirTableConfig.from_env()
-    manager = AirTableManager(config)
+    config = AirtableConfig.from_env()
+    manager = AirtableManager(config)
     
     print("\n1️⃣ Listing accessible bases...")
     try:
@@ -668,7 +668,7 @@ def demonstrate_base_operations() -> bool:
 def main():
     """Main demonstration function"""
     
-    print("🚀 Pydantic AirTable - Table Management Example")
+    print("🚀 Pydantic Airtable - Table Management Example")
     print("=" * 60)
     
     print("\nThis example demonstrates:")
@@ -703,7 +703,7 @@ def main():
                 all_success = False
         else:
             print("\n⚠️  Skipping CRUD operations due to table setup failures")
-            print("🔧 Please check your AirTable permissions and try again")
+            print("🔧 Please check your Airtable permissions and try again")
             all_success = False
         
         # Print appropriate summary based on success
@@ -718,8 +718,8 @@ def main():
             print("   ✅ LINKED_RECORD fields enable relationships between tables")
             print("   ✅ Tasks can be linked to Projects using record IDs")
             print("   ✅ CRUD operations work seamlessly with complex data types")
-            print("   ✅ Schema synchronization keeps AirTable in sync with model changes")
-            print("   ✅ Base operations provide visibility into your AirTable workspace")
+            print("   ✅ Schema synchronization keeps Airtable in sync with model changes")
+            print("   ✅ Base operations provide visibility into your Airtable workspace")
         else:
             print("⚠️  Demonstrations completed with some errors")
             print("="*60)

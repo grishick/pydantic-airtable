@@ -1,12 +1,12 @@
 # Table and Base Management Example
 
-This example demonstrates the schema management capabilities of the Pydantic AirTable library, including creating bases and tables programmatically.
+This example demonstrates the schema management capabilities of the Pydantic Airtable library, including creating bases and tables programmatically.
 
 ## 🎯 What This Example Shows
 
-- **Base Management**: Create, list, and manage AirTable bases
+- **Base Management**: Create, list, and manage Airtable bases
 - **Table Creation**: Generate tables from Pydantic models automatically
-- **Schema Validation**: Ensure models match AirTable table structures
+- **Schema Validation**: Ensure models match Airtable table structures
 - **Schema Synchronization**: Add missing fields to existing tables
 - **Model Evolution**: Handle changing requirements over time
 
@@ -85,7 +85,7 @@ sync_result = table_manager.sync_pydantic_model_to_table(MyModel, "TableName")
 
 ### Model Integration
 ```python
-class Task(AirTableModel):
+class Task(AirtableModel):
     title: str
     priority: Priority  # Enum -> SELECT field
     due_date: Optional[datetime]
@@ -102,14 +102,14 @@ sync_result = Task.sync_table_schema(create_missing_fields=True)
 
 ### 1. Initial Model
 ```python
-class Task(AirTableModel):
+class Task(AirtableModel):
     title: str
     status: TaskStatus
 ```
 
 ### 2. Evolved Model
 ```python
-class Task(AirTableModel):
+class Task(AirtableModel):
     title: str
     status: TaskStatus
     # New fields added
@@ -129,17 +129,17 @@ sync_result = Task.sync_table_schema(
 ## 🎨 Advanced Features
 
 ### Automatic Type Detection
-- **Python types** → **AirTable field types**
+- **Python types** → **Airtable field types**
 - **Enums** → **SELECT fields with choices**
 - **Optional types** → **Nullable fields**
 - **DateTime** → **Proper date/time fields**
 
 ### Field Configuration
 ```python
-complexity: Optional[int] = AirTableField(
+complexity: Optional[int] = AirtableField(
     default=None,
     description="Task complexity rating (1-10)",
-    airtable_field_type=AirTableFieldType.NUMBER
+    airtable_field_type=AirtableFieldType.NUMBER
 )
 ```
 
@@ -158,7 +158,7 @@ validation = Task.validate_table_schema()
 ## 💡 Key Learning Points
 
 - **Infrastructure as Code**: Define your database schema in Python
-- **Type Safety**: Full validation from Python to AirTable
+- **Type Safety**: Full validation from Python to Airtable
 - **Schema Evolution**: Handle changing requirements gracefully
 - **Enum Integration**: Rich data types with automatic UI generation
 - **Non-Destructive Updates**: Safe schema migrations
@@ -168,12 +168,12 @@ validation = Task.validate_table_schema()
 ### Schema Versioning
 ```python
 # Version 1: Basic model
-class TaskV1(AirTableModel):
+class TaskV1(AirtableModel):
     title: str
     status: str
 
 # Version 2: Enhanced model  
-class TaskV2(AirTableModel):
+class TaskV2(AirtableModel):
     title: str
     status: TaskStatus  # Now an enum
     priority: Priority  # New field

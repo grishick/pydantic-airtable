@@ -1,17 +1,17 @@
-# Pydantic AirTable
+# Pydantic Airtable
 
-**The most intuitive way to integrate Pydantic models with AirTable**
+**The most intuitive way to integrate Pydantic models with Airtable**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Pydantic v2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://pydantic.dev/)
-[![AirTable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
+[![Airtable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## ✨ Transform Your AirTable Integration
+## ✨ Transform Your Airtable Integration
 
-Turn your Pydantic models into fully-functional AirTable integrations with just **8 lines of code**:
+Turn your Pydantic models into fully-functional Airtable integrations with just **8 lines of code**:
 
 ```python
 from pydantic_airtable import airtable_model, configure_from_env
@@ -54,7 +54,7 @@ alice = User.find_by(name="Alice")
 
     ---
 
-    Creates AirTable tables directly from your model definitions with `User.create_table()`.
+    Creates Airtable tables directly from your model definitions with `User.create_table()`.
 
 -   :rocket: **Intuitive CRUD**
 
@@ -145,7 +145,7 @@ user.save()
 
 ## 🧠 Smart Field Detection
 
-The library automatically detects AirTable field types based on your field names:
+The library automatically detects Airtable field types based on your field names:
 
 | Python Code | Detected Type | Reason |
 |-------------|---------------|--------|
@@ -162,9 +162,9 @@ The library automatically detects AirTable field types based on your field names
 
 ---
 
-## 💡 Why Pydantic AirTable?
+## 💡 Why Pydantic Airtable?
 
-- **Type Safety**: Full Pydantic validation with AirTable persistence
+- **Type Safety**: Full Pydantic validation with Airtable persistence
 - **Intuitive API**: Works exactly like you'd expect
 - **Smart Defaults**: Minimal configuration required
 - **Production Ready**: Error handling, retries, and batch operations
@@ -176,7 +176,7 @@ The library automatically detects AirTable field types based on your field names
 
 - [GitHub Repository](https://github.com/pydantic-airtable/pydantic-airtable)
 - [PyPI Package](https://pypi.org/project/pydantic-airtable/)
-- [AirTable API Documentation](https://airtable.com/developers/web/api/introduction)
+- [Airtable API Documentation](https://airtable.com/developers/web/api/introduction)
 - [Pydantic Documentation](https://pydantic.dev/)
 
 ---

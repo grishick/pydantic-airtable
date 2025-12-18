@@ -1,5 +1,5 @@
 """
-AirTable Base Management - Create, list, and manage AirTable bases
+Airtable Base Management - Create, list, and manage Airtable bases
 """
 
 import requests
@@ -9,7 +9,7 @@ from .exceptions import APIError
 
 class BaseManager:
     """
-    Manager for AirTable base operations using the AirTable API
+    Manager for Airtable base operations using the Airtable API
     """
     
     BASE_URL = "https://api.airtable.com/v0"
@@ -20,7 +20,7 @@ class BaseManager:
         Initialize Base Manager
         
         Args:
-            access_token: AirTable Personal Access Token with base management permissions
+            access_token: Airtable Personal Access Token with base management permissions
         """
         self.access_token = access_token
         self.session = requests.Session()
@@ -69,7 +69,7 @@ class BaseManager:
         """
         List all workspaces accessible with the current access token
         
-        Note: This endpoint requires an AirTable Enterprise account.
+        Note: This endpoint requires an Airtable Enterprise account.
         It will not work with free/personal accounts.
         
         Returns:
@@ -84,7 +84,7 @@ class BaseManager:
         Get the schema of a specific base
         
         Args:
-            base_id: AirTable base ID
+            base_id: Airtable base ID
             
         Returns:
             Base schema information including tables and fields
@@ -99,7 +99,7 @@ class BaseManager:
         workspace_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Create a new AirTable base
+        Create a new Airtable base
         
         Args:
             name: Name of the new base
@@ -120,7 +120,7 @@ class BaseManager:
                 workspaces = self.list_workspaces()
                 if not workspaces:
                     raise APIError(
-                        message="No workspaces available. Please create a workspace in AirTable first, "
+                        message="No workspaces available. Please create a workspace in Airtable first, "
                                 "or provide a workspace_id parameter.",
                         status_code=400
                     )
@@ -153,10 +153,10 @@ class BaseManager:
     
     def delete_base(self, base_id: str) -> Dict[str, Any]:
         """
-        Delete an AirTable base
+        Delete an Airtable base
         
         Args:
-            base_id: AirTable base ID to delete
+            base_id: Airtable base ID to delete
             
         Returns:
             Deletion confirmation
@@ -169,7 +169,7 @@ class BaseManager:
         Get information about a specific base
         
         Args:
-            base_id: AirTable base ID
+            base_id: Airtable base ID
             
         Returns:
             Base information
@@ -185,7 +185,7 @@ class BaseManager:
         Create a TableManager for a specific base
         
         Args:
-            base_id: AirTable base ID
+            base_id: Airtable base ID
             
         Returns:
             TableManager instance for the base

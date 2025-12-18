@@ -1,12 +1,12 @@
 # Models
 
-Learn how to define and use Pydantic models with AirTable integration.
+Learn how to define and use Pydantic models with Airtable integration.
 
 ---
 
 ## Basic Model Definition
 
-The `@airtable_model` decorator transforms any Pydantic `BaseModel` into an AirTable-connected model:
+The `@airtable_model` decorator transforms any Pydantic `BaseModel` into an Airtable-connected model:
 
 ```python
 from pydantic_airtable import airtable_model, configure_from_env
@@ -31,8 +31,8 @@ The `@airtable_model` decorator accepts these parameters:
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `table_name` | `str` | AirTable table name (required) |
-| `config` | `AirTableConfig` | Configuration object |
+| `table_name` | `str` | Airtable table name (required) |
+| `config` | `AirtableConfig` | Configuration object |
 | `access_token` | `str` | Direct token specification |
 | `base_id` | `str` | Direct base ID specification |
 
@@ -54,7 +54,7 @@ class Project(BaseModel):
     name: str
 
 # With config object
-config = AirTableConfig(access_token="pat_xxx", base_id="appXXX")
+config = AirtableConfig(access_token="pat_xxx", base_id="appXXX")
 
 @airtable_model(config=config, table_name="Tasks")
 class Task(BaseModel):
@@ -69,7 +69,7 @@ Every model automatically includes these fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | `Optional[str]` | AirTable record ID (e.g., `recXXXXXXXXXXXXXX`) |
+| `id` | `Optional[str]` | Airtable record ID (e.g., `recXXXXXXXXXXXXXX`) |
 | `created_time` | `Optional[datetime]` | Record creation timestamp |
 
 ```python
@@ -90,7 +90,7 @@ print(user.created_time) # 2024-01-15T10:30:00.000Z
 
 ### Supported Python Types
 
-| Python Type | AirTable Type | Notes |
+| Python Type | Airtable Type | Notes |
 |-------------|---------------|-------|
 | `str` | SINGLE_LINE_TEXT | Default for strings |
 | `int` | NUMBER | Integer values |
@@ -259,7 +259,7 @@ class User(BaseModel):
 ```
 
 ```python
-# Validation happens before AirTable operations
+# Validation happens before Airtable operations
 try:
     user = User.create(name="", email="invalid")
 except ValueError as e:
@@ -327,7 +327,7 @@ users = User.all()  # Works even if Airtable has more fields than the model
 | `find_by(**filters)` | Find by field values |
 | `first(**filters)` | Get first match |
 | `bulk_create(data_list)` | Create multiple records |
-| `create_table()` | Create AirTable table |
+| `create_table()` | Create Airtable table |
 | `sync_table(**options)` | Sync schema to table |
 
 ### Instance Methods

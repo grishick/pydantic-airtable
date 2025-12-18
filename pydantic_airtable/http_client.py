@@ -1,5 +1,5 @@
 """
-Unified HTTP client for all AirTable operations
+Unified HTTP client for all Airtable operations
 """
 
 import json
@@ -23,7 +23,7 @@ def _get_user_agent() -> str:
 
 class BaseHTTPClient:
     """
-    Unified HTTP client for all AirTable API operations
+    Unified HTTP client for all Airtable API operations
     Eliminates code duplication across different managers
     """
     
@@ -35,7 +35,7 @@ class BaseHTTPClient:
         Initialize HTTP client
         
         Args:
-            access_token: AirTable Personal Access Token
+            access_token: Airtable Personal Access Token
         """
         if not access_token:
             raise ValueError("access_token is required")
@@ -53,7 +53,7 @@ class BaseHTTPClient:
         Handle API response and raise appropriate exceptions
         
         Args:
-            response: HTTP response from AirTable API
+            response: HTTP response from Airtable API
             
         Returns:
             Parsed JSON data

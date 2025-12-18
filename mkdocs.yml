@@ -1,6 +1,6 @@
-site_name: Pydantic AirTable
-site_description: The most intuitive way to integrate Pydantic models with AirTable
-site_author: Pydantic AirTable Team
+site_name: Pydantic Airtable
+site_description: The most intuitive way to integrate Pydantic models with Airtable
+site_author: Pydantic Airtable Team
 site_url: https://pydantic-airtable.readthedocs.io/
 
 repo_name: pydantic-airtable

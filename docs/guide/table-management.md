@@ -1,12 +1,12 @@
 # Table Management
 
-Learn how to create and manage AirTable tables from your Pydantic models.
+Learn how to create and manage Airtable tables from your Pydantic models.
 
 ---
 
 ## Overview
 
-Pydantic AirTable can automatically create and manage AirTable tables based on your model definitions. This enables an "infrastructure as code" approach where your Python models define your database schema.
+Pydantic Airtable can automatically create and manage Airtable tables based on your model definitions. This enables an "infrastructure as code" approach where your Python models define your database schema.
 
 ---
 
@@ -28,7 +28,7 @@ class User(BaseModel):
     email: str
     age: Optional[int] = None
 
-# Create the table in AirTable
+# Create the table in Airtable
 result = User.create_table()
 print(f"Created table: {result['id']}")
 ```
@@ -62,7 +62,7 @@ result = User.create_table()
 
 ## Automatic Field Mapping
 
-When creating tables, Python types are mapped to AirTable field types:
+When creating tables, Python types are mapped to Airtable field types:
 
 ```python
 from datetime import datetime
@@ -172,7 +172,7 @@ print(f"Added: {result['fields_created']}")
 ### Handling Field Changes
 
 !!! warning "Field Type Changes"
-    Changing field types in AirTable can cause data loss. The library doesn't automatically change types unless explicitly requested.
+    Changing field types in Airtable can cause data loss. The library doesn't automatically change types unless explicitly requested.
 
 ```python
 # Dangerous: changing field types
@@ -183,19 +183,19 @@ result = User.sync_table(
 
 ---
 
-## Using AirTableManager
+## Using AirtableManager
 
-For more control, use the `AirTableManager` directly:
+For more control, use the `AirtableManager` directly:
 
 ```python
-from pydantic_airtable import AirTableManager, AirTableConfig
+from pydantic_airtable import AirtableManager, AirtableConfig
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
 
-manager = AirTableManager(config)
+manager = AirtableManager(config)
 ```
 
 ### Create Table with Custom Fields

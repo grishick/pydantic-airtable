@@ -6,30 +6,30 @@ API documentation for the model system.
 
 ## airtable_model
 
-Decorator to configure a Pydantic model for AirTable integration.
+Decorator to configure a Pydantic model for Airtable integration.
 
 ```python
 def airtable_model(
     *,
     table_name: Optional[str] = None,
-    config: Optional[AirTableConfig] = None,
+    config: Optional[AirtableConfig] = None,
     access_token: Optional[str] = None,
     base_id: Optional[str] = None
-) -> Callable[[Type[BaseModel]], Type[AirTableModel]]
+) -> Callable[[Type[BaseModel]], Type[AirtableModel]]
 ```
 
 ### Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `table_name` | `str` | AirTable table name. Uses class name if not provided. |
-| `config` | `AirTableConfig` | Configuration object. Creates from other params if not provided. |
-| `access_token` | `str` | AirTable Personal Access Token. |
-| `base_id` | `str` | AirTable Base ID. |
+| `table_name` | `str` | Airtable table name. Uses class name if not provided. |
+| `config` | `AirtableConfig` | Configuration object. Creates from other params if not provided. |
+| `access_token` | `str` | Airtable Personal Access Token. |
+| `base_id` | `str` | Airtable Base ID. |
 
 ### Returns
 
-A decorator that transforms a `BaseModel` into an `AirTableModel`.
+A decorator that transforms a `BaseModel` into an `AirtableModel`.
 
 ### Example
 
@@ -53,7 +53,7 @@ class Task(BaseModel):
     title: str
 
 # With config object
-config = AirTableConfig(access_token="pat_xxx", base_id="appXXX")
+config = AirtableConfig(access_token="pat_xxx", base_id="appXXX")
 
 @airtable_model(config=config, table_name="Projects")
 class Project(BaseModel):
@@ -62,26 +62,26 @@ class Project(BaseModel):
 
 ---
 
-## AirTableModel
+## AirtableModel
 
-Base class providing AirTable operations. Added automatically by the `@airtable_model` decorator.
+Base class providing Airtable operations. Added automatically by the `@airtable_model` decorator.
 
 ### Automatic Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | `Optional[str]` | AirTable record ID (e.g., `recXXXXXXXXXXXXXX`) |
+| `id` | `Optional[str]` | Airtable record ID (e.g., `recXXXXXXXXXXXXXX`) |
 | `created_time` | `Optional[datetime]` | Record creation timestamp |
 
 ### Class Methods
 
 #### create
 
-Create a new record in AirTable.
+Create a new record in Airtable.
 
 ```python
 @classmethod
-def create(cls, **data) -> 'AirTableModel'
+def create(cls, **data) -> 'AirtableModel'
 ```
 
 **Parameters:**
@@ -103,11 +103,11 @@ Retrieve a record by ID.
 
 ```python
 @classmethod
-def get(cls, record_id: str) -> 'AirTableModel'
+def get(cls, record_id: str) -> 'AirtableModel'
 ```
 
 **Parameters:**
-- `record_id`: AirTable record ID
+- `record_id`: Airtable record ID
 
 **Returns:** Model instance
 
@@ -126,12 +126,12 @@ Get all records from the table.
 
 ```python
 @classmethod
-def all(cls, **filters) -> List['AirTableModel']
+def all(cls, **filters) -> List['AirtableModel']
 ```
 
 **Parameters:**
-- `**filters`: Query parameters passed to AirTable API
-  - `filterByFormula`: AirTable formula string
+- `**filters`: Query parameters passed to Airtable API
+  - `filterByFormula`: Airtable formula string
   - `maxRecords`: Maximum records to return
   - `sort`: Sort configuration
   - `fields`: Fields to return
@@ -163,7 +163,7 @@ Find records by field values.
 
 ```python
 @classmethod
-def find_by(cls, **filters) -> List['AirTableModel']
+def find_by(cls, **filters) -> List['AirtableModel']
 ```
 
 **Parameters:**
@@ -188,7 +188,7 @@ Get the first record matching filters.
 
 ```python
 @classmethod
-def first(cls, **filters) -> Optional['AirTableModel']
+def first(cls, **filters) -> Optional['AirtableModel']
 ```
 
 **Parameters:**
@@ -211,7 +211,7 @@ Create multiple records.
 
 ```python
 @classmethod
-def bulk_create(cls, data_list: List[Dict[str, Any]]) -> List['AirTableModel']
+def bulk_create(cls, data_list: List[Dict[str, Any]]) -> List['AirtableModel']
 ```
 
 **Parameters:**
@@ -231,7 +231,7 @@ users = User.bulk_create([
 
 #### create_table
 
-Create AirTable table from model definition.
+Create Airtable table from model definition.
 
 ```python
 @classmethod
@@ -287,7 +287,7 @@ print(f"Added: {result['fields_created']}")
 Save changes to the record.
 
 ```python
-def save(self) -> 'AirTableModel'
+def save(self) -> 'AirtableModel'
 ```
 
 **Returns:** Updated model instance
@@ -343,7 +343,7 @@ class User(BaseModel):
 
 ### Default Configuration
 
-The `AirTableModel` base class sets these defaults:
+The `AirtableModel` base class sets these defaults:
 
 ```python
 model_config = ConfigDict(
@@ -369,7 +369,7 @@ model_config = ConfigDict(
 ## Type Hints
 
 ```python
-from pydantic_airtable import AirTableModel
+from pydantic_airtable import AirtableModel
 from typing import List, Optional
 
 # Type hints for return values

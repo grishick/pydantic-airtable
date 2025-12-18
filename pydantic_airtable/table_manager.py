@@ -1,5 +1,5 @@
 """
-AirTable Table Management - Create, update, and manage AirTable tables
+Airtable Table Management - Create, update, and manage Airtable tables
 """
 
 import requests
@@ -8,12 +8,12 @@ from pydantic import BaseModel
 from enum import Enum
 
 from .exceptions import APIError
-from .fields import AirTableFieldType, TypeMapper
+from .fields import AirtableFieldType, TypeMapper
 
 
 class TableManager:
     """
-    Manager for AirTable table operations using the AirTable API
+    Manager for Airtable table operations using the Airtable API
     """
     
     META_API_URL = "https://api.airtable.com/v0/meta"
@@ -23,8 +23,8 @@ class TableManager:
         Initialize Table Manager
         
         Args:
-            access_token: AirTable Personal Access Token
-            base_id: AirTable base ID
+            access_token: Airtable Personal Access Token
+            base_id: Airtable base ID
         """
         self.access_token = access_token
         self.base_id = base_id
@@ -85,7 +85,7 @@ class TableManager:
         description: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Create an AirTable table based on a Pydantic model
+        Create an Airtable table based on a Pydantic model
         
         Args:
             model_class: Pydantic model class to create table from
@@ -164,12 +164,12 @@ class TableManager:
         update_field_types: bool = False
     ) -> Dict[str, Any]:
         """
-        Synchronize a Pydantic model with an existing AirTable table
+        Synchronize a Pydantic model with an existing Airtable table
         
         Args:
             model_class: Pydantic model to sync
             table_id_or_name: Existing table ID or name
-            create_missing_fields: Whether to create fields missing in AirTable
+            create_missing_fields: Whether to create fields missing in Airtable
             update_field_types: Whether to update field types (dangerous)
             
         Returns:
@@ -226,24 +226,24 @@ class TableManager:
     
     def _convert_pydantic_to_airtable_fields(self, model_class: Type[BaseModel]) -> List[Dict[str, Any]]:
         """
-        Convert Pydantic model fields to AirTable field configurations
+        Convert Pydantic model fields to Airtable field configurations
         
         Args:
             model_class: Pydantic model class
             
         Returns:
-            List of AirTable field configurations
+            List of Airtable field configurations
         """
         fields = []
         model_fields = model_class.model_fields
         
         for field_name, field_info in model_fields.items():
-            # Skip AirTable internal fields
+            # Skip Airtable internal fields
             json_schema_extra = getattr(field_info, 'json_schema_extra', {}) or {}
             if json_schema_extra.get('airtable_read_only'):
                 continue
             
-            # Get field configuration from AirTableField if present
+            # Get field configuration from AirtableField if present
             airtable_field_name = json_schema_extra.get('airtable_field_name') or field_name
             airtable_field_type = json_schema_extra.get('airtable_field_type')
             
@@ -275,13 +275,13 @@ class TableManager:
         
         return fields
     
-    def _get_field_type_options(self, field_info, field_type: AirTableFieldType) -> Dict[str, Any]:
+    def _get_field_type_options(self, field_info, field_type: AirtableFieldType) -> Dict[str, Any]:
         """
-        Get field-specific options based on the AirTable field type
+        Get field-specific options based on the Airtable field type
         
         Args:
             field_info: Pydantic field info
-            field_type: AirTable field type
+            field_type: Airtable field type
             
         Returns:
             Dictionary of field options
@@ -289,7 +289,7 @@ class TableManager:
         options = {}
         
         # Handle select fields
-        if field_type in [AirTableFieldType.SELECT, AirTableFieldType.MULTI_SELECT]:
+        if field_type in [AirtableFieldType.SELECT, AirtableFieldType.MULTI_SELECT]:
             # Try to extract choices from Enum or constraints
             annotation = field_info.annotation
             
@@ -306,25 +306,25 @@ class TableManager:
                 options["options"] = {"choices": choices}
         
         # Handle number fields
-        elif field_type in [AirTableFieldType.NUMBER, AirTableFieldType.CURRENCY, AirTableFieldType.PERCENT]:
+        elif field_type in [AirtableFieldType.NUMBER, AirtableFieldType.CURRENCY, AirtableFieldType.PERCENT]:
             # Could add precision, format options here
             options["options"] = {"precision": 0}
         
         # Handle checkbox fields
-        elif field_type == AirTableFieldType.CHECKBOX:
+        elif field_type == AirtableFieldType.CHECKBOX:
             options["options"] = {
                 "icon": "check",
                 "color": "greenBright"
             }
         
         # Handle date/datetime fields
-        elif field_type == AirTableFieldType.DATETIME:
+        elif field_type == AirtableFieldType.DATETIME:
             options["options"] = {
                 "dateFormat": {"name": "iso"},
                 "timeFormat": {"name": "24hour"},
                 "timeZone": "utc"
             }
-        elif field_type == AirTableFieldType.DATE:
+        elif field_type == AirtableFieldType.DATE:
             options["options"] = {"dateFormat": {"name": "iso"}}
         
         return options
@@ -335,7 +335,7 @@ class TableManager:
         table_id_or_name: str
     ) -> Dict[str, Any]:
         """
-        Validate that a Pydantic model matches an existing AirTable table
+        Validate that a Pydantic model matches an existing Airtable table
         
         Args:
             model_class: Pydantic model to validate

@@ -1,6 +1,6 @@
 # Examples Overview
 
-Explore practical examples demonstrating Pydantic AirTable capabilities.
+Explore practical examples demonstrating Pydantic Airtable capabilities.
 
 ---
 
@@ -52,7 +52,7 @@ The [Agentic Researcher](agentic-researcher.md) shows:
 All examples require:
 
 1. **Python 3.8+**
-2. **AirTable credentials**:
+2. **Airtable credentials**:
     - Personal Access Token (PAT)
     - Base ID
 
@@ -100,7 +100,7 @@ class Task(BaseModel):
     completed: bool = False
 
 # Create
-task = Task.create(title="Learn Pydantic AirTable")
+task = Task.create(title="Learn Pydantic Airtable")
 
 # Read
 tasks = Task.all()
@@ -128,20 +128,20 @@ class Contact(BaseModel):
 ### With Custom Fields
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 @airtable_model(table_name="Products")
 class Product(BaseModel):
     name: str
     
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Draft", "Active", "Discontinued"]
     )
     
     price: float = airtable_field(
         field_name="Price (USD)",
-        field_type=AirTableFieldType.CURRENCY
+        field_type=AirtableFieldType.CURRENCY
     )
 ```
 

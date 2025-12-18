@@ -1,6 +1,6 @@
 # Quick Start
 
-Get up and running with Pydantic AirTable in under 5 minutes.
+Get up and running with Pydantic Airtable in under 5 minutes.
 
 ---
 
@@ -9,8 +9,8 @@ Get up and running with Pydantic AirTable in under 5 minutes.
 Before starting, ensure you have:
 
 - [x] Python 3.8+ installed
-- [x] Pydantic AirTable [installed](installation.md)
-- [x] AirTable [credentials configured](installation.md#getting-airtable-credentials)
+- [x] Pydantic Airtable [installed](installation.md)
+- [x] Airtable [credentials configured](installation.md#getting-airtable-credentials)
 
 ---
 
@@ -42,12 +42,12 @@ class User(BaseModel):
     is_active: bool = True
 ```
 
-The `@airtable_model` decorator transforms your Pydantic model into an AirTable-connected model with full CRUD capabilities.
+The `@airtable_model` decorator transforms your Pydantic model into an Airtable-connected model with full CRUD capabilities.
 
 ### Step 3: Create the Table
 
 ```python
-# Create the table in AirTable (if it doesn't exist)
+# Create the table in Airtable (if it doesn't exist)
 User.create_table()
 print("✅ Users table created!")
 ```
@@ -106,7 +106,7 @@ Here's a complete working example:
 
 ```python
 """
-Complete Pydantic AirTable Quick Start Example
+Complete Pydantic Airtable Quick Start Example
 """
 from pydantic_airtable import airtable_model, configure_from_env
 from pydantic import BaseModel
@@ -181,15 +181,15 @@ When you run the example, you'll see output like:
 ✅ User deleted!
 ```
 
-Each record gets a unique AirTable ID (starting with `rec`) that you can use to reference it later.
+Each record gets a unique Airtable ID (starting with `rec`) that you can use to reference it later.
 
 ---
 
 ## Smart Field Detection in Action
 
-Notice how we didn't specify any AirTable field types? The library automatically detected them:
+Notice how we didn't specify any Airtable field types? The library automatically detected them:
 
-| Python Field | AirTable Type | Why? |
+| Python Field | Airtable Type | Why? |
 |--------------|---------------|------|
 | `name: str` | SINGLE_LINE_TEXT | Default for strings |
 | `email: str` | EMAIL | Field name contains "email" |
@@ -254,7 +254,7 @@ try:
 except RecordNotFoundError:
     print("User not found!")
 except APIError as e:
-    print(f"AirTable API error: {e}")
+    print(f"Airtable API error: {e}")
 except ConfigurationError as e:
     print(f"Configuration error: {e}")
 ```

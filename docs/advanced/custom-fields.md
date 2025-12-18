@@ -6,10 +6,10 @@ Learn how to override automatic field detection and configure custom field behav
 
 ## Overview
 
-While Pydantic AirTable provides smart field detection, you may need to:
+While Pydantic Airtable provides smart field detection, you may need to:
 
 - Override detected types
-- Use custom field names in AirTable
+- Use custom field names in Airtable
 - Configure field options
 - Mark fields as read-only
 
@@ -20,11 +20,11 @@ While Pydantic AirTable provides smart field detection, you may need to:
 Use `airtable_field()` to customize field behavior:
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 field_name: str = airtable_field(
-    field_type=AirTableFieldType.LONG_TEXT,  # Override type
-    field_name="Field Name in AirTable",      # Custom AirTable name
+    field_type=AirtableFieldType.LONG_TEXT,  # Override type
+    field_name="Field Name in Airtable",      # Custom Airtable name
     read_only=False,                          # Whether field is read-only
     choices=["Option 1", "Option 2"],         # For SELECT/MULTI_SELECT
     default=None,                             # Default value (Pydantic)
@@ -39,7 +39,7 @@ field_name: str = airtable_field(
 ### Basic Override
 
 ```python
-from pydantic_airtable import airtable_model, airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_model, airtable_field, AirtableFieldType
 from pydantic import BaseModel
 
 @airtable_model(table_name="Products")
@@ -48,68 +48,68 @@ class Product(BaseModel):
     
     # 'notes' would be detected as LONG_TEXT, but we want single line
     notes: str = airtable_field(
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT
     )
     
     # 'data' is generic, explicitly set to LONG_TEXT
     data: str = airtable_field(
-        field_type=AirTableFieldType.LONG_TEXT
+        field_type=AirtableFieldType.LONG_TEXT
     )
 ```
 
 ### All Available Types
 
 ```python
-from pydantic_airtable import AirTableFieldType
+from pydantic_airtable import AirtableFieldType
 
 # Text types
-AirTableFieldType.SINGLE_LINE_TEXT  # Single line text
-AirTableFieldType.LONG_TEXT         # Multi-line text
-AirTableFieldType.EMAIL             # Email with validation
-AirTableFieldType.URL               # URL with validation
-AirTableFieldType.PHONE             # Phone number
+AirtableFieldType.SINGLE_LINE_TEXT  # Single line text
+AirtableFieldType.LONG_TEXT         # Multi-line text
+AirtableFieldType.EMAIL             # Email with validation
+AirtableFieldType.URL               # URL with validation
+AirtableFieldType.PHONE             # Phone number
 
 # Number types
-AirTableFieldType.NUMBER            # Generic number
-AirTableFieldType.CURRENCY          # Currency with symbol
-AirTableFieldType.PERCENT           # Percentage
+AirtableFieldType.NUMBER            # Generic number
+AirtableFieldType.CURRENCY          # Currency with symbol
+AirtableFieldType.PERCENT           # Percentage
 
 # Date/Time types
-AirTableFieldType.DATE              # Date only
-AirTableFieldType.DATETIME          # Date and time
+AirtableFieldType.DATE              # Date only
+AirtableFieldType.DATETIME          # Date and time
 
 # Selection types
-AirTableFieldType.SELECT            # Single select
-AirTableFieldType.MULTI_SELECT      # Multiple select
-AirTableFieldType.CHECKBOX          # Boolean checkbox
+AirtableFieldType.SELECT            # Single select
+AirtableFieldType.MULTI_SELECT      # Multiple select
+AirtableFieldType.CHECKBOX          # Boolean checkbox
 
 # Other types
-AirTableFieldType.ATTACHMENT        # File attachments
-AirTableFieldType.FORMULA           # Computed field
-AirTableFieldType.ROLLUP            # Rollup from linked records
-AirTableFieldType.LOOKUP            # Lookup from linked records
+AirtableFieldType.ATTACHMENT        # File attachments
+AirtableFieldType.FORMULA           # Computed field
+AirtableFieldType.ROLLUP            # Rollup from linked records
+AirtableFieldType.LOOKUP            # Lookup from linked records
 ```
 
 ---
 
 ## Custom Field Names
 
-Map Python field names to different AirTable field names:
+Map Python field names to different Airtable field names:
 
 ```python
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    # Python: user_name → AirTable: "Full Name"
+    # Python: user_name → Airtable: "Full Name"
     user_name: str = airtable_field(
         field_name="Full Name"
     )
     
-    # Python: contact_email → AirTable: "Email Address"
+    # Python: contact_email → Airtable: "Email Address"
     contact_email: str = airtable_field(
         field_name="Email Address"
     )
     
-    # Python: created → AirTable: "Created Date"
+    # Python: created → Airtable: "Created Date"
     created: datetime = airtable_field(
         field_name="Created Date"
     )
@@ -117,10 +117,10 @@ class User(BaseModel):
 
 ### When to Use Custom Names
 
-- AirTable fields have spaces: `"First Name"`, `"Phone Number"`
-- AirTable fields have special characters: `"Cost ($)"`, `"Completion %"`
+- Airtable fields have spaces: `"First Name"`, `"Phone Number"`
+- Airtable fields have special characters: `"Cost ($)"`, `"Completion %"`
 - Legacy tables with non-Pythonic names
-- Integration with existing AirTable bases
+- Integration with existing Airtable bases
 
 ---
 
@@ -135,13 +135,13 @@ class Task(BaseModel):
     
     # Define available choices
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["To Do", "In Progress", "Review", "Done"],
         default="To Do"
     )
     
     priority: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Low", "Medium", "High", "Urgent"],
         default="Medium"
     )
@@ -158,13 +158,13 @@ class Project(BaseModel):
     
     # Multiple selections allowed
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["Frontend", "Backend", "Database", "DevOps", "Design"],
         default=[]
     )
     
     team_members: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["Alice", "Bob", "Carol", "Dave"],
         default=[]
     )
@@ -197,20 +197,20 @@ Mark fields that shouldn't be sent during create/update:
 class Record(BaseModel):
     name: str
     
-    # Auto-number field (AirTable generates this)
+    # Auto-number field (Airtable generates this)
     record_number: int = airtable_field(
         read_only=True,
         default=0
     )
     
-    # Formula field (computed by AirTable)
+    # Formula field (computed by Airtable)
     calculated_value: str = airtable_field(
-        field_type=AirTableFieldType.FORMULA,
+        field_type=AirtableFieldType.FORMULA,
         read_only=True,
         default=""
     )
     
-    # Last modified (updated by AirTable)
+    # Last modified (updated by Airtable)
     last_modified: datetime = airtable_field(
         read_only=True,
         default=None
@@ -240,7 +240,7 @@ class Product(BaseModel):
     
     # USD with 2 decimal places
     price_usd: float = airtable_field(
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         json_schema_extra={
             "precision": 2,
             "symbol": "$"
@@ -249,7 +249,7 @@ class Product(BaseModel):
     
     # Euro with 2 decimal places
     price_eur: float = airtable_field(
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         json_schema_extra={
             "precision": 2,
             "symbol": "€"
@@ -266,7 +266,7 @@ class Metrics(BaseModel):
     
     # Percentage with 1 decimal place
     completion: float = airtable_field(
-        field_type=AirTableFieldType.PERCENT,
+        field_type=AirtableFieldType.PERCENT,
         json_schema_extra={
             "precision": 1
         }
@@ -282,7 +282,7 @@ class Measurement(BaseModel):
     
     # Integer (no decimals)
     count: int = airtable_field(
-        field_type=AirTableFieldType.NUMBER,
+        field_type=AirtableFieldType.NUMBER,
         json_schema_extra={
             "precision": 0
         }
@@ -290,7 +290,7 @@ class Measurement(BaseModel):
     
     # 4 decimal places
     precise_value: float = airtable_field(
-        field_type=AirTableFieldType.NUMBER,
+        field_type=AirtableFieldType.NUMBER,
         json_schema_extra={
             "precision": 4
         }
@@ -345,7 +345,7 @@ class User(BaseModel):
 Here's a comprehensive example combining multiple customizations:
 
 ```python
-from pydantic_airtable import airtable_model, airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_model, airtable_field, AirtableFieldType
 from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from datetime import datetime
@@ -362,16 +362,16 @@ class Task(BaseModel):
     title: str
     description: Optional[str] = None  # → LONG_TEXT (detected)
     
-    # Custom AirTable field name
+    # Custom Airtable field name
     assignee_email: str = airtable_field(
         field_name="Assigned To",
-        field_type=AirTableFieldType.EMAIL
+        field_type=AirtableFieldType.EMAIL
     )
     
     # Select with explicit choices
     status: str = airtable_field(
         field_name="Task Status",
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Backlog", "To Do", "In Progress", "Review", "Done"],
         default="Backlog"
     )
@@ -381,7 +381,7 @@ class Task(BaseModel):
     
     # Multi-select tags
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["Bug", "Feature", "Documentation", "Refactor"],
         default=[]
     )
@@ -389,7 +389,7 @@ class Task(BaseModel):
     # Currency field
     estimated_cost: Optional[float] = airtable_field(
         field_name="Estimated Cost ($)",
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         json_schema_extra={"precision": 2, "symbol": "$"},
         default=None
     )
@@ -417,14 +417,14 @@ class Task(BaseModel):
 ### Field Not Saving
 
 ```python
-# Problem: Field value not saving to AirTable
+# Problem: Field value not saving to Airtable
 notes: str = airtable_field(read_only=True)  # read_only prevents saving
 
 # Solution: Remove read_only or set to False
 notes: str = airtable_field(read_only=False)
 ```
 
-### Wrong Type in AirTable
+### Wrong Type in Airtable
 
 ```python
 # Problem: Field created with wrong type
@@ -432,7 +432,7 @@ status: str  # Created as SINGLE_LINE_TEXT, wanted SELECT
 
 # Solution: Explicitly specify type
 status: str = airtable_field(
-    field_type=AirTableFieldType.SELECT,
+    field_type=AirtableFieldType.SELECT,
     choices=["Active", "Inactive"]
 )
 ```
@@ -440,8 +440,8 @@ status: str = airtable_field(
 ### Field Name Mismatch
 
 ```python
-# Problem: Python field doesn't match AirTable field
-first_name: str  # AirTable has "First Name"
+# Problem: Python field doesn't match Airtable field
+first_name: str  # Airtable has "First Name"
 
 # Solution: Use field_name parameter
 first_name: str = airtable_field(field_name="First Name")

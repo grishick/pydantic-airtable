@@ -1,15 +1,15 @@
 # Error Handling
 
-Learn how to handle errors effectively in Pydantic AirTable applications.
+Learn how to handle errors effectively in Pydantic Airtable applications.
 
 ---
 
 ## Exception Hierarchy
 
-Pydantic AirTable provides a structured exception hierarchy:
+Pydantic Airtable provides a structured exception hierarchy:
 
 ```
-AirTableError (base)
+AirtableError (base)
 ├── ConfigurationError
 ├── APIError
 ├── RecordNotFoundError
@@ -20,18 +20,18 @@ AirTableError (base)
 
 ## Exception Types
 
-### AirTableError
+### AirtableError
 
 Base exception for all library errors:
 
 ```python
-from pydantic_airtable import AirTableError
+from pydantic_airtable import AirtableError
 
 try:
     # Any operation
     user = User.create(name="Alice")
-except AirTableError as e:
-    print(f"AirTable error: {e}")
+except AirtableError as e:
+    print(f"Airtable error: {e}")
 ```
 
 ### ConfigurationError
@@ -54,7 +54,7 @@ except ConfigurationError as e:
 
 ### APIError
 
-Raised for AirTable API errors:
+Raised for Airtable API errors:
 
 ```python
 from pydantic_airtable import APIError
@@ -127,7 +127,7 @@ def create_user_safe(name: str, email: str) -> Optional[User]:
         return None
     
     except APIError as e:
-        print(f"AirTable API error: {e}")
+        print(f"Airtable API error: {e}")
         return None
     
     except Exception as e:

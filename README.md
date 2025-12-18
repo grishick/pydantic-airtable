@@ -1,15 +1,15 @@
-# 🚀 Pydantic AirTable
+# 🚀 Pydantic Airtable
 
-**The most intuitive way to integrate Pydantic models with AirTable**
+**The most intuitive way to integrate Pydantic models with Airtable**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Pydantic v2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://pydantic.dev/)
-[![AirTable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
+[![Airtable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Clean, Intuitive AirTable Integration
+## ✨ Clean, Intuitive Airtable Integration
 
-Transform your Pydantic models into fully-functional AirTable integrations with just **8 lines of code**:
+Transform your Pydantic models into fully-functional Airtable integrations with just **8 lines of code**:
 
 ```python
 from pydantic_airtable import airtable_model, configure_from_env
@@ -58,8 +58,8 @@ AIRTABLE_BASE_ID=app_your_base_id
 ```
 
 Get your credentials:
-- **Personal Access Token**: [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
-- **Base ID**: Found in your AirTable base URL
+- **Personal Access Token**: [Airtable Developer Hub](https://airtable.com/developers/web/api/authentication)
+- **Base ID**: Found in your Airtable base URL
 
 ### 2. Define Your Model
 
@@ -124,7 +124,7 @@ User.bulk_create(users_data)
 
 ## 🧠 Smart Field Detection
 
-The system automatically detects AirTable field types:
+The system automatically detects Airtable field types:
 
 | Python Code | Detected Type | Reason |
 |-------------|---------------|--------|
@@ -144,7 +144,7 @@ The system automatically detects AirTable field types:
 ### Override Auto-Detection
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 @airtable_model(table_name="Projects")
 class Project(BaseModel):
@@ -152,14 +152,14 @@ class Project(BaseModel):
     
     # Override detection with explicit configuration
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Planning", "In Progress", "Done"]
     )
     
-    # Custom field name in AirTable
+    # Custom field name in Airtable
     description: str = airtable_field(
         field_name="Project Description",
-        field_type=AirTableFieldType.LONG_TEXT
+        field_type=AirtableFieldType.LONG_TEXT
     )
 ```
 
@@ -167,7 +167,7 @@ class Project(BaseModel):
 
 ```python
 # Per-model configuration
-user_config = AirTableConfig(
+user_config = AirtableConfig(
     access_token="pat_user_token", 
     base_id="app_user_base"
 )
@@ -306,13 +306,13 @@ AIRTABLE_TABLE_NAME=DefaultTable       # Default table name
 ### Programmatic Configuration
 
 ```python
-from pydantic_airtable import AirTableConfig, set_global_config
+from pydantic_airtable import AirtableConfig, set_global_config
 
 # Method 1: From environment
 configure_from_env()
 
 # Method 2: Explicit configuration
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_your_token",
     base_id="app_your_base",
     table_name="DefaultTable"  # optional
@@ -372,8 +372,8 @@ python simple_usage.py
 
 ```python
 @airtable_model(
-    table_name: str,              # AirTable table name
-    config: AirTableConfig = None,   # Configuration object
+    table_name: str,              # Airtable table name
+    config: AirtableConfig = None,   # Configuration object
     access_token: str = None,     # Direct token specification
     base_id: str = None          # Direct base ID specification
 )
@@ -400,11 +400,11 @@ user.delete() -> dict                         # Delete record
 ### Field Utilities
 
 ```python
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 field = airtable_field(
-    field_type: AirTableFieldType = None,     # Override auto-detection
-    field_name: str = None,                   # Custom AirTable field name  
+    field_type: AirtableFieldType = None,     # Override auto-detection
+    field_name: str = None,                   # Custom Airtable field name  
     read_only: bool = False,                  # Read-only field
     choices: List[str] = None,                # For SELECT/MULTI_SELECT
     **pydantic_field_kwargs                   # Standard Pydantic Field options
@@ -415,7 +415,7 @@ field = airtable_field(
 
 ### Common Issues
 
-**Issue**: `ConfigurationError: AirTable Personal Access Token is required`
+**Issue**: `ConfigurationError: Airtable Personal Access Token is required`
 ```python
 # Solution: Set environment variables or configure explicitly
 configure_from_env()  # Loads from .env file
@@ -432,11 +432,11 @@ User.create_table()
 **Issue**: Field type not detected correctly
 ```python
 # Solution: Override with explicit type
-from pydantic_airtable import airtable_field, AirTableFieldType
+from pydantic_airtable import airtable_field, AirtableFieldType
 
 class User(BaseModel):
     description: str = airtable_field(
-        field_type=AirTableFieldType.LONG_TEXT
+        field_type=AirtableFieldType.LONG_TEXT
     )
 ```
 
@@ -445,7 +445,7 @@ class User(BaseModel):
 - Use `bulk_create()` for multiple records
 - Cache model instances when possible  
 - Use `find_by()` instead of filtering `all()` results
-- Set up proper indexes in AirTable for frequently queried fields
+- Set up proper indexes in Airtable for frequently queried fields
 
 ## 📄 License
 
@@ -464,11 +464,11 @@ Full documentation is available at **[pydantic-airtable.readthedocs.io](https://
 
 - [Documentation](https://pydantic-airtable.readthedocs.io/)
 - [Examples](./examples/)
-- [AirTable API Reference](https://airtable.com/developers/web/api/introduction)
+- [Airtable API Reference](https://airtable.com/developers/web/api/introduction)
 - [Issue Tracker](https://github.com/pydantic-airtable/pydantic-airtable/issues)
 
 ---
 
 **Made with ❤️ for the Python community**
 
-*Transform your AirTable integration from complex to simple with just 8 lines of code!* 🚀
+*Transform your Airtable integration from complex to simple with just 8 lines of code!* 🚀

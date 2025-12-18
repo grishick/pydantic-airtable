@@ -1,35 +1,35 @@
 # Manager API Reference
 
-API documentation for the AirTableManager class.
+API documentation for the AirtableManager class.
 
 ---
 
-## AirTableManager
+## AirtableManager
 
-Unified manager for all AirTable operations.
+Unified manager for all Airtable operations.
 
 ```python
-class AirTableManager:
-    def __init__(self, config: AirTableConfig)
+class AirtableManager:
+    def __init__(self, config: AirtableConfig)
 ```
 
 ### Constructor
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `config` | `AirTableConfig` | AirTable configuration |
+| `config` | `AirtableConfig` | Airtable configuration |
 
 ### Example
 
 ```python
-from pydantic_airtable import AirTableManager, AirTableConfig
+from pydantic_airtable import AirtableManager, AirtableConfig
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
 
-manager = AirTableManager(config)
+manager = AirtableManager(config)
 ```
 
 ---
@@ -52,7 +52,7 @@ def get_records(
 **Parameters:**
 - `table_name`: Table name (uses config default if None)
 - `base_id`: Base ID (uses config default if None)
-- `**params`: AirTable API parameters
+- `**params`: Airtable API parameters
   - `filterByFormula`: Filter formula
   - `maxRecords`: Maximum records
   - `sort`: Sort configuration
@@ -123,7 +123,7 @@ def get_record(
 ```
 
 **Parameters:**
-- `record_id`: AirTable record ID
+- `record_id`: Airtable record ID
 - `table_name`: Table name
 - `base_id`: Base ID
 
@@ -488,13 +488,13 @@ print(f"Created: {result['fields_created']}")
 ### Full CRUD Example
 
 ```python
-from pydantic_airtable import AirTableManager, AirTableConfig
+from pydantic_airtable import AirtableManager, AirtableConfig
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
-manager = AirTableManager(config)
+manager = AirtableManager(config)
 
 # Create
 record = manager.create_record(

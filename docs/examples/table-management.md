@@ -1,6 +1,6 @@
 # Table Management Example
 
-Learn to create and manage AirTable schemas programmatically.
+Learn to create and manage Airtable schemas programmatically.
 
 ---
 
@@ -19,15 +19,15 @@ This example demonstrates:
 
 ```python
 """
-Table Management Example for Pydantic AirTable
+Table Management Example for Pydantic Airtable
 """
 from pydantic_airtable import (
     airtable_model,
     configure_from_env,
     airtable_field,
-    AirTableFieldType,
-    AirTableManager,
-    AirTableConfig
+    AirtableFieldType,
+    AirtableManager,
+    AirtableConfig
 )
 from pydantic import BaseModel
 from typing import Optional, List
@@ -62,12 +62,12 @@ class Task(BaseModel):
     
     # Custom field with explicit options
     tags: List[str] = airtable_field(
-        field_type=AirTableFieldType.MULTI_SELECT,
+        field_type=AirtableFieldType.MULTI_SELECT,
         choices=["Bug", "Feature", "Documentation", "Refactor"],
         default=[]
     )
     
-    # Custom field name in AirTable
+    # Custom field name in Airtable
     estimated_hours: Optional[float] = airtable_field(
         field_name="Estimated Hours",
         default=None
@@ -86,13 +86,13 @@ class Project(BaseModel):
     name: str
     description: Optional[str] = None
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Planning", "Active", "On Hold", "Completed"],
         default="Planning"
     )
     budget: Optional[float] = airtable_field(
         field_name="Budget ($)",
-        field_type=AirTableFieldType.CURRENCY,
+        field_type=AirtableFieldType.CURRENCY,
         default=None
     )
     start_date: Optional[datetime] = None
@@ -211,7 +211,7 @@ result = Task.create_table()
 
 ### Field Type Mapping
 
-| Model Definition | AirTable Field |
+| Model Definition | Airtable Field |
 |------------------|----------------|
 | `title: str` | singleLineText |
 | `description: str` | multilineText (detected) |
@@ -226,14 +226,14 @@ result = Task.create_table()
 ```python
 # Explicit type
 tags: List[str] = airtable_field(
-    field_type=AirTableFieldType.MULTI_SELECT,
+    field_type=AirtableFieldType.MULTI_SELECT,
     choices=["Bug", "Feature", "Documentation"]
 )
 
-# Custom AirTable name
+# Custom Airtable name
 budget: float = airtable_field(
     field_name="Budget ($)",
-    field_type=AirTableFieldType.CURRENCY
+    field_type=AirtableFieldType.CURRENCY
 )
 ```
 
@@ -332,12 +332,12 @@ def migrate_v1_to_v2():
         status: str
         # New in v2
         priority: str = airtable_field(
-            field_type=AirTableFieldType.SELECT,
+            field_type=AirtableFieldType.SELECT,
             choices=["Low", "Medium", "High"],
             default="Medium"
         )
         tags: List[str] = airtable_field(
-            field_type=AirTableFieldType.MULTI_SELECT,
+            field_type=AirtableFieldType.MULTI_SELECT,
             choices=["Bug", "Feature"],
             default=[]
         )
@@ -357,19 +357,19 @@ def migrate_v1_to_v2():
 
 ---
 
-## Using AirTableManager
+## Using AirtableManager
 
 For advanced operations, use the manager directly:
 
 ```python
-from pydantic_airtable import AirTableManager, AirTableConfig
+from pydantic_airtable import AirtableManager, AirtableConfig
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
 
-manager = AirTableManager(config)
+manager = AirtableManager(config)
 
 # List bases
 bases = manager.list_bases()
@@ -412,7 +412,7 @@ def check_schema_version():
 # Use a test base for migrations
 @pytest.fixture
 def test_base():
-    return AirTableConfig(
+    return AirtableConfig(
         access_token=os.getenv("TEST_TOKEN"),
         base_id=os.getenv("TEST_BASE")
     )

@@ -2,7 +2,7 @@
 Agentic Researcher Example
 
 An AI-powered research assistant that uses OpenAI's API to conduct comprehensive research
-on any topic, storing all data in AirTable using the streamlined pydantic-airtable API.
+on any topic, storing all data in Airtable using the streamlined pydantic-airtable API.
 
 Features:
 - Smart field detection for all research models
@@ -29,8 +29,8 @@ sys.path.insert(0, "../../")
 from pydantic_airtable import (
     airtable_model,
     configure_from_env,
-    AirTableManager,
-    AirTableConfig
+    AirtableManager,
+    AirtableConfig
 )
 
 import openai
@@ -41,7 +41,7 @@ from prompt_loader import PromptLoader
 # Load environment variables
 load_dotenv()
 
-# Configure AirTable from environment
+# Configure Airtable from environment
 configure_from_env()
 
 # Initialize OpenAI
@@ -173,15 +173,15 @@ class AgenticResearcher:
     AI-powered research assistant using the streamlined pydantic-airtable API
     """
     
-    def __init__(self, config: Optional[AirTableConfig] = None):
+    def __init__(self, config: Optional[AirtableConfig] = None):
         """
         Initialize the Agentic Researcher
         
         Args:
-            config: Optional AirTable configuration (uses global if None)
+            config: Optional Airtable configuration (uses global if None)
         """
         self.config = config
-        self.manager = AirTableManager(config) if config else None
+        self.manager = AirtableManager(config) if config else None
         
         # Initialize tools
         self.research_tools = research_tools
@@ -190,12 +190,12 @@ class AgenticResearcher:
         
     def setup_tables(self) -> Dict[str, Any]:
         """
-        Setup all required AirTable tables
+        Setup all required Airtable tables
         
         Returns:
             Dictionary with setup results
         """
-        print("🔧 Setting up AirTable tables...")
+        print("🔧 Setting up Airtable tables...")
         
         results = {
             "tables_created": [],
@@ -211,8 +211,8 @@ class AgenticResearcher:
         
         # Get base schema once (more efficient than checking each table separately)
         try:
-            config = AirTableConfig.from_env()
-            manager = AirTableManager(config)
+            config = AirtableConfig.from_env()
+            manager = AirtableManager(config)
             schema = manager.get_base_schema()
             existing_tables = {t['name']: t['id'] for t in schema.get('tables', [])}
         except Exception as e:
@@ -846,7 +846,7 @@ async def interactive_mode():
                             print(f"Generated: {result.generated_at.strftime('%Y-%m-%d %H:%M')}")
                         print(f"Content: {result.content[:200]}...")
                         if len(result.content) > 200:
-                            print("   (truncated - see AirTable for full content)")
+                            print("   (truncated - see Airtable for full content)")
                         print("-" * 40)
                 else:
                     print("❌ No detailed results available yet.")
@@ -904,7 +904,7 @@ async def demo_mode():
     print(f"Q: {question}")
     print(f"A: {answer}")
     
-    print("\n🎉 Demo completed! Check your AirTable base for detailed results.")
+    print("\n🎉 Demo completed! Check your Airtable base for detailed results.")
 
 
 def main():
@@ -916,7 +916,7 @@ def main():
     parser.add_argument('--interactive', action='store_true', help='Run in interactive mode')
     args = parser.parse_args()
     
-    print("🚀 Pydantic AirTable - Agentic Researcher")
+    print("🚀 Pydantic Airtable - Agentic Researcher")
     print("=" * 50)
     
     # Check environment variables
@@ -930,7 +930,7 @@ def main():
         for var in required_vars:
             print(f"   {var}=your_value_here")
         print("\n2. Get credentials:")
-        print("   - AirTable PAT: https://airtable.com/developers/web/api/authentication")
+        print("   - Airtable PAT: https://airtable.com/developers/web/api/authentication")
         print("   - OpenAI API Key: https://platform.openai.com/api-keys")
         return
     

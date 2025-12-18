@@ -13,16 +13,16 @@ from pydantic_airtable import (
     airtable_model, 
     configure_from_env, 
     airtable_field, 
-    AirTableFieldType,
-    AirTableConfig,
-    AirTableManager
+    AirtableFieldType,
+    AirtableConfig,
+    AirtableManager
 )
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Configure AirTable connection from environment
+# Configure Airtable connection from environment
 configure_from_env()
 
 # Define model with streamlined decorator
@@ -38,7 +38,7 @@ class User(BaseModel):
     
     # Optional: Override detection with explicit field configuration
     bio: Optional[str] = airtable_field(
-        field_type=AirTableFieldType.LONG_TEXT,
+        field_type=AirtableFieldType.LONG_TEXT,
         default=None
     )
 
@@ -46,14 +46,14 @@ class User(BaseModel):
 def main():
     """Demonstrate streamlined CRUD operations"""
     
-    print("🚀 Pydantic AirTable - Simple Usage Example")
+    print("🚀 Pydantic Airtable - Simple Usage Example")
     print("=" * 50)
     
     try:
         # Check if table exists by looking at base schema (more efficient than fetching records)
         print("🔍 Checking if Users table exists...")
-        config = AirTableConfig.from_env()
-        manager = AirTableManager(config)
+        config = AirtableConfig.from_env()
+        manager = AirtableManager(config)
         schema = manager.get_base_schema()
         
         table_exists = any(t['name'] == 'Users' for t in schema.get('tables', []))

@@ -1,6 +1,6 @@
 # Best Practices
 
-Production-ready patterns and recommendations for Pydantic AirTable applications.
+Production-ready patterns and recommendations for Pydantic Airtable applications.
 
 ---
 
@@ -14,7 +14,7 @@ from pydantic_airtable import configure_from_env
 configure_from_env()
 
 # ❌ Bad: Hard-coded credentials
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxxxx",  # Never do this!
     base_id="appXXXX"
 )
@@ -29,7 +29,7 @@ def initialize_app():
         configure_from_env()
         # Test connection
         _ = User.all(maxRecords=1)
-        print("✅ AirTable connection verified")
+        print("✅ Airtable connection verified")
     except ConfigurationError as e:
         print(f"❌ Configuration error: {e}")
         sys.exit(1)
@@ -52,7 +52,7 @@ base_ids = {
     "production": "appProdBase"
 }
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token=os.getenv("AIRTABLE_ACCESS_TOKEN"),
     base_id=base_ids[env]
 )
@@ -88,13 +88,13 @@ class Product(BaseModel):
     
     # 'code' would be SINGLE_LINE_TEXT, we want to be explicit
     code: str = airtable_field(
-        field_type=AirTableFieldType.SINGLE_LINE_TEXT,
+        field_type=AirtableFieldType.SINGLE_LINE_TEXT,
         description="Product code"
     )
     
     # Status needs specific choices
     status: str = airtable_field(
-        field_type=AirTableFieldType.SELECT,
+        field_type=AirtableFieldType.SELECT,
         choices=["Draft", "Active", "Discontinued"]
     )
 ```
@@ -121,7 +121,7 @@ class Task(BaseModel):
 ### Add Pydantic Validation
 
 ```python
-# ✅ Good: Validate before sending to AirTable
+# ✅ Good: Validate before sending to Airtable
 from pydantic import field_validator, Field
 
 class User(BaseModel):
@@ -378,7 +378,7 @@ def log_user_operation(user: User, operation: str):
 # ✅ Good: Separate test base
 @pytest.fixture
 def test_config():
-    return AirTableConfig(
+    return AirtableConfig(
         access_token=os.getenv("TEST_AIRTABLE_TOKEN"),
         base_id=os.getenv("TEST_AIRTABLE_BASE")
     )
@@ -482,14 +482,14 @@ def deactivate_user(user_id: str) -> User:
     Deactivate a user account.
     
     Args:
-        user_id: AirTable record ID of the user
+        user_id: Airtable record ID of the user
         
     Returns:
         Updated User instance
         
     Raises:
         RecordNotFoundError: If user doesn't exist
-        APIError: If AirTable API call fails
+        APIError: If Airtable API call fails
     """
     user = User.get(user_id)
     user.is_active = False

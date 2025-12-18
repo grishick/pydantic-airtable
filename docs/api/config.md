@@ -4,13 +4,13 @@ API documentation for configuration classes and functions.
 
 ---
 
-## AirTableConfig
+## AirtableConfig
 
-Configuration dataclass for AirTable connections.
+Configuration dataclass for Airtable connections.
 
 ```python
 @dataclass
-class AirTableConfig:
+class AirtableConfig:
     access_token: str
     base_id: str
     table_name: Optional[str] = None
@@ -27,7 +27,7 @@ class AirTableConfig:
 ### Constructor
 
 ```python
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX",
     table_name="Users"  # Optional
@@ -57,7 +57,7 @@ def from_env(
     base_id: Optional[str] = None,
     table_name: Optional[str] = None,
     env_prefix: str = "AIRTABLE_"
-) -> 'AirTableConfig'
+) -> 'AirtableConfig'
 ```
 
 **Parameters:**
@@ -74,15 +74,15 @@ def from_env(
 **Example:**
 ```python
 # From environment only
-config = AirTableConfig.from_env()
+config = AirtableConfig.from_env()
 
 # With overrides
-config = AirTableConfig.from_env(
+config = AirtableConfig.from_env(
     base_id="appDifferentBase"
 )
 
 # Custom prefix
-config = AirTableConfig.from_env(env_prefix="MY_APP_")
+config = AirtableConfig.from_env(env_prefix="MY_APP_")
 # Uses MY_APP_ACCESS_TOKEN, MY_APP_BASE_ID, etc.
 ```
 
@@ -93,17 +93,17 @@ config = AirTableConfig.from_env(env_prefix="MY_APP_")
 Create a new config with a different table name.
 
 ```python
-def with_table(self, table_name: str) -> 'AirTableConfig'
+def with_table(self, table_name: str) -> 'AirtableConfig'
 ```
 
 **Parameters:**
 - `table_name`: New table name
 
-**Returns:** New `AirTableConfig` instance
+**Returns:** New `AirtableConfig` instance
 
 **Example:**
 ```python
-base_config = AirTableConfig(
+base_config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
@@ -138,7 +138,7 @@ def validate_table_name(self, table_name: Optional[str] = None) -> str
 Load configuration from environment and set as global.
 
 ```python
-def configure_from_env(**overrides) -> AirTableConfig
+def configure_from_env(**overrides) -> AirtableConfig
 ```
 
 **Parameters:**
@@ -147,7 +147,7 @@ def configure_from_env(**overrides) -> AirTableConfig
   - `base_id`: Override base ID
   - `table_name`: Override table name
 
-**Returns:** Created `AirTableConfig` (also set as global)
+**Returns:** Created `AirtableConfig` (also set as global)
 
 **Example:**
 ```python
@@ -169,7 +169,7 @@ configure_from_env(
 Set global configuration.
 
 ```python
-def set_global_config(config: AirTableConfig) -> None
+def set_global_config(config: AirtableConfig) -> None
 ```
 
 **Parameters:**
@@ -177,9 +177,9 @@ def set_global_config(config: AirTableConfig) -> None
 
 **Example:**
 ```python
-from pydantic_airtable import AirTableConfig, set_global_config
+from pydantic_airtable import AirtableConfig, set_global_config
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )
@@ -193,10 +193,10 @@ set_global_config(config)
 Get current global configuration.
 
 ```python
-def get_global_config() -> AirTableConfig
+def get_global_config() -> AirtableConfig
 ```
 
-**Returns:** Global `AirTableConfig` instance
+**Returns:** Global `AirtableConfig` instance
 
 **Raises:** `ConfigurationError` if no global config set
 
@@ -217,7 +217,7 @@ print(f"Base: {config.base_id}")
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `AIRTABLE_ACCESS_TOKEN` | Personal Access Token | `pat_abc123...` |
-| `AIRTABLE_BASE_ID` | AirTable Base ID | `appXXXXXXXXXXXX` |
+| `AIRTABLE_BASE_ID` | Airtable Base ID | `appXXXXXXXXXXXX` |
 
 ### Optional
 
@@ -278,16 +278,16 @@ configure_from_env()
 
 ```python
 import os
-from pydantic_airtable import AirTableConfig, set_global_config
+from pydantic_airtable import AirtableConfig, set_global_config
 
 env = os.getenv("ENVIRONMENT", "development")
 
 configs = {
-    "development": AirTableConfig(
+    "development": AirtableConfig(
         access_token=os.getenv("DEV_TOKEN"),
         base_id=os.getenv("DEV_BASE")
     ),
-    "production": AirTableConfig(
+    "production": AirtableConfig(
         access_token=os.getenv("PROD_TOKEN"),
         base_id=os.getenv("PROD_BASE")
     )
@@ -299,15 +299,15 @@ set_global_config(configs[env])
 ### Multiple Bases
 
 ```python
-from pydantic_airtable import AirTableConfig, airtable_model
+from pydantic_airtable import AirtableConfig, airtable_model
 from pydantic import BaseModel
 
-crm_config = AirTableConfig(
+crm_config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appCRMBase"
 )
 
-inventory_config = AirTableConfig(
+inventory_config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appInventoryBase"
 )

@@ -1,7 +1,7 @@
 """
-Pydantic AirTable - A streamlined library for managing AirTable data using Pydantic objects
+Pydantic Airtable - A streamlined library for managing Airtable data using Pydantic objects
 
-This library provides a clean, intuitive API for integrating Pydantic models with AirTable,
+This library provides a clean, intuitive API for integrating Pydantic models with Airtable,
 with smart field detection and minimal configuration required.
 
 Quick Start:
@@ -24,13 +24,13 @@ Quick Start:
 """
 
 # Core API
-from .models import AirTableModel, airtable_model
-from .config import AirTableConfig, configure_from_env, set_global_config, get_global_config
+from .models import AirtableModel, airtable_model
+from .config import AirtableConfig, configure_from_env, set_global_config, get_global_config
 from .field_types import airtable_field, FieldTypeResolver
-from .fields import AirTableFieldType, AirTableField
-from .manager import AirTableManager
+from .fields import AirtableFieldType, AirtableField
+from .manager import AirtableManager
 from .exceptions import (
-    AirTableError, 
+    AirtableError, 
     RecordNotFoundError, 
     ValidationError, 
     APIError, 
@@ -39,7 +39,7 @@ from .exceptions import (
 
 # Internal components (for advanced usage)
 from .http_client import BaseHTTPClient
-from .client import AirTableClient
+from .client import AirtableClient
 from .base_manager import BaseManager
 from .table_manager import TableManager
 
@@ -49,25 +49,25 @@ __version__ = "1.0.0"
 __all__ = [
     # Main decorator and model
     "airtable_model",
-    "AirTableModel", 
+    "AirtableModel", 
     
     # Configuration  
-    "AirTableConfig",
+    "AirtableConfig",
     "configure_from_env",
     "set_global_config",
     "get_global_config",
     
     # Field utilities
     "airtable_field",
-    "AirTableField",
-    "AirTableFieldType",
+    "AirtableField",
+    "AirtableFieldType",
     "FieldTypeResolver",
     
     # Manager
-    "AirTableManager",
+    "AirtableManager",
     
     # Exceptions
-    "AirTableError",
+    "AirtableError",
     "RecordNotFoundError", 
     "ValidationError",
     "APIError",
@@ -75,7 +75,7 @@ __all__ = [
     
     # Internal components
     "BaseHTTPClient",
-    "AirTableClient",
+    "AirtableClient",
     "BaseManager",
     "TableManager",
 ]

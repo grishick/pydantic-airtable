@@ -101,7 +101,7 @@ for user in users:
 
 ### Get by ID
 
-Retrieve a specific record by its AirTable ID:
+Retrieve a specific record by its Airtable ID:
 
 ```python
 # Get record by ID
@@ -167,7 +167,7 @@ else:
 For complex queries, use the `filterByFormula` parameter:
 
 ```python
-# Using AirTable formula
+# Using Airtable formula
 results = User.all(filterByFormula="{age} > 25")
 
 # Complex formula
@@ -323,7 +323,7 @@ try:
 except RecordNotFoundError:
     print("Record not found")
 except APIError as e:
-    print(f"AirTable API error: {e}")
+    print(f"Airtable API error: {e}")
 except ConfigurationError as e:
     print(f"Configuration error: {e}")
 ```
@@ -409,7 +409,7 @@ def update_or_create_user(email: str, **data) -> User:
 
 ## Transaction-Like Patterns
 
-AirTable doesn't support transactions, but you can implement patterns:
+Airtable doesn't support transactions, but you can implement patterns:
 
 ### Create with Cleanup
 

@@ -1,13 +1,13 @@
 # Agentic Researcher Example
 
-This example demonstrates an AI-powered research assistant that combines OpenAI's language models with AirTable's database capabilities to conduct structured research workflows.
+This example demonstrates an AI-powered research assistant that combines OpenAI's language models with Airtable's database capabilities to conduct structured research workflows.
 
 ## 🎯 What This Example Shows
 
 - **Real Web Search**: Conducts actual web searches using DuckDuckGo for current information
 - **AI-Powered Analysis**: GPT-4o analyzes real research data instead of generating content
 - **Multiple Research Types**: Literature search, market research, news analysis, technical research
-- **Structured Data Management**: Research tasks, steps, and results in AirTable
+- **Structured Data Management**: Research tasks, steps, and results in Airtable
 - **Automatic Infrastructure**: Creates bases and tables automatically
 - **Interactive Q&A**: Answer questions using real research findings as context
 - **Full Lifecycle Management**: From data gathering to final summarization
@@ -43,12 +43,12 @@ python agentic_researcher.py --interactive  # Interactive mode
 1. **Task Creation**: User provides research topic
 2. **Step Planning**: AI breaks down research into actionable steps
 3. **Step Execution**: AI conducts each research step systematically
-4. **Result Storage**: All findings stored in structured AirTable records
+4. **Result Storage**: All findings stored in structured Airtable records
 5. **Summarization**: Final comprehensive summary generation
 6. **Q&A System**: Answer questions using research context
 
 ### 2. Infrastructure Management
-- **Automatic Base Creation**: Creates AirTable base if none provided
+- **Automatic Base Creation**: Creates Airtable base if none provided
 - **Table Generation**: Creates three interconnected tables from Pydantic models
 - **Schema Management**: Handles field types, enums, and relationships automatically
 
@@ -64,7 +64,7 @@ python agentic_researcher.py --interactive  # Interactive mode
 
 #### ResearchTask
 ```python
-class ResearchTask(AirTableModel):
+class ResearchTask(AirtableModel):
     # Core Information
     title: str
     description: str
@@ -85,7 +85,7 @@ class ResearchTask(AirTableModel):
 
 #### ResearchStep
 ```python
-class ResearchStep(AirTableModel):
+class ResearchStep(AirtableModel):
     # Identification
     task_id: str
     step_number: int
@@ -106,7 +106,7 @@ class ResearchStep(AirTableModel):
 
 #### ResearchResult
 ```python
-class ResearchResult(AirTableModel):
+class ResearchResult(AirtableModel):
     # Identification
     task_id: str
     step_id: Optional[str]
@@ -209,7 +209,7 @@ AI generates steps like:
 ### 3. Execution
 ```python
 final_summary = await researcher.execute_full_research(task)
-# AI executes each step, storing findings in AirTable
+# AI executes each step, storing findings in Airtable
 ```
 
 ### 4. Q&A
@@ -371,7 +371,7 @@ python agentic_researcher.py --demo
 - Complete research workflow
 - AI planning and execution
 - Q&A system capabilities
-- AirTable integration
+- Airtable integration
 
 ## 📊 Research Analytics
 
@@ -384,7 +384,7 @@ The system provides comprehensive analytics:
 
 ## 🔗 Integration Points
 
-### AirTable Integration
+### Airtable Integration
 - **Automatic base/table creation**
 - **Real-time progress updates**
 - **Rich data relationships**

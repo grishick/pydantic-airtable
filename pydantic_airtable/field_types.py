@@ -9,7 +9,7 @@ from enum import Enum
 from pydantic import Field
 from pydantic.fields import FieldInfo
 
-from .fields import AirTableFieldType
+from .fields import AirtableFieldType
 
 
 class FieldTypeResolver:
@@ -20,14 +20,14 @@ class FieldTypeResolver:
     
     # Core type mappings
     PYTHON_TO_AIRTABLE = {
-        str: AirTableFieldType.SINGLE_LINE_TEXT,
-        int: AirTableFieldType.NUMBER,
-        float: AirTableFieldType.NUMBER,
-        bool: AirTableFieldType.CHECKBOX,
-        datetime: AirTableFieldType.DATETIME,
-        date: AirTableFieldType.DATE,
-        timedelta: AirTableFieldType.DURATION,
-        list: AirTableFieldType.MULTI_SELECT,
+        str: AirtableFieldType.SINGLE_LINE_TEXT,
+        int: AirtableFieldType.NUMBER,
+        float: AirtableFieldType.NUMBER,
+        bool: AirtableFieldType.CHECKBOX,
+        datetime: AirtableFieldType.DATETIME,
+        date: AirtableFieldType.DATE,
+        timedelta: AirtableFieldType.DURATION,
+        list: AirtableFieldType.MULTI_SELECT,
     }
     
     # Field name patterns for smart detection
@@ -131,10 +131,10 @@ class FieldTypeResolver:
         field_name: str,
         python_type: Type,
         field_info: Optional[FieldInfo] = None,
-        explicit_type: Optional[AirTableFieldType] = None
-    ) -> AirTableFieldType:
+        explicit_type: Optional[AirtableFieldType] = None
+    ) -> AirtableFieldType:
         """
-        Resolve AirTable field type from multiple sources
+        Resolve Airtable field type from multiple sources
         
         Priority:
         1. Explicit type specification
@@ -147,10 +147,10 @@ class FieldTypeResolver:
             field_name: Python field name
             python_type: Python type annotation
             field_info: Pydantic field info
-            explicit_type: Explicitly specified AirTable type
+            explicit_type: Explicitly specified Airtable type
             
         Returns:
-            Resolved AirTable field type
+            Resolved Airtable field type
         """
         # 1. Explicit type takes precedence
         if explicit_type:
@@ -174,17 +174,17 @@ class FieldTypeResolver:
             airtable_type = cls.PYTHON_TO_AIRTABLE[base_type]
             
             # Further refinement for numbers
-            if airtable_type == AirTableFieldType.NUMBER:
+            if airtable_type == AirtableFieldType.NUMBER:
                 return cls._refine_number_type(field_name)
             
             return airtable_type
         
         # 5. Handle enums
         if cls._is_enum_type(python_type):
-            return AirTableFieldType.SELECT
+            return AirtableFieldType.SELECT
         
         # 6. Default fallback
-        return AirTableFieldType.SINGLE_LINE_TEXT
+        return AirtableFieldType.SINGLE_LINE_TEXT
     
     @classmethod
     def _is_string_type(cls, python_type: Type) -> bool:
@@ -225,7 +225,7 @@ class FieldTypeResolver:
         return python_type
     
     @classmethod
-    def _detect_from_field_name(cls, field_name: str) -> Optional[AirTableFieldType]:
+    def _detect_from_field_name(cls, field_name: str) -> Optional[AirtableFieldType]:
         """
         Smart field type detection based on field name patterns
         
@@ -239,24 +239,24 @@ class FieldTypeResolver:
         
         # Email detection
         if any(re.search(pattern, name_lower) for pattern in cls.EMAIL_PATTERNS):
-            return AirTableFieldType.EMAIL
+            return AirtableFieldType.EMAIL
         
         # URL detection  
         if any(re.search(pattern, name_lower) for pattern in cls.URL_PATTERNS):
-            return AirTableFieldType.URL
+            return AirtableFieldType.URL
         
         # Phone detection
         if any(re.search(pattern, name_lower) for pattern in cls.PHONE_PATTERNS):
-            return AirTableFieldType.PHONE
+            return AirtableFieldType.PHONE
         
         # Long text detection
         if any(re.search(pattern, name_lower) for pattern in cls.LONG_TEXT_PATTERNS):
-            return AirTableFieldType.LONG_TEXT
+            return AirtableFieldType.LONG_TEXT
         
         return None
     
     @classmethod
-    def _refine_number_type(cls, field_name: str) -> AirTableFieldType:
+    def _refine_number_type(cls, field_name: str) -> AirtableFieldType:
         """
         Refine number type based on field name
         
@@ -270,29 +270,29 @@ class FieldTypeResolver:
         
         # Currency detection
         if any(re.search(pattern, name_lower) for pattern in cls.CURRENCY_PATTERNS):
-            return AirTableFieldType.CURRENCY
+            return AirtableFieldType.CURRENCY
         
         # Percentage detection
         if any(re.search(pattern, name_lower) for pattern in cls.PERCENT_PATTERNS):
-            return AirTableFieldType.PERCENT
+            return AirtableFieldType.PERCENT
         
         # Duration detection (for int/float fields named like durations)
         if any(re.search(pattern, name_lower) for pattern in cls.DURATION_PATTERNS):
-            return AirTableFieldType.DURATION
+            return AirtableFieldType.DURATION
         
         # Rating detection (for int fields named like ratings)
         if any(re.search(pattern, name_lower) for pattern in cls.RATING_PATTERNS):
-            return AirTableFieldType.RATING
+            return AirtableFieldType.RATING
         
-        return AirTableFieldType.NUMBER
+        return AirtableFieldType.NUMBER
     
     @classmethod
-    def get_field_options(cls, field_type: AirTableFieldType, **kwargs) -> Dict[str, Any]:
+    def get_field_options(cls, field_type: AirtableFieldType, **kwargs) -> Dict[str, Any]:
         """
-        Generate field options for specific AirTable field types
+        Generate field options for specific Airtable field types
         
         Args:
-            field_type: AirTable field type
+            field_type: Airtable field type
             **kwargs: Additional options
             
         Returns:
@@ -300,40 +300,40 @@ class FieldTypeResolver:
         """
         options = {}
         
-        if field_type == AirTableFieldType.CHECKBOX:
+        if field_type == AirtableFieldType.CHECKBOX:
             options.update({
                 "icon": kwargs.get("icon", "check"),
                 "color": kwargs.get("color", "greenBright")
             })
         
-        elif field_type == AirTableFieldType.SELECT:
+        elif field_type == AirtableFieldType.SELECT:
             choices = kwargs.get("choices", [])
             if choices:
                 options["choices"] = [{"name": choice} for choice in choices]
         
-        elif field_type == AirTableFieldType.MULTI_SELECT:
+        elif field_type == AirtableFieldType.MULTI_SELECT:
             choices = kwargs.get("choices", [])
             if choices:
                 options["choices"] = [{"name": choice} for choice in choices]
         
-        elif field_type == AirTableFieldType.CURRENCY:
+        elif field_type == AirtableFieldType.CURRENCY:
             options.update({
                 "precision": kwargs.get("precision", 2),
                 "symbol": kwargs.get("symbol", "$")
             })
         
-        elif field_type == AirTableFieldType.PERCENT:
+        elif field_type == AirtableFieldType.PERCENT:
             options.update({
                 "precision": kwargs.get("precision", 1)
             })
         
-        elif field_type == AirTableFieldType.DURATION:
+        elif field_type == AirtableFieldType.DURATION:
             # Duration format options: h:mm, h:mm:ss, h:mm:ss.S, h:mm:ss.SS, h:mm:ss.SSS
             options.update({
                 "durationFormat": kwargs.get("duration_format", "h:mm")
             })
         
-        elif field_type == AirTableFieldType.RATING:
+        elif field_type == AirtableFieldType.RATING:
             # Rating options: max value (1-10), icon (star, heart, thumbs-up, flag, dot)
             options.update({
                 "max": kwargs.get("max", 5),
@@ -341,7 +341,7 @@ class FieldTypeResolver:
                 "color": kwargs.get("color", "yellowBright")
             })
         
-        elif field_type == AirTableFieldType.LINKED_RECORD:
+        elif field_type == AirtableFieldType.LINKED_RECORD:
             # Linked record requires the table ID to link to
             linked_table_id = kwargs.get("linked_table_id")
             if linked_table_id:
@@ -354,20 +354,20 @@ class FieldTypeResolver:
             if inverse_field:
                 options["inverseLinkFieldId"] = inverse_field
         
-        elif field_type == AirTableFieldType.USER:
+        elif field_type == AirtableFieldType.USER:
             # User/Collaborator field options
             options.update({
                 "shouldNotify": kwargs.get("should_notify", False)
             })
         
-        elif field_type == AirTableFieldType.BUTTON:
+        elif field_type == AirtableFieldType.BUTTON:
             # Button field options - typically read-only, triggers actions
             label = kwargs.get("label", "Click")
             options.update({
                 "label": label
             })
         
-        elif field_type == AirTableFieldType.BARCODE:
+        elif field_type == AirtableFieldType.BARCODE:
             # Barcode field - no special options needed for creation
             pass
         
@@ -376,7 +376,7 @@ class FieldTypeResolver:
 
 def airtable_field(
     *,
-    field_type: Optional[AirTableFieldType] = None,
+    field_type: Optional[AirtableFieldType] = None,
     field_name: Optional[str] = None,
     read_only: bool = False,
     choices: Optional[list] = None,
@@ -386,11 +386,11 @@ def airtable_field(
     **field_kwargs
 ) -> Any:
     """
-    Streamlined AirTable field with smart defaults
+    Streamlined Airtable field with smart defaults
     
     Args:
-        field_type: Explicit AirTable field type (auto-detected if None)
-        field_name: AirTable field name (uses Python name if None) 
+        field_type: Explicit Airtable field type (auto-detected if None)
+        field_name: Airtable field name (uses Python name if None) 
         read_only: Whether field is read-only
         choices: For select/multi-select fields
         linked_table_id: For LINKED_RECORD fields, the ID of the table to link to
@@ -399,9 +399,9 @@ def airtable_field(
         **field_kwargs: Additional Pydantic Field() arguments
         
     Returns:
-        Pydantic Field with AirTable metadata
+        Pydantic Field with Airtable metadata
     """
-    # Build AirTable metadata
+    # Build Airtable metadata
     airtable_metadata = {}
     
     if field_type:

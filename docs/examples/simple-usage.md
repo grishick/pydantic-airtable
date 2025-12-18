@@ -1,6 +1,6 @@
 # Simple Usage Example
 
-A beginner-friendly example demonstrating core Pydantic AirTable features.
+A beginner-friendly example demonstrating core Pydantic Airtable features.
 
 ---
 
@@ -19,13 +19,13 @@ This example shows how to:
 
 ```python
 """
-Simple Usage Example for Pydantic AirTable
+Simple Usage Example for Pydantic Airtable
 """
 from pydantic_airtable import (
     airtable_model, 
     configure_from_env,
     airtable_field,
-    AirTableFieldType
+    AirtableFieldType
 )
 from pydantic import BaseModel
 from typing import Optional
@@ -43,7 +43,7 @@ class User(BaseModel):
     
     # Explicit override
     bio: Optional[str] = airtable_field(
-        field_type=AirTableFieldType.LONG_TEXT,
+        field_type=AirtableFieldType.LONG_TEXT,
         default=None
     )
 
@@ -131,7 +131,7 @@ The decorator:
 
 ### 3. Smart Detection
 
-| Field | Python Type | Detected AirTable Type |
+| Field | Python Type | Detected Airtable Type |
 |-------|-------------|------------------------|
 | `name` | `str` | SINGLE_LINE_TEXT |
 | `email` | `str` | EMAIL (name pattern) |
@@ -188,7 +188,7 @@ user.delete()
 ### Prerequisites
 
 1. Python 3.8+
-2. AirTable account with API access
+2. Airtable account with API access
 
 ### Setup
 
@@ -264,9 +264,9 @@ class Contact(BaseModel):
 ### With Custom Configuration
 
 ```python
-from pydantic_airtable import AirTableConfig
+from pydantic_airtable import AirtableConfig
 
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_xxx",
     base_id="appXXX"
 )

@@ -1,12 +1,12 @@
 # Configuration
 
-Learn how to configure Pydantic AirTable for different use cases and environments.
+Learn how to configure Pydantic Airtable for different use cases and environments.
 
 ---
 
 ## Configuration Methods
 
-Pydantic AirTable offers multiple ways to configure your connection:
+Pydantic Airtable offers multiple ways to configure your connection:
 
 1. **Environment Variables** - Best for production
 2. **`.env` Files** - Best for development
@@ -22,7 +22,7 @@ Pydantic AirTable offers multiple ways to configure your connection:
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `AIRTABLE_ACCESS_TOKEN` | Personal Access Token | `pat_abc123...` |
-| `AIRTABLE_BASE_ID` | AirTable Base ID | `appXXXXXXXXXXXX` |
+| `AIRTABLE_BASE_ID` | Airtable Base ID | `appXXXXXXXXXXXX` |
 
 ### Optional Variables
 
@@ -78,10 +78,10 @@ configure_from_env()
 For more control, create configuration objects directly:
 
 ```python
-from pydantic_airtable import AirTableConfig, set_global_config
+from pydantic_airtable import AirtableConfig, set_global_config
 
 # Create configuration
-config = AirTableConfig(
+config = AirtableConfig(
     access_token="pat_your_token",
     base_id="appYourBaseId",
     table_name="DefaultTable"  # Optional
@@ -131,10 +131,10 @@ class User(BaseModel):
 Pass a configuration object to the decorator:
 
 ```python
-from pydantic_airtable import airtable_model, AirTableConfig
+from pydantic_airtable import airtable_model, AirtableConfig
 from pydantic import BaseModel
 
-user_config = AirTableConfig(
+user_config = AirtableConfig(
     access_token="pat_user_token",
     base_id="app_user_base"
 )
@@ -152,17 +152,17 @@ class User(BaseModel):
 ### Different Bases per Model
 
 ```python
-from pydantic_airtable import airtable_model, AirTableConfig
+from pydantic_airtable import airtable_model, AirtableConfig
 from pydantic import BaseModel
 
 # CRM Base
-crm_config = AirTableConfig(
+crm_config = AirtableConfig(
     access_token="pat_your_token",
     base_id="appCRMBase"
 )
 
 # Inventory Base  
-inventory_config = AirTableConfig(
+inventory_config = AirtableConfig(
     access_token="pat_your_token",
     base_id="appInventoryBase"
 )
@@ -181,9 +181,9 @@ class Product(BaseModel):
 ### Switching Bases Dynamically
 
 ```python
-from pydantic_airtable import AirTableConfig
+from pydantic_airtable import AirtableConfig
 
-base_config = AirTableConfig(
+base_config = AirtableConfig(
     access_token="pat_your_token",
     base_id="appBaseOne"
 )
@@ -247,10 +247,10 @@ print(f"User model base: {config.base_id}")
 The library validates configuration on creation:
 
 ```python
-from pydantic_airtable import AirTableConfig, ConfigurationError
+from pydantic_airtable import AirtableConfig, ConfigurationError
 
 try:
-    config = AirTableConfig(
+    config = AirtableConfig(
         access_token="invalid_token",  # Doesn't start with 'pat_'
         base_id="appValidBase"
     )
@@ -275,22 +275,22 @@ except ConfigurationError as e:
 
 ```python
 import os
-from pydantic_airtable import AirTableConfig, set_global_config
+from pydantic_airtable import AirtableConfig, set_global_config
 
 environment = os.getenv("ENVIRONMENT", "development")
 
 if environment == "production":
-    config = AirTableConfig(
+    config = AirtableConfig(
         access_token=os.getenv("PROD_AIRTABLE_TOKEN"),
         base_id=os.getenv("PROD_AIRTABLE_BASE")
     )
 elif environment == "staging":
-    config = AirTableConfig(
+    config = AirtableConfig(
         access_token=os.getenv("STAGING_AIRTABLE_TOKEN"),
         base_id=os.getenv("STAGING_AIRTABLE_BASE")
     )
 else:
-    config = AirTableConfig(
+    config = AirtableConfig(
         access_token=os.getenv("DEV_AIRTABLE_TOKEN"),
         base_id=os.getenv("DEV_AIRTABLE_BASE")
     )

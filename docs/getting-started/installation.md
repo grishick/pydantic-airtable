@@ -1,6 +1,6 @@
 # Installation
 
-This guide covers installing Pydantic AirTable and setting up your development environment.
+This guide covers installing Pydantic Airtable and setting up your development environment.
 
 ---
 
@@ -8,7 +8,7 @@ This guide covers installing Pydantic AirTable and setting up your development e
 
 - **Python 3.8** or higher
 - **pip** package manager
-- An **AirTable account** with API access
+- An **Airtable account** with API access
 
 ---
 
@@ -54,12 +54,12 @@ pip install -r requirements-dev.txt
 
 ## Dependencies
 
-Pydantic AirTable automatically installs these dependencies:
+Pydantic Airtable automatically installs these dependencies:
 
 | Package | Version | Purpose |
 |---------|---------|---------|
 | `pydantic` | >=2.0.0 | Data validation and serialization |
-| `requests` | >=2.28.0 | HTTP client for AirTable API |
+| `requests` | >=2.28.0 | HTTP client for Airtable API |
 | `python-dateutil` | >=2.8.0 | Date/time parsing utilities |
 | `python-dotenv` | >=1.0.0 | Environment variable loading |
 
@@ -72,14 +72,14 @@ After installation, verify everything works:
 ```python
 # Test import
 import pydantic_airtable
-print(f"✅ Pydantic AirTable v{pydantic_airtable.__version__} installed successfully!")
+print(f"✅ Pydantic Airtable v{pydantic_airtable.__version__} installed successfully!")
 
 # Test core components
 from pydantic_airtable import (
     airtable_model,
     configure_from_env,
-    AirTableConfig,
-    AirTableFieldType
+    AirtableConfig,
+    AirtableFieldType
 )
 print("✅ All core components imported successfully!")
 ```
@@ -89,7 +89,7 @@ Run this as a script:
 ```bash
 python -c "
 import pydantic_airtable
-print(f'✅ Pydantic AirTable v{pydantic_airtable.__version__} installed!')
+print(f'✅ Pydantic Airtable v{pydantic_airtable.__version__} installed!')
 from pydantic_airtable import airtable_model, configure_from_env
 print('✅ All components ready!')
 "
@@ -97,11 +97,11 @@ print('✅ All components ready!')
 
 ---
 
-## Getting AirTable Credentials
+## Getting Airtable Credentials
 
 ### Personal Access Token (PAT)
 
-1. Go to [AirTable Developer Hub](https://airtable.com/developers/web/api/authentication)
+1. Go to [Airtable Developer Hub](https://airtable.com/developers/web/api/authentication)
 2. Click **"Create new token"**
 3. Give it a descriptive name (e.g., "pydantic-airtable-dev")
 4. Select the required scopes:
@@ -117,7 +117,7 @@ print('✅ All components ready!')
 
 ### Base ID
 
-Find your Base ID in the AirTable URL:
+Find your Base ID in the Airtable URL:
 
 ```
 https://airtable.com/appXXXXXXXXXXXXXX/...
@@ -125,7 +125,7 @@ https://airtable.com/appXXXXXXXXXXXXXX/...
                      This is your Base ID
 ```
 
-Or from the [AirTable API documentation](https://airtable.com/developers/web/api/introduction) for your base.
+Or from the [Airtable API documentation](https://airtable.com/developers/web/api/introduction) for your base.
 
 ---
 
@@ -197,7 +197,7 @@ Set variables directly in your shell:
     pip install pydantic>=2.0.0
     ```
 
-??? failure "ConfigurationError: AirTable Personal Access Token is required"
+??? failure "ConfigurationError: Airtable Personal Access Token is required"
     **Solution**: Set your environment variables or create a `.env` file:
     ```bash
     export AIRTABLE_ACCESS_TOKEN="pat_your_token"
@@ -211,8 +211,8 @@ Set variables directly in your shell:
 
 ## Next Steps
 
-Now that you have Pydantic AirTable installed:
+Now that you have Pydantic Airtable installed:
 
-1. **[Quick Start](quickstart.md)** - Create your first model and interact with AirTable
+1. **[Quick Start](quickstart.md)** - Create your first model and interact with Airtable
 2. **[Configuration](configuration.md)** - Learn about all configuration options
 3. **[Examples](../examples/index.md)** - See real-world usage examples

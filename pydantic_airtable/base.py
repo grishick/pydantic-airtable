@@ -1,5 +1,5 @@
 """
-Base AirTable model that integrates with Pydantic
+Base Airtable model that integrates with Pydantic
 """
 
 import os
@@ -7,13 +7,13 @@ from typing import Any, Dict, List, Optional, ClassVar
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
-from .client import AirTableClient
-from .fields import AirTableField, TypeMapper, AirTableFieldType
+from .client import AirtableClient
+from .fields import AirtableField, TypeMapper, AirtableFieldType
 from .exceptions import ConfigurationError
 
 
-class AirTableConfig:
-    """Configuration for AirTable connection"""
+class AirtableConfig:
+    """Configuration for Airtable connection"""
 
     def __init__(
         self,
@@ -27,7 +27,7 @@ class AirTableConfig:
             import warnings
             warnings.warn(
                 "The 'api_key' parameter is deprecated. Use 'access_token' instead. "
-                "API keys are deprecated by AirTable in favor of Personal Access Tokens (PATs). "
+                "API keys are deprecated by Airtable in favor of Personal Access Tokens (PATs). "
                 "See: https://airtable.com/developers/web/api/authentication",
                 DeprecationWarning,
                 stacklevel=2
@@ -48,13 +48,13 @@ class AirTableConfig:
 
         if not self.access_token:
             raise ConfigurationError(
-                "AirTable Personal Access Token not provided. Set AIRTABLE_ACCESS_TOKEN "
+                "Airtable Personal Access Token not provided. Set AIRTABLE_ACCESS_TOKEN "
                 "environment variable or pass access_token parameter. "
                 "Get your PAT from: https://airtable.com/developers/web/api/authentication"
             )
         if not self.base_id:
             raise ConfigurationError(
-                "AirTable Base ID not provided. Set AIRTABLE_BASE_ID "
+                "Airtable Base ID not provided. Set AIRTABLE_BASE_ID "
                 "environment variable or pass base_id parameter."
             )
 
@@ -70,12 +70,12 @@ class AirTableConfig:
             )
 
 
-class AirTableModelMeta(type(BaseModel)):
-    """Metaclass for AirTable models to handle configuration"""
+class AirtableModelMeta(type(BaseModel)):
+    """Metaclass for Airtable models to handle configuration"""
 
     def __new__(cls, name, bases, namespace, **kwargs):
         # Get configuration from class attributes
-        config = namespace.get('AirTableConfig')
+        config = namespace.get('AirtableConfig')
         if config and hasattr(config, 'table_name') and not config.table_name:
             # Auto-generate table name from class name if not provided
             config.table_name = name
@@ -83,10 +83,10 @@ class AirTableModelMeta(type(BaseModel)):
         return super().__new__(cls, name, bases, namespace, **kwargs)
 
 
-class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
+class AirtableModel(BaseModel, metaclass=AirtableModelMeta):
     """
-    Base model for AirTable records that integrates Pydantic validation
-    with AirTable CRUD operations.
+    Base model for Airtable records that integrates Pydantic validation
+    with Airtable CRUD operations.
     """
 
     # Use extra='ignore' to allow fields from Airtable that aren't defined in the model
@@ -99,42 +99,42 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         str_strip_whitespace=True,
     )
 
-    # AirTable-specific fields
-    id: Optional[str] = AirTableField(
+    # Airtable-specific fields
+    id: Optional[str] = AirtableField(
         default=None,
         airtable_field_name="id",
-        airtable_field_type=AirTableFieldType.AUTO_NUMBER,
+        airtable_field_type=AirtableFieldType.AUTO_NUMBER,
         read_only=True,
-        description="AirTable record ID"
+        description="Airtable record ID"
     )
 
-    created_time: Optional[datetime] = AirTableField(
+    created_time: Optional[datetime] = AirtableField(
         default=None,
         airtable_field_name="createdTime",
-        airtable_field_type=AirTableFieldType.CREATED_TIME,
+        airtable_field_type=AirtableFieldType.CREATED_TIME,
         read_only=True,
         description="When the record was created"
     )
 
     # Configuration (to be set in subclasses)
-    AirTableConfig: ClassVar[Optional[AirTableConfig]] = None
+    AirtableConfig: ClassVar[Optional[AirtableConfig]] = None
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._client: Optional[AirTableClient] = None
+        self._client: Optional[AirtableClient] = None
 
     @classmethod
-    def _get_client(cls) -> AirTableClient:
-        """Get or create AirTable client"""
-        if not cls.AirTableConfig:
+    def _get_client(cls) -> AirtableClient:
+        """Get or create Airtable client"""
+        if not cls.AirtableConfig:
             raise ConfigurationError(
-                f"AirTableConfig not set for {cls.__name__}"
+                f"AirtableConfig not set for {cls.__name__}"
             )
 
-        return AirTableClient(
-            access_token=cls.AirTableConfig.access_token,
-            base_id=cls.AirTableConfig.base_id,
-            table_name=cls.AirTableConfig.table_name or cls.__name__
+        return AirtableClient(
+            access_token=cls.AirtableConfig.access_token,
+            base_id=cls.AirtableConfig.base_id,
+            table_name=cls.AirtableConfig.table_name or cls.__name__
         )
     
     @classmethod
@@ -146,7 +146,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         access_token: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Create an AirTable table based on this Pydantic model
+        Create an Airtable table based on this Pydantic model
         
         Args:
             table_name: Optional table name (defaults to class name)
@@ -160,12 +160,12 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         from .table_manager import TableManager
         
         # Use provided values or fall back to class config
-        if not cls.AirTableConfig:
-            raise ConfigurationError(f"AirTableConfig not set for {cls.__name__}")
+        if not cls.AirtableConfig:
+            raise ConfigurationError(f"AirtableConfig not set for {cls.__name__}")
         
-        final_base_id = base_id or cls.AirTableConfig.base_id
-        final_access_token = access_token or cls.AirTableConfig.access_token
-        final_table_name = table_name or cls.AirTableConfig.table_name or cls.__name__
+        final_base_id = base_id or cls.AirtableConfig.base_id
+        final_access_token = access_token or cls.AirtableConfig.access_token
+        final_table_name = table_name or cls.AirtableConfig.table_name or cls.__name__
         
         if not final_base_id or not final_access_token:
             raise ConfigurationError("base_id and access_token are required")
@@ -178,8 +178,8 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         )
         
         # Update the class config with the table name if it was auto-generated
-        if not cls.AirTableConfig.table_name:
-            cls.AirTableConfig.table_name = final_table_name
+        if not cls.AirtableConfig.table_name:
+            cls.AirtableConfig.table_name = final_table_name
         
         return result
     
@@ -191,11 +191,11 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         update_field_types: bool = False
     ) -> Dict[str, Any]:
         """
-        Synchronize this Pydantic model with an existing AirTable table
+        Synchronize this Pydantic model with an existing Airtable table
         
         Args:
             table_id_or_name: Table to sync with (defaults to config table_name)
-            create_missing_fields: Whether to create fields missing in AirTable
+            create_missing_fields: Whether to create fields missing in Airtable
             update_field_types: Whether to update field types (use with caution)
             
         Returns:
@@ -203,12 +203,12 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         """
         from .table_manager import TableManager
         
-        if not cls.AirTableConfig:
-            raise ConfigurationError(f"AirTableConfig not set for {cls.__name__}")
+        if not cls.AirtableConfig:
+            raise ConfigurationError(f"AirtableConfig not set for {cls.__name__}")
         
-        table_target = table_id_or_name or cls.AirTableConfig.table_name or cls.__name__
+        table_target = table_id_or_name or cls.AirtableConfig.table_name or cls.__name__
         
-        table_manager = TableManager(cls.AirTableConfig.access_token, cls.AirTableConfig.base_id)
+        table_manager = TableManager(cls.AirtableConfig.access_token, cls.AirtableConfig.base_id)
         return table_manager.sync_pydantic_model_to_table(
             cls,
             table_target,
@@ -219,7 +219,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
     @classmethod
     def validate_table_schema(cls, table_id_or_name: Optional[str] = None) -> Dict[str, Any]:
         """
-        Validate that this Pydantic model matches an existing AirTable table
+        Validate that this Pydantic model matches an existing Airtable table
         
         Args:
             table_id_or_name: Table to validate against (defaults to config table_name)
@@ -229,17 +229,17 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         """
         from .table_manager import TableManager
         
-        if not cls.AirTableConfig:
-            raise ConfigurationError(f"AirTableConfig not set for {cls.__name__}")
+        if not cls.AirtableConfig:
+            raise ConfigurationError(f"AirtableConfig not set for {cls.__name__}")
         
-        table_target = table_id_or_name or cls.AirTableConfig.table_name or cls.__name__
+        table_target = table_id_or_name or cls.AirtableConfig.table_name or cls.__name__
         
-        table_manager = TableManager(cls.AirTableConfig.access_token, cls.AirTableConfig.base_id)
+        table_manager = TableManager(cls.AirtableConfig.access_token, cls.AirtableConfig.base_id)
         return table_manager.validate_pydantic_model_against_table(cls, table_target)
 
     @classmethod
     def _get_field_mappings(cls) -> Dict[str, Dict[str, Any]]:
-        """Get field mappings between Python and AirTable field names"""
+        """Get field mappings between Python and Airtable field names"""
         mappings = {}
 
         for field_name, field_info in cls.model_fields.items():
@@ -268,7 +268,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         return mappings
 
     def _to_airtable_fields(self, exclude_readonly: bool = True) -> Dict[str, Any]:
-        """Convert model instance to AirTable fields format"""
+        """Convert model instance to Airtable fields format"""
         field_mappings = self._get_field_mappings()
         airtable_fields = {}
 
@@ -292,11 +292,11 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         return airtable_fields
 
     @classmethod
-    def _from_airtable_record(cls, record_data: Dict[str, Any]) -> 'AirTableModel':
-        """Create model instance from AirTable record data"""
+    def _from_airtable_record(cls, record_data: Dict[str, Any]) -> 'AirtableModel':
+        """Create model instance from Airtable record data"""
         field_mappings = cls._get_field_mappings()
 
-        # Create reverse mapping (AirTable name -> Python name)
+        # Create reverse mapping (Airtable name -> Python name)
         reverse_mappings = {
             mapping['airtable_name']: {
                 'python_name': field_name,
@@ -326,8 +326,8 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
 
     # CRUD Operations
 
-    def save(self) -> 'AirTableModel':
-        """Save the record to AirTable (create or update)"""
+    def save(self) -> 'AirtableModel':
+        """Save the record to Airtable (create or update)"""
         client = self._get_client()
         airtable_fields = self._to_airtable_fields()
 
@@ -341,13 +341,13 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         # Update instance with response data
         updated_instance = self._from_airtable_record(response)
         for field_name, value in updated_instance.__dict__.items():
-            if not field_name.startswith('_') and field_name != 'AirTableConfig':
+            if not field_name.startswith('_') and field_name != 'AirtableConfig':
                 setattr(self, field_name, value)
 
         return self
 
     def delete(self) -> bool:
-        """Delete the record from AirTable"""
+        """Delete the record from Airtable"""
         if not self.id:
             raise ValueError("Cannot delete record without ID")
 
@@ -357,20 +357,20 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         return True
 
     @classmethod
-    def get(cls, record_id: str) -> 'AirTableModel':
+    def get(cls, record_id: str) -> 'AirtableModel':
         """Get a record by ID"""
         client = cls._get_client()
         record_data = client.get_record(record_id)
         return cls._from_airtable_record(record_data)
 
     @classmethod
-    def create(cls, **kwargs) -> 'AirTableModel':
+    def create(cls, **kwargs) -> 'AirtableModel':
         """Create and save a new record"""
         instance = cls(**kwargs)
         return instance.save()
 
     @classmethod
-    def all(cls, **kwargs) -> List['AirTableModel']:
+    def all(cls, **kwargs) -> List['AirtableModel']:
         """Get all records"""
         return cls.filter(**kwargs)
 
@@ -381,12 +381,12 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         max_records: Optional[int] = None,
         sort: Optional[List[Dict[str, str]]] = None,
         **kwargs
-    ) -> List['AirTableModel']:
+    ) -> List['AirtableModel']:
         """
         Filter records based on criteria
 
         Args:
-            filter_by_formula: AirTable formula for filtering
+            filter_by_formula: Airtable formula for filtering
             max_records: Maximum number of records to return
             sort: List of sort specifications
             **kwargs: Additional parameters passed to client.list_records
@@ -403,7 +403,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         return [cls._from_airtable_record(record) for record in records_data]
 
     @classmethod
-    def find_by(cls, **field_filters) -> List['AirTableModel']:
+    def find_by(cls, **field_filters) -> List['AirtableModel']:
         """
         Find records by field values
 
@@ -413,7 +413,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         if not field_filters:
             return cls.all()
 
-        # Build AirTable formula
+        # Build Airtable formula
         conditions = []
         field_mappings = cls._get_field_mappings()
 
@@ -427,7 +427,7 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
             if isinstance(value, str):
                 condition = f"{{{{field_name}}}} = '{value}'"
             elif isinstance(value, bool):
-                # AirTable checkbox fields need special handling
+                # Airtable checkbox fields need special handling
                 if value:
                     condition = "{{field_name}}"  # True condition
                 else:
@@ -445,17 +445,17 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
         return cls.filter(filter_by_formula=formula)
 
     @classmethod
-    def first(cls, **field_filters) -> Optional['AirTableModel']:
+    def first(cls, **field_filters) -> Optional['AirtableModel']:
         """Get the first record matching the criteria"""
         results = cls.find_by(**field_filters)
         return results[0] if results else None
 
     @classmethod
-    def bulk_create(cls, records_data: List[Dict[str, Any]]) -> List['AirTableModel']:
+    def bulk_create(cls, records_data: List[Dict[str, Any]]) -> List['AirtableModel']:
         """Create multiple records in batch"""
         client = cls._get_client()
 
-        # Convert to AirTable format
+        # Convert to Airtable format
         airtable_records = []
         for data in records_data:
             instance = cls(**data)
@@ -467,8 +467,8 @@ class AirTableModel(BaseModel, metaclass=AirTableModelMeta):
 
         return [cls._from_airtable_record(record) for record in created_records]
 
-    def refresh(self) -> 'AirTableModel':
-        """Refresh the instance from AirTable"""
+    def refresh(self) -> 'AirtableModel':
+        """Refresh the instance from Airtable"""
         if not self.id:
             raise ValueError("Cannot refresh record without ID")
 

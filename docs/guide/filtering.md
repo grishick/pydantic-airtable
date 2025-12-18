@@ -1,6 +1,6 @@
 # Filtering & Queries
 
-Learn how to efficiently query and filter records in AirTable.
+Learn how to efficiently query and filter records in Airtable.
 
 ---
 
@@ -85,7 +85,7 @@ results = User.find_by(
 
 ## Advanced Filtering with Formulas
 
-For complex queries, use AirTable formulas:
+For complex queries, use Airtable formulas:
 
 ### Using filterByFormula
 
@@ -419,7 +419,7 @@ def user_exists(email: str) -> bool:
 
 ---
 
-## AirTable Formula Reference
+## Airtable Formula Reference
 
 Common functions for `filterByFormula`:
 

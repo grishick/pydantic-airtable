@@ -7,7 +7,7 @@ API documentation for exception classes.
 ## Exception Hierarchy
 
 ```
-AirTableError (base)
+AirtableError (base)
 ├── ConfigurationError
 ├── APIError
 ├── RecordNotFoundError
@@ -16,13 +16,13 @@ AirTableError (base)
 
 ---
 
-## AirTableError
+## AirtableError
 
 Base exception for all library errors.
 
 ```python
-class AirTableError(Exception):
-    """Base exception for AirTable errors"""
+class AirtableError(Exception):
+    """Base exception for Airtable errors"""
     pass
 ```
 
@@ -31,12 +31,12 @@ class AirTableError(Exception):
 Catch all library exceptions:
 
 ```python
-from pydantic_airtable import AirTableError
+from pydantic_airtable import AirtableError
 
 try:
     user = User.create(name="Alice")
-except AirTableError as e:
-    print(f"AirTable error: {e}")
+except AirtableError as e:
+    print(f"Airtable error: {e}")
 ```
 
 ---
@@ -46,7 +46,7 @@ except AirTableError as e:
 Raised for configuration-related issues.
 
 ```python
-class ConfigurationError(AirTableError):
+class ConfigurationError(AirtableError):
     """Configuration error"""
     pass
 ```
@@ -69,19 +69,19 @@ try:
 except ConfigurationError as e:
     print(f"Configuration error: {e}")
     # Example messages:
-    # - "AirTable Personal Access Token is required"
-    # - "AirTable Base ID is required"
+    # - "Airtable Personal Access Token is required"
+    # - "Airtable Base ID is required"
     # - "Invalid access token format. Personal Access Tokens must start with 'pat_'"
 ```
 
 ### Handling
 
 ```python
-from pydantic_airtable import ConfigurationError, AirTableConfig
+from pydantic_airtable import ConfigurationError, AirtableConfig
 
 def get_config():
     try:
-        return AirTableConfig(
+        return AirtableConfig(
             access_token=os.getenv("AIRTABLE_ACCESS_TOKEN", ""),
             base_id=os.getenv("AIRTABLE_BASE_ID", "")
         )
@@ -95,11 +95,11 @@ def get_config():
 
 ## APIError
 
-Raised for AirTable API errors.
+Raised for Airtable API errors.
 
 ```python
-class APIError(AirTableError):
-    """AirTable API error"""
+class APIError(AirtableError):
+    """Airtable API error"""
     pass
 ```
 
@@ -160,7 +160,7 @@ def create_with_retry(data, max_retries=3):
 Raised when a record doesn't exist.
 
 ```python
-class RecordNotFoundError(AirTableError):
+class RecordNotFoundError(AirtableError):
     """Record not found error"""
     pass
 ```
@@ -259,7 +259,7 @@ except ValidationError as e:
 
 ```python
 from pydantic_airtable import (
-    AirTableError,
+    AirtableError,
     APIError,
     ConfigurationError,
     RecordNotFoundError
@@ -289,13 +289,13 @@ def safe_create_user(data: dict):
         return None
     
     except APIError as e:
-        # AirTable API error
-        print(f"AirTable API error: {e}")
+        # Airtable API error
+        print(f"Airtable API error: {e}")
         return None
     
-    except AirTableError as e:
+    except AirtableError as e:
         # Catch-all for library errors
-        print(f"AirTable error: {e}")
+        print(f"Airtable error: {e}")
         return None
 ```
 
@@ -384,7 +384,7 @@ def create_user(name: str, email: str) -> User:
 ```python
 # Import all exceptions
 from pydantic_airtable import (
-    AirTableError,
+    AirtableError,
     APIError,
     ConfigurationError,
     RecordNotFoundError,
