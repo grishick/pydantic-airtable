@@ -9,7 +9,7 @@ A beginner-friendly example demonstrating core Pydantic Airtable features.
 This example shows how to:
 
 - Configure the library from environment variables
-- Define models with smart field detection
+- Define models with field type detection
 - Perform CRUD operations
 - Use filtering and queries
 
@@ -35,7 +35,7 @@ configure_from_env()
 
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    # Smart field detection
+    # Auto field detection
     name: str                    # → SINGLE_LINE_TEXT
     email: str                   # → EMAIL (detected from name)
     age: Optional[int] = None    # → NUMBER
@@ -129,7 +129,7 @@ The decorator:
 - Adds `id` and `created_time` fields automatically
 - Enables CRUD methods
 
-### 3. Smart Detection
+### 3. Field Type Detection
 
 | Field | Python Type | Detected Airtable Type |
 |-------|-------------|------------------------|

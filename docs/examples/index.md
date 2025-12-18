@@ -8,7 +8,7 @@ Explore practical examples demonstrating Pydantic Airtable capabilities.
 
 | Example | Difficulty | Description |
 |---------|------------|-------------|
-| [Simple Usage](simple-usage.md) | Beginner | Basic CRUD operations and smart field detection |
+| [Simple Usage](simple-usage.md) | Beginner | Basic CRUD operations and field type detection |
 | [Table Management](table-management.md) | Intermediate | Schema creation and synchronization |
 | [Agentic Researcher](agentic-researcher.md) | Advanced | AI-powered research assistant with OpenAI |
 
@@ -21,7 +21,7 @@ Explore practical examples demonstrating Pydantic Airtable capabilities.
 Start with the [Simple Usage](simple-usage.md) example to learn:
 
 - How to define models with the `@airtable_model` decorator
-- Smart field type detection
+- Field type detection
 - Basic CRUD operations
 - Environment-based configuration
 
@@ -113,7 +113,7 @@ task.save()
 task.delete()
 ```
 
-### With Smart Detection
+### With Field Type Detection
 
 ```python
 @airtable_model(table_name="Contacts")

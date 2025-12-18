@@ -5,7 +5,7 @@ An AI-powered research assistant that uses OpenAI's API to conduct comprehensive
 on any topic, storing all data in Airtable using the streamlined pydantic-airtable API.
 
 Features:
-- Smart field detection for all research models
+- Field detection for all research models
 - Automatic table creation and management
 - Real web search integration using DuckDuckGo
 - Comprehensive prompt management via YAML files
@@ -87,7 +87,7 @@ class StepType(str, Enum):
 
 @airtable_model(table_name="Research_Tasks")
 class ResearchTask(BaseModel):
-    """Main research task with smart field detection"""
+    """Main research task with field type detection"""
     
     title: str                              # -> SINGLE_LINE_TEXT
     description: str                        # -> LONG_TEXT (detected)

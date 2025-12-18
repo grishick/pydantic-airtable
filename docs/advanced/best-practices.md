@@ -65,7 +65,7 @@ config = AirtableConfig(
 ### Use Descriptive Names
 
 ```python
-# ✅ Good: Descriptive field names enable smart detection
+# ✅ Good: Descriptive field names enable field type detection
 class Contact(BaseModel):
     full_name: str           # Clear purpose
     email_address: str       # Detected as EMAIL

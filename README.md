@@ -34,7 +34,7 @@ alice = User.find_by(name="Alice")
 
 | Feature | Description | Example |
 |---------|-------------|---------|
-| **Smart Detection** | Auto-detects field types from naming patterns | `email: str` → EMAIL field |
+| **Type Detection** | Auto-detects field types from naming patterns | `email: str` → EMAIL field |
 | **Zero Config** | Works with just environment variables | `AIRTABLE_ACCESS_TOKEN=pat_...` |
 | **Table Creation** | Creates tables from model definitions | `User.create_table()` |
 | **Intuitive CRUD** | Simple, predictable methods | `User.create()`, `User.all()`, `user.save()` |
@@ -74,7 +74,7 @@ configure_from_env()
 
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    # Smart field detection - no manual types needed!
+    # Field type detection
     name: str                    # → SINGLE_LINE_TEXT
     email: str                   # → EMAIL (detected from field name)
     phone: str                   # → PHONE (detected from field name)  
@@ -122,7 +122,7 @@ users_data = [
 User.bulk_create(users_data)
 ```
 
-## 🧠 Smart Field Detection
+## 🧠 Field Type Detection
 
 The system automatically detects Airtable field types:
 
@@ -256,7 +256,7 @@ urgent_tasks = Task.find_by(priority=Priority.HIGH, completed=False)
 ```python
 @airtable_model(table_name="Customers")
 class Customer(BaseModel):
-    # Contact info (smart detection)
+    # Contact info (auto detection)
     name: str                           # → SINGLE_LINE_TEXT
     email: str                          # → EMAIL  
     phone: str                          # → PHONE

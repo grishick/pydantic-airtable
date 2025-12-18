@@ -7,14 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2024-12-10
+## [1.0.0] - 2025-12-18
+
+### Initial Release
+
+First public release of Pydantic Airtable — the most intuitive way to integrate Pydantic models with Airtable.
 
 ### Added
 
 - **Core Features**
   - `@airtable_model` decorator for Pydantic model integration
   - `AirtableModel` base class with full CRUD operations
-  - Smart field type detection from Python types and field names
   - `airtable_field()` function for field customization
 
 - **CRUD Operations**
@@ -41,11 +44,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Field Types**
   - All standard Airtable field types
-  - Smart detection for email, phone, URL, etc.
+  - Automatic field type detection for email, phone, URL, etc.
   - Enum support for SELECT fields
   - List support for MULTI_SELECT fields
   - Custom field name mapping
   - Read-only field support
+
+- ** Field Type Detection**
+
+  | Pattern | Detected Type |
+  |---------|---------------|
+  | email, mail, contact | EMAIL |
+  | phone, tel, mobile, cell | PHONE |
+  | url, link, website | URL |
+  | description, note, bio | LONG_TEXT |
+  | price, cost, amount | CURRENCY |
+  | percent, rate, ratio | PERCENT |
+
+- **Examples**
+  - Simple Usage — Basic CRUD operations
+  - Table Management — Schema creation and evolution
+  - Agentic Researcher — AI-powered research assistant with OpenAI integration
 
 - **Documentation**
   - Comprehensive MkDocs documentation
@@ -53,89 +72,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - User guide
   - Examples
 
-### Field Detection Patterns
-
-| Pattern | Detected Type |
-|---------|---------------|
-| email, mail, contact | EMAIL |
-| phone, tel, mobile, cell | PHONE |
-| url, link, website | URL |
-| description, note, bio | LONG_TEXT |
-| price, cost, amount | CURRENCY |
-| percent, rate, ratio | PERCENT |
-
----
-
-## [0.9.0] - 2024-11-15
-
-### Added
-
-- Initial beta release
-- Basic model decorator
-- Simple CRUD operations
-- Environment configuration
-
-### Known Issues
-
-- Limited field type support
-- No batch operations
-- No table management
-
 ---
 
 ## Upcoming
 
-### Planned for 1.1.0
+### Planned for Future Releases
 
 - [ ] Async support
-- [ ] Linked records
-- [ ] Attachment handling
-- [ ] Webhook support
+- [ ] Linked records handling
+- [ ] Attachment field support
+- [ ] Webhook integration
 - [ ] Rate limit handling improvements
-
-### Planned for 1.2.0
-
 - [ ] Record versioning
 - [ ] Soft delete support
-- [ ] Audit logging
 - [ ] Cache layer
-
----
-
-## Migration Guides
-
-### 0.9.x to 1.0.0
-
-**Breaking Changes:**
-
-1. **Decorator syntax changed**
-   ```python
-   # Old (0.9.x)
-   @airtable_model("Users")
-   class User(BaseModel): ...
-   
-   # New (1.0.0)
-   @airtable_model(table_name="Users")
-   class User(BaseModel): ...
-   ```
-
-2. **Configuration function renamed**
-   ```python
-   # Old (0.9.x)
-   configure(token="...", base_id="...")
-   
-   # New (1.0.0)
-   configure_from_env(access_token="...", base_id="...")
-   ```
-
-3. **Field helper renamed**
-   ```python
-   # Old (0.9.x)
-   AirtableField(type=...)
-   
-   # New (1.0.0)
-   airtable_field(field_type=...)
-   ```
 
 ---
 
@@ -143,5 +93,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Date | Status |
 |---------|------|--------|
-| 1.0.0 | 2024-12-10 | Current |
-| 0.9.0 | 2024-11-15 | Beta |
+| 1.0.0 | 2025-12-18 | Initial Release |

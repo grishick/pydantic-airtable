@@ -16,7 +16,7 @@ class User(BaseModel):
 ```
 
 **What you'll learn:**
-- Smart field type detection
+- Field type detection
 - Automatic table creation
 - Basic CRUD operations
 - Environment-based configuration

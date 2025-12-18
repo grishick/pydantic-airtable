@@ -60,7 +60,7 @@ pip install -r requirements.txt
 ## 🔍 **Version Compatibility**
 
 ### **OpenAI Library**
-- **Latest Version**: 2.8.1 (November 2024)
+- **Version**: 2.8.1+
 - **Key Features**:
   - Enhanced error handling
   - Improved timeout management

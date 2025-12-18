@@ -185,7 +185,7 @@ Each record gets a unique Airtable ID (starting with `rec`) that you can use to 
 
 ---
 
-## Smart Field Detection in Action
+## Field Type Detection in Action
 
 Notice how we didn't specify any Airtable field types? The library automatically detected them:
 
@@ -266,6 +266,6 @@ except ConfigurationError as e:
 Now that you've created your first model:
 
 1. **[Configuration](configuration.md)** - Learn all configuration options
-2. **[Field Types](../guide/field-types.md)** - Understand smart field detection
+2. **[Field Types](../guide/field-types.md)** - Understand field type detection
 3. **[CRUD Operations](../guide/crud-operations.md)** - Deep dive into all operations
 4. **[Examples](../examples/index.md)** - See more complex examples

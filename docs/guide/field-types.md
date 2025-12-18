@@ -1,10 +1,10 @@
 # Field Types
 
-Complete guide to Airtable field types and smart detection.
+Complete guide to Airtable fields and field type detection.
 
 ---
 
-## Smart Detection Overview
+## Field Type Detection Overview
 
 Pydantic Airtable automatically detects the appropriate Airtable field type based on:
 
@@ -20,7 +20,7 @@ When determining field type, the library checks in this order:
 
 1. **Explicit type** - `airtable_field(field_type=...)` always wins
 2. **Field metadata** - Existing type in field's `json_schema_extra`
-3. **Field name patterns** - Smart detection from naming
+3. **Field name patterns** - Field type detection from naming
 4. **Python type** - Default mapping from type annotation
 
 ---

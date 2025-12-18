@@ -1,5 +1,5 @@
 """
-Streamlined field type system with smart detection and minimal boilerplate
+Streamlined field type system with field type detection and minimal boilerplate
 """
 
 import re
@@ -15,7 +15,7 @@ from .fields import AirtableFieldType
 class FieldTypeResolver:
     """
     Unified field type detection and conversion
-    Eliminates duplication and provides smart defaults
+    Eliminates duplication and provides defaults
     """
     
     # Core type mappings
@@ -30,7 +30,7 @@ class FieldTypeResolver:
         list: AirtableFieldType.MULTI_SELECT,
     }
     
-    # Field name patterns for smart detection
+    # Field name patterns for field type detection
     # Using anchors and boundaries to avoid false substring matches
     # Patterns use: ^ (start), $ (end), _ (word separator) to be more precise
     
@@ -139,7 +139,7 @@ class FieldTypeResolver:
         Priority:
         1. Explicit type specification
         2. Field info metadata
-        3. Smart detection from field name
+        3. Field type detection from field name
         4. Python type mapping
         5. Default fallback
         
@@ -162,11 +162,11 @@ class FieldTypeResolver:
             if isinstance(extra, dict) and 'airtable_field_type' in extra:
                 return extra['airtable_field_type']
         
-        # 3. Smart detection from field name (for string types)
+        # 3. Type detection from field name (for string types)
         if cls._is_string_type(python_type):
-            smart_type = cls._detect_from_field_name(field_name)
-            if smart_type:
-                return smart_type
+            auto_type = cls._detect_from_field_name(field_name)
+            if auto_type:
+                return auto_type
         
         # 4. Python type mapping
         base_type = cls._extract_base_type(python_type)
@@ -227,7 +227,7 @@ class FieldTypeResolver:
     @classmethod
     def _detect_from_field_name(cls, field_name: str) -> Optional[AirtableFieldType]:
         """
-        Smart field type detection based on field name patterns
+        Field type detection based on field name patterns
         
         Args:
             field_name: Field name to analyze
@@ -386,7 +386,7 @@ def airtable_field(
     **field_kwargs
 ) -> Any:
     """
-    Streamlined Airtable field with smart defaults
+    Streamlined Airtable field with defaults
     
     Args:
         field_type: Explicit Airtable field type (auto-detected if None)

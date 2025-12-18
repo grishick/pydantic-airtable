@@ -38,7 +38,7 @@ alice = User.find_by(name="Alice")
 
 <div class="grid cards" markdown>
 
--   :brain: **Smart Detection**
+-   :brain: **Type Detection**
 
     ---
 
@@ -143,7 +143,7 @@ user.save()
 
 ---
 
-## 🧠 Smart Field Detection
+## 🧠 Field Type Detection
 
 The library automatically detects Airtable field types based on your field names:
 
@@ -166,7 +166,7 @@ The library automatically detects Airtable field types based on your field names
 
 - **Type Safety**: Full Pydantic validation with Airtable persistence
 - **Intuitive API**: Works exactly like you'd expect
-- **Smart Defaults**: Minimal configuration required
+- **Field Type Defaults**: Reduces schema guessing
 - **Production Ready**: Error handling, retries, and batch operations
 - **Well Documented**: Comprehensive guides and examples
 

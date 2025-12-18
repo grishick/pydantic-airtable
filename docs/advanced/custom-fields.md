@@ -6,7 +6,7 @@ Learn how to override automatic field detection and configure custom field behav
 
 ## Overview
 
-While Pydantic Airtable provides smart field detection, you may need to:
+While Pydantic Airtable provides field type detection, you may need to:
 
 - Override detected types
 - Use custom field names in Airtable
@@ -358,7 +358,7 @@ class Priority(str, Enum):
 
 @airtable_model(table_name="Tasks")
 class Task(BaseModel):
-    # Standard fields with smart detection
+    # Standard fields with type detection
     title: str
     description: Optional[str] = None  # → LONG_TEXT (detected)
     

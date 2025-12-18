@@ -209,7 +209,7 @@ class Product(BaseModel):
 
 ## FieldTypeResolver
 
-Internal class for smart field type detection.
+Internal class for field type detection.
 
 ```python
 class FieldTypeResolver:
@@ -227,7 +227,7 @@ class FieldTypeResolver:
 
 1. Explicit type specification
 2. Field info metadata
-3. Smart detection from field name
+3. Field type detection from field name
 4. Python type mapping
 5. Default fallback (`SINGLE_LINE_TEXT`)
 

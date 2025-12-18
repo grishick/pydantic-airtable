@@ -1,5 +1,5 @@
 """
-Streamlined model system with decorators and smart defaults
+Streamlined model system with decorators and defaults
 """
 
 from typing import Any, Dict, List, Optional, Type, ClassVar, get_type_hints

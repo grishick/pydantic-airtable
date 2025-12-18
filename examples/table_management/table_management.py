@@ -6,7 +6,7 @@ directly from Pydantic models, and manage table schemas using the
 streamlined pydantic-airtable API.
 
 Features demonstrated:
-- Smart field type detection
+- Field type detection
 - Automatic table creation from models
 - LINKED_RECORD fields for relating tables (Tasks -> Projects)
 - CRUD operations with complex models
@@ -64,7 +64,7 @@ def get_projects_table_id() -> Optional[str]:
     return _projects_table_id
 
 
-# Example 1: Simple Task Model with Smart Field Detection and Project Link
+# Example 1: Simple Task Model with Field Type Detection and Project Link
 @airtable_model(table_name="Tasks")
 class Task(BaseModel):
     """Task model with automatic field type detection and project link"""
@@ -94,10 +94,10 @@ class Task(BaseModel):
     )
 
 
-# Example 2: User Model with Smart Email/Phone Detection
+# Example 2: User Model with Field Type Detection
 @airtable_model(table_name="Users")
 class User(BaseModel):
-    """User model demonstrating smart field detection"""
+    """User model demonstrating field type detection"""
     
     name: str                    # -> SINGLE_LINE_TEXT
     email: str                   # -> EMAIL (detected from field name!)
@@ -672,7 +672,7 @@ def main():
     print("=" * 60)
     
     print("\nThis example demonstrates:")
-    print("✨ Smart field type detection")
+    print("✨ Field type detection")
     print("🏗️  Automatic table creation from models") 
     print("🔗 LINKED_RECORD fields for relating tables (Tasks → Projects)")
     print("📝 CRUD operations with complex models")

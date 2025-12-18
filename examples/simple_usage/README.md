@@ -47,7 +47,7 @@ Just **8 lines of code** to get a fully functional Airtable integration!
 ## 📋 What the Example Demonstrates
 
 1. **Environment-based configuration** from `.env` files
-2. **Smart field detection** - no manual type specification needed
+2. **Field type detection** - no manual type specification needed
 3. **Automatic table creation** if the table doesn't exist
 4. **Clean CRUD operations** with intuitive methods
 5. **Simple filtering** with `find_by()` and `first()`
@@ -68,7 +68,7 @@ class User(BaseModel):
     )
 ```
 
-## 🧠 Smart Field Detection
+## 🧠 Field Type Detection
 
 The system automatically detects Airtable field types:
 
@@ -86,7 +86,7 @@ The system automatically detects Airtable field types:
 
 ## 🛠️ Automatic Table Management
 
-The example includes smart table management:
+The example includes table management:
 
 1. **Table Detection**: Automatically checks if the "Users" table exists
 2. **Interactive Creation**: Creates tables from model definitions if needed
@@ -110,7 +110,7 @@ This eliminates the need to manually create tables in Airtable before running th
 
 ## 💡 Key Learning Points
 
-- **Smart Type Mapping**: Python types automatically map to Airtable field types
+- **Field Type Mapping**: Python types automatically map to Airtable field types
 - **Environment Configuration**: Simple setup through `.env` files
 - **Automatic Table Creation**: The script can create missing tables from Pydantic models
 - **Clean CRUD Operations**: Intuitive methods that work as expected
@@ -215,7 +215,7 @@ After running this example, try these advanced examples:
 This simple example shows how pydantic-airtable makes Airtable integration:
 
 - **Intuitive**: Just like working with regular Pydantic models
-- **Automatic**: Smart field detection reduces configuration
+- **Automatic**: Field type detection reduces configuration
 - **Flexible**: Easy to override defaults when needed  
 - **Reliable**: Built-in error handling and validation
 - **Secure**: Environment-based configuration keeps credentials safe

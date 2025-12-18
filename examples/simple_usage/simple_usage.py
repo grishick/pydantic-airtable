@@ -28,9 +28,9 @@ configure_from_env()
 # Define model with streamlined decorator
 @airtable_model(table_name="Users")  
 class User(BaseModel):
-    """User model with smart field detection"""
+    """User model with field type detection"""
     
-    # Smart field detection - no explicit field types needed!
+    # Field type detection - no explicit field types needed!
     name: str                    # -> SINGLE_LINE_TEXT (auto-detected)
     email: str                   # -> EMAIL (auto-detected from field name)  
     age: Optional[int] = None    # -> NUMBER (auto-detected)
@@ -147,7 +147,7 @@ def main():
         
         print("\n🎉 Example completed successfully!")
         print("\n💡 Key features demonstrated:")
-        print("   ✅ Smart field type detection")  
+        print("   ✅ Field type detection")  
         print("   ✅ Simple @airtable_model decorator")
         print("   ✅ Automatic table creation")
         print("   ✅ Clean CRUD operations")

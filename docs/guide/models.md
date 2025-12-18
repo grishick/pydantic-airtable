@@ -101,7 +101,7 @@ print(user.created_time) # 2024-01-15T10:30:00.000Z
 | `Enum` | SELECT | Single selection |
 | `List[str]` | MULTI_SELECT | Multiple selections |
 
-### Smart Detection
+### Field Type Detection
 
 Field names trigger automatic type detection:
 
@@ -344,7 +344,7 @@ See [CRUD Operations](crud-operations.md) for detailed usage.
 ## Best Practices
 
 !!! success "Do"
-    - Use descriptive field names for smart detection
+    - Use descriptive field names for type detection
     - Define enums for fixed choice fields
     - Use `Optional` for truly optional fields
     - Add Pydantic validators for data integrity
