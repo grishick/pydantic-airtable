@@ -13,7 +13,7 @@
 pip install -r requirements.txt
 
 # Or install individual packages
-pip install pydantic>=2.0.0 requests>=2.28.0 python-dateutil>=2.8.0 openai>=2.8.1
+pip install pydantic>=2.0.0 requests>=2.28.0 python-dateutil>=2.8.0 openai>=2.13.0
 ```
 
 ### **Development Installation**
@@ -60,12 +60,7 @@ pip install -r requirements.txt
 ## 🔍 **Version Compatibility**
 
 ### **OpenAI Library**
-- **Version**: 2.8.1+
-- **Key Features**:
-  - Enhanced error handling
-  - Improved timeout management
-  - Better retry logic
-  - Support for latest models (gpt-4o, gpt-4-turbo)
+- **Version**: 2.13.0+
 
 ### **Pydantic Library**
 - **Version**: 2.0+
@@ -127,7 +122,7 @@ pip install --upgrade pydantic>=2.0.0
 ### **Issue**: `ImportError: cannot import name 'OpenAI' from 'openai'`
 **Solution**: Update to latest OpenAI library
 ```bash
-pip install --upgrade openai>=2.8.1
+pip install --upgrade openai>=2.13.0
 ```
 
 ### **Issue**: `ConfigurationError: Airtable Personal Access Token not provided`

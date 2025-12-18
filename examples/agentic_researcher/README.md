@@ -18,7 +18,7 @@ This example demonstrates an AI-powered research assistant that combines OpenAI'
 ### Prerequisites
 ```bash
 # Install latest OpenAI library
-pip install openai>=2.8.1
+pip install openai>=2.13.0
 
 # Set environment variables
 export OPENAI_API_KEY="sk-your-openai-api-key"
@@ -53,7 +53,7 @@ python agentic_researcher.py --interactive  # Interactive mode
 - **Schema Management**: Handles field types, enums, and relationships automatically
 
 ### 3. AI Integration
-- **Latest OpenAI API**: Uses OpenAI 2.8.1 with GPT-4o model
+- **Latest OpenAI API**: Uses OpenAI SDK
 - **Structured Prompts**: Sophisticated prompt engineering for research tasks
 - **JSON Response Parsing**: Handles structured AI responses reliably
 - **Error Recovery**: Graceful fallbacks for API failures
@@ -391,7 +391,7 @@ The system provides comprehensive analytics:
 - **Query and reporting capabilities**
 
 ### OpenAI Integration
-- **Latest API patterns** (2.8.1)
+- **Latest API patterns**
 - **Structured response handling**
 - **Error recovery and retries**
 - **Cost-effective prompt design**

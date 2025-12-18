@@ -4,7 +4,7 @@
 -e ../../
 
 # OpenAI for AI-powered research
-openai>=2.8.1
+openai>=2.13.0
 
 # Environment variable management
 python-dotenv>=1.0.0

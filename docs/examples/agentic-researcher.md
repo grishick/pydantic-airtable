@@ -189,7 +189,7 @@ AI synthesizes all findings into:
 
 ```bash
 # Required
-pip install openai>=2.8.1
+pip install openai>=2.13.0
 
 # Environment variables
 export OPENAI_API_KEY="sk-your-key"
