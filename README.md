@@ -6,6 +6,7 @@
 [![Pydantic v2](https://img.shields.io/badge/pydantic-v2-green.svg)](https://pydantic.dev/)
 [![Airtable API](https://img.shields.io/badge/airtable-API%20v0-orange.svg)](https://airtable.com/developers/web/api/introduction)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Documentation Status](https://readthedocs.org/projects/pydantic-airtable/badge/?version=latest)](https://pydantic-airtable.readthedocs.io/en/latest/?badge=latest)
 
 ## ✨ Clean, Intuitive Airtable Integration
 
