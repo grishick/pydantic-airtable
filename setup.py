@@ -8,18 +8,17 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydantic-airtable", 
-    version="0.2.0",
-    author="Your Name",
-    author_email="your.email@example.com",
+    version="1.0.0",
+    author="Greg Solovyev",
+    author_email="fiddlestring@gmail.com",
     description="A Python library for managing Airtable data using Pydantic objects",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/pydantic-airtable",
+    url="https://github.com/grishick/pydantic-airtable",
     packages=find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
