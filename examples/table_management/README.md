@@ -52,35 +52,26 @@ This example demonstrates the schema management capabilities of the Pydantic Air
 
 ## 🏗️ Architecture Overview
 
-### BaseManager
+### AirtableManager
 ```python
-base_manager = BaseManager(access_token)
+from pydantic_airtable import AirtableManager, AirtableConfig
 
-# Create bases with multiple tables
-new_base = base_manager.create_base(
-    name="Project Management",
-    tables=[task_config, user_config]
-)
+config = AirtableConfig(access_token="pat_xxx", base_id="appXXX")
+manager = AirtableManager(config)
 
-# List and inspect bases
-bases = base_manager.list_bases()
-schema = base_manager.get_base_schema(base_id)
-```
+# Base operations
+bases = manager.list_bases()
+schema = manager.get_base_schema()
 
-### TableManager
-```python
-table_manager = TableManager(access_token, base_id)
-
-# Create from Pydantic models
-table_info = table_manager.create_table_from_pydantic(
+# Create tables from Pydantic models
+table_info = manager.create_table_from_model(
     MyModel, 
-    table_name="CustomName",
-    description="Generated from Pydantic model"
+    table_name="CustomName"
 )
 
 # Validate and sync schemas
-validation = table_manager.validate_pydantic_model_against_table(MyModel, "TableName")
-sync_result = table_manager.sync_pydantic_model_to_table(MyModel, "TableName")
+validation = manager.validate_model_against_table(MyModel, table_name="TableName")
+sync_result = manager.sync_model_to_table(MyModel, table_name="TableName")
 ```
 
 ### Model Integration
@@ -184,14 +175,19 @@ TaskV2.sync_table_schema(create_missing_fields=True)
 
 ### Multi-Environment Management
 ```python
+from pydantic_airtable import AirtableManager, AirtableConfig
+
+config = AirtableConfig(access_token="pat_xxx", base_id="appXXX")
+manager = AirtableManager(config)
+
 # Development
-dev_base = base_manager.create_base("MyApp-Dev", tables)
+dev_base = manager.create_base("MyApp-Dev", tables)
 
 # Staging  
-staging_base = base_manager.create_base("MyApp-Staging", tables)
+staging_base = manager.create_base("MyApp-Staging", tables)
 
 # Production
-prod_base = base_manager.create_base("MyApp-Prod", tables)
+prod_base = manager.create_base("MyApp-Prod", tables)
 ```
 
 ## 🔧 Troubleshooting

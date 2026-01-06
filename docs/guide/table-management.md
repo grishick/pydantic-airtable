@@ -421,6 +421,32 @@ setup_tables("production")   # Creates Users
 
 ---
 
+## API Limitations
+
+Some field types cannot be created through the Airtable API:
+
+!!! warning "AUTO_NUMBER Fields"
+    The Airtable public API does not support creating `AUTO_NUMBER` fields. To add an auto-number field:
+    
+    1. Define a `NUMBER` field in your model
+    2. Create the table using `create_table()`
+    3. Open the Airtable UI and convert the field to "Auto number"
+    
+    ```python
+    @airtable_model(table_name="Invoices")
+    class Invoice(BaseModel):
+        # This will be created as NUMBER - convert to Auto number in Airtable UI
+        invoice_number: int = airtable_field(
+            field_type=AirtableFieldType.NUMBER,
+            read_only=True,  # Mark as read-only since it will be auto-generated
+            default=0
+        )
+        customer_name: str
+        amount: float
+    ```
+
+---
+
 ## Best Practices
 
 !!! success "Do"

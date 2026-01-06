@@ -40,10 +40,8 @@ from .exceptions import (
 # Internal components (for advanced usage)
 from .http_client import BaseHTTPClient
 from .client import AirtableClient
-from .base_manager import BaseManager
-from .table_manager import TableManager
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 # Primary exports
 __all__ = [
@@ -76,8 +74,6 @@ __all__ = [
     # Internal components
     "BaseHTTPClient",
     "AirtableClient",
-    "BaseManager",
-    "TableManager",
 ]
 
 # Convenience aliases for most common use cases

@@ -8,7 +8,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="pydantic-airtable", 
-    version="1.0.0",
+    version="1.0.1",
     author="Greg Solovyev",
     author_email="fiddlestring@gmail.com",
     description="A Python library for managing Airtable data using Pydantic objects",

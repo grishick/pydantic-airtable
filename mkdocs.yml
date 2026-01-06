@@ -4,7 +4,7 @@ site_author: Pydantic Airtable Team
 site_url: https://pydantic-airtable.readthedocs.io/
 
 repo_name: pydantic-airtable
-repo_url: https://github.com/pydantic-airtable/pydantic-airtable
+repo_url: https://github.com/grishick/pydantic-airtable
 
 copyright: Copyright (c) 2025 Airtable https://airtable.com
 
@@ -85,7 +85,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/pydantic-airtable/pydantic-airtable
+      link: https://github.com/grishick/pydantic-airtable
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/pydantic-airtable/
   version:

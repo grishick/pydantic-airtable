@@ -14,10 +14,11 @@ from .fields import AirtableFieldType
 
 class AirtableManager:
     """
-    Unified manager for all Airtable operations
-    
-    Combines functionality from BaseManager and TableManager
-    into a single, cohesive interface
+    Unified manager for all Airtable operations including:
+    - Base operations (create, list, delete bases)
+    - Table operations (create, update, delete tables)
+    - Record operations (CRUD on records)
+    - Pydantic model integration (create tables from models, sync schemas)
     """
     
     def __init__(self, config: AirtableConfig):
@@ -268,6 +269,61 @@ class AirtableManager:
         
         return results
     
+    def validate_model_against_table(
+        self,
+        model_class: Type,
+        table_name: Optional[str] = None,
+        base_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Validate that a Pydantic model matches an existing Airtable table
+        
+        Args:
+            model_class: Pydantic model to validate
+            table_name: Table name to validate against (uses model name if None)
+            base_id: Base ID (uses config default if None)
+            
+        Returns:
+            Validation results with any mismatches
+        """
+        name = table_name or getattr(model_class, '__name__', 'UnnamedTable')
+        
+        table_schema = self.get_table_schema(name, base_id)
+        table_fields = {f["name"]: f for f in table_schema.get("fields", [])}
+        
+        model_fields = self._convert_model_to_fields(model_class)
+        model_field_names = {f["name"] for f in model_fields}
+        table_field_names = set(table_fields.keys())
+        
+        validation_results = {
+            "is_valid": True,
+            "missing_in_table": list(model_field_names - table_field_names),
+            "missing_in_model": list(table_field_names - model_field_names),
+            "type_mismatches": [],
+            "warnings": []
+        }
+        
+        # Check for type mismatches
+        for model_field in model_fields:
+            field_name = model_field["name"]
+            if field_name in table_fields:
+                table_field = table_fields[field_name]
+                if table_field["type"] != model_field["type"]:
+                    validation_results["type_mismatches"].append({
+                        "field_name": field_name,
+                        "model_type": model_field["type"],
+                        "table_type": table_field["type"]
+                    })
+        
+        # Set overall validity
+        validation_results["is_valid"] = (
+            len(validation_results["missing_in_table"]) == 0 and
+            len(validation_results["missing_in_model"]) == 0 and
+            len(validation_results["type_mismatches"]) == 0
+        )
+        
+        return validation_results
+    
     def _convert_model_to_fields(self, model_class: Type) -> List[Dict[str, Any]]:
         """
         Convert Pydantic model to Airtable field definitions
@@ -297,6 +353,13 @@ class AirtableManager:
             if not airtable_field_type:
                 python_type = type_hints.get(field_name, str)
                 airtable_field_type = self._python_type_to_airtable_type(python_type)
+            
+            # Handle AUTO_NUMBER - Airtable API doesn't support creating AUTO_NUMBER fields
+            if airtable_field_type == AirtableFieldType.AUTO_NUMBER:
+                print(f"⚠️  Warning: Field '{airtable_field_name}' is specified as AUTO_NUMBER, but Airtable API "
+                      f"does not support creating AUTO_NUMBER fields. Creating as NUMBER instead. "
+                      f"To convert to Auto number, use the Airtable UI after table creation.")
+                airtable_field_type = AirtableFieldType.NUMBER
             
             field_def = {
                 "name": airtable_field_name,

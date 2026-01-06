@@ -157,7 +157,8 @@ class AirtableModel(BaseModel, metaclass=AirtableModelMeta):
         Returns:
             Created table information
         """
-        from .table_manager import TableManager
+        from .manager import AirtableManager
+        from .config import AirtableConfig as ConfigClass
         
         # Use provided values or fall back to class config
         if not cls.AirtableConfig:
@@ -170,11 +171,12 @@ class AirtableModel(BaseModel, metaclass=AirtableModelMeta):
         if not final_base_id or not final_access_token:
             raise ConfigurationError("base_id and access_token are required")
         
-        table_manager = TableManager(final_access_token, final_base_id)
-        result = table_manager.create_table_from_pydantic(
+        config = ConfigClass(access_token=final_access_token, base_id=final_base_id)
+        manager = AirtableManager(config)
+        result = manager.create_table_from_model(
             cls, 
             table_name=final_table_name,
-            description=description
+            base_id=final_base_id
         )
         
         # Update the class config with the table name if it was auto-generated
@@ -201,17 +203,22 @@ class AirtableModel(BaseModel, metaclass=AirtableModelMeta):
         Returns:
             Sync results
         """
-        from .table_manager import TableManager
+        from .manager import AirtableManager
+        from .config import AirtableConfig as ConfigClass
         
         if not cls.AirtableConfig:
             raise ConfigurationError(f"AirtableConfig not set for {cls.__name__}")
         
         table_target = table_id_or_name or cls.AirtableConfig.table_name or cls.__name__
         
-        table_manager = TableManager(cls.AirtableConfig.access_token, cls.AirtableConfig.base_id)
-        return table_manager.sync_pydantic_model_to_table(
+        config = ConfigClass(
+            access_token=cls.AirtableConfig.access_token, 
+            base_id=cls.AirtableConfig.base_id
+        )
+        manager = AirtableManager(config)
+        return manager.sync_model_to_table(
             cls,
-            table_target,
+            table_name=table_target,
             create_missing_fields=create_missing_fields,
             update_field_types=update_field_types
         )
@@ -227,15 +234,20 @@ class AirtableModel(BaseModel, metaclass=AirtableModelMeta):
         Returns:
             Validation results
         """
-        from .table_manager import TableManager
+        from .manager import AirtableManager
+        from .config import AirtableConfig as ConfigClass
         
         if not cls.AirtableConfig:
             raise ConfigurationError(f"AirtableConfig not set for {cls.__name__}")
         
         table_target = table_id_or_name or cls.AirtableConfig.table_name or cls.__name__
         
-        table_manager = TableManager(cls.AirtableConfig.access_token, cls.AirtableConfig.base_id)
-        return table_manager.validate_pydantic_model_against_table(cls, table_target)
+        config = ConfigClass(
+            access_token=cls.AirtableConfig.access_token, 
+            base_id=cls.AirtableConfig.base_id
+        )
+        manager = AirtableManager(config)
+        return manager.validate_model_against_table(cls, table_name=table_target)
 
     @classmethod
     def _get_field_mappings(cls) -> Dict[str, Dict[str, Any]]:

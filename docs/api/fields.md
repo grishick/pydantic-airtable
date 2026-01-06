@@ -82,7 +82,17 @@ class AirtableFieldType(str, Enum):
 - `MODIFIED_TIME` - Last modification time
 - `CREATED_BY` - Creator user
 - `MODIFIED_BY` - Last modifier user
-- `AUTO_NUMBER` - Auto-incrementing number
+- `AUTO_NUMBER` - Auto-incrementing number (**Note**: Cannot be created via API, see below)
+
+!!! warning "AUTO_NUMBER API Limitation"
+    The Airtable public API does not support creating `AUTO_NUMBER` fields programmatically. To use auto-number fields:
+    
+    1. Create a `NUMBER` field via `create_table()` or `sync_table()`
+    2. Open your Airtable base in the browser
+    3. Click on the field header → "Customize field type"
+    4. Select "Auto number" to convert the field
+    
+    The converted field will then be read-only and auto-increment for each new record.
 
 #### Computed Fields
 - `FORMULA` - Computed formula

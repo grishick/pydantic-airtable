@@ -94,10 +94,10 @@ class Task(BaseModel):
     )
 
 
-# Example 2: User Model with Field Type Detection
-@airtable_model(table_name="Users")
-class User(BaseModel):
-    """User model demonstrating field type detection"""
+# Example 2: Employee Model with Field Type Detection
+@airtable_model(table_name="Employees")
+class Employee(BaseModel):
+    """Employee model demonstrating field type detection"""
     
     name: str                    # -> SINGLE_LINE_TEXT
     email: str                   # -> EMAIL (detected from field name!)
@@ -152,7 +152,7 @@ def demonstrate_table_creation():
     
     Creates tables in the correct order to handle LINKED_RECORD dependencies:
     1. Projects table (no dependencies)
-    2. Users table (no dependencies)
+    2. Employees table (no dependencies)
     3. Tasks table (depends on Projects for LINKED_RECORD field)
     """
     global _projects_table_id
@@ -162,7 +162,7 @@ def demonstrate_table_creation():
     print("="*60)
     
     print("\n💡 Creating tables in order to handle LINKED_RECORD dependencies...")
-    print("   Projects → Users → Tasks (Tasks links to Projects)")
+    print("   Projects → Employees → Tasks (Tasks links to Projects)")
     
     failed_tables = []
     
@@ -177,9 +177,9 @@ def demonstrate_table_creation():
         # Update Task model's linked_table_id for the project_ids field
         _update_task_linked_table_id(projects_table_id)
     
-    # Step 2: Create Users table (no dependencies)
-    print(f"\n📋 Step 2: Creating Users table...")
-    _create_or_get_table(User, "Users", failed_tables)
+    # Step 2: Create Employees table (no dependencies)
+    print(f"\n📋 Step 2: Creating Employees table...")
+    _create_or_get_table(Employee, "Employees", failed_tables)
     
     # Step 3: Create Tasks table (with LINKED_RECORD to Projects)
     print(f"\n📋 Step 3: Creating Tasks table (with link to Projects)...")
@@ -345,7 +345,7 @@ def demonstrate_crud_operations() -> bool:
     print("\n3️⃣ Creating sample users...")
     
     try:
-        user1 = User.create(
+        employee1 = Employee.create(
             name="Alice Johnson",
             email="alice@example.com",  # Auto-detected as EMAIL type
             phone="555-0123",           # Auto-detected as PHONE type 
@@ -355,7 +355,7 @@ def demonstrate_crud_operations() -> bool:
             salary=95000.0
         )
         
-        user2 = User.create(
+        employee2 = Employee.create(
             name="Bob Smith",
             email="bob@example.com",
             bio="Product manager focused on user experience",
@@ -363,7 +363,7 @@ def demonstrate_crud_operations() -> bool:
             salary=85000.0
         )
         
-        print(f"✅ Created users: {user1.name} and {user2.name}")
+        print(f"✅ Created employees: {employee1.name} and {employee2.name}")
     except Exception as user_error:
         print(f"❌ Failed to create users: {user_error}")
         success = False
@@ -381,13 +381,22 @@ def demonstrate_crud_operations() -> bool:
             if task.project_ids:
                 print(f"   📎 Task '{task.title}' linked to {len(task.project_ids)} project(s)")
         
-        # Find admin users
-        admin_users = User.find_by(is_admin=True)
-        print(f"📊 Admin users: {len(admin_users)}")
+        # Find admin employees
+        admin_employees = Employee.find_by(is_admin=True)
+        print(f"📊 Admin employees: {len(admin_employees)}")
         
         # Find active projects
         active_projects = Project.find_by(status="Active")
         print(f"📊 Active projects: {len(active_projects)}")
+        
+        # Multi-field filtering example: find high priority incomplete tasks
+        # find_by supports multiple field filters combined with AND logic
+        high_priority_incomplete = Task.find_by(priority=Priority.HIGH, completed=False)
+        print(f"📊 High priority incomplete tasks: {len(high_priority_incomplete)}")
+        
+        # Another multi-field example: find in-progress tasks with specific status
+        in_progress_tasks = Task.find_by(status=TaskStatus.IN_PROGRESS, completed=False)
+        print(f"📊 In-progress tasks (not completed): {len(in_progress_tasks)}")
     except Exception as query_error:
         print(f"❌ Failed during queries: {query_error}")
         success = False
@@ -511,10 +520,10 @@ def demonstrate_table_management() -> bool:
         assigned_to: Optional[str] = None  # Will be detected as SINGLE_LINE_TEXT
         notes: Optional[str] = None        # Will be detected as LONG_TEXT
     
-    # Define extended User model with new fields
-    @airtable_model(table_name="Users")
-    class UserExtended(BaseModel):
-        """Extended User model with additional fields for schema sync demo"""
+    # Define extended Employee model with new fields
+    @airtable_model(table_name="Employees")
+    class EmployeeExtended(BaseModel):
+        """Extended Employee model with additional fields for schema sync demo"""
         # Original fields
         name: str
         email: str
@@ -562,13 +571,13 @@ def demonstrate_table_management() -> bool:
     
     print("\n   📋 Extended models defined with new fields:")
     print("      • TaskExtended: +estimated_hours, +assigned_to, +notes")
-    print("      • UserExtended: +department, +hire_date, +is_active")
+    print("      • EmployeeExtended: +department, +hire_date, +is_active")
     print("      • ProjectExtended: +project_code, +risk_level, +notes")
     
     # Sync extended models
     extended_models = [
         ("Tasks", TaskExtended),
-        ("Users", UserExtended),
+        ("Employees", EmployeeExtended),
         ("Projects", ProjectExtended)
     ]
     
@@ -604,7 +613,7 @@ def demonstrate_table_management() -> bool:
     try:
         updated_schema = manager.get_base_schema()
         for table in updated_schema.get('tables', []):
-            if table['name'] in ['Tasks', 'Users', 'Projects']:
+            if table['name'] in ['Tasks', 'Employees', 'Projects']:
                 fields = table.get('fields', [])
                 print(f"\n   📋 {table['name']}: {len(fields)} fields")
                 for field in fields[:10]:  # Show first 10 fields

@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-01-06
+
+### Changed
+
+- **Consolidated Manager Classes**: Removed `BaseManager` and `TableManager` classes. All functionality is now available through the unified `AirtableManager` class.
+- **Renamed Example Table**: Changed `Users` table to `Employees` in the table_management example to avoid conflicts with the simple_usage example.
+
+### Fixed
+
+- **Multi-field Filtering**: Fixed `find_by()` method in `models.py` to correctly generate Airtable formulas when filtering by multiple fields. Now properly uses `AND(condition1, condition2)` syntax instead of invalid `condition1 AND condition2` syntax.
+
+### Added
+
+- **Multi-field Filter Examples**: Added examples demonstrating `find_by()` with multiple field filters in simple_usage and table_management examples.
+- **AUTO_NUMBER Documentation**: Added documentation noting that Airtable API does not support creating AUTO_NUMBER fields. Users must create NUMBER fields and convert them to Auto number in the Airtable UI.
+- **AUTO_NUMBER Warning**: Added runtime warning when attempting to create a table with an AUTO_NUMBER field, automatically substituting NUMBER type.
+
+---
+
 ## [1.0.0] - 2025-12-18
 
 ### Initial Release
@@ -93,4 +112,5 @@ First public release of Pydantic Airtable — the most intuitive way to integrat
 
 | Version | Date | Status |
 |---------|------|--------|
+| 1.0.1 | 2026-01-06 | Bug fixes & consolidation |
 | 1.0.0 | 2025-12-18 | Initial Release |

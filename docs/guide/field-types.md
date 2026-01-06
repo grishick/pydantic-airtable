@@ -173,6 +173,14 @@ These field types require explicit specification - they are not auto-detected:
 | BUTTON | Triggers automations (read-only) |
 | BARCODE | Stores barcode text |
 
+!!! warning "AUTO_NUMBER Field Limitation"
+    The Airtable public API does not support creating fields with type `AUTO_NUMBER`. If you need an auto-incrementing number field, you must:
+    
+    1. Create a `NUMBER` field via the API or model
+    2. Manually convert it to `Auto number` in the Airtable UI (Field settings → Convert to Auto number)
+    
+    Once converted, the field becomes read-only and auto-increments for new records.
+
 ### Complex Types
 
 | Python Type | Airtable Type |

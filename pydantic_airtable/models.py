@@ -162,7 +162,11 @@ class AirtableModel(BaseModel):
                 formula_parts.append(f"{{{airtable_field_name}}} = {value}")
         
         if formula_parts:
-            formula = " AND ".join(formula_parts)
+            # Use AND() function for multiple conditions, single condition without wrapper
+            if len(formula_parts) > 1:
+                formula = "AND(" + ", ".join(formula_parts) + ")"
+            else:
+                formula = formula_parts[0]
             return cls.all(filterByFormula=formula)
         
         return cls.all()

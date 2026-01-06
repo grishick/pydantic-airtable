@@ -175,7 +175,12 @@ class Task(BaseModel):
 # Usage
 Task.create_table()
 task = Task.create(title="Finish documentation", priority="High")
+
+# Single field filter
 incomplete_tasks = Task.find_by(completed=False)
+
+# Multi-field filter (combined with AND logic)
+high_priority_incomplete = Task.find_by(priority="High", completed=False)
 ```
 
 ### Contact Management

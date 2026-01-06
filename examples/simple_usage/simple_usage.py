@@ -113,6 +113,11 @@ def main():
         active_users = User.find_by(is_active=True)
         print(f"📊 Active users: {len(active_users)}")
         
+        # Multi-field filtering: find active users over 25
+        # find_by supports multiple fields combined with AND logic
+        active_over_25 = User.find_by(is_active=True, age=25)
+        print(f"📊 Active users age 25: {len(active_over_25)}")
+        
         # Get first inactive user  
         inactive_user = User.first(is_active=False)
         if inactive_user:
