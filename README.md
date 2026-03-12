@@ -461,6 +461,10 @@ Full documentation is available at **[pydantic-airtable.readthedocs.io](https://
 - [API Reference](https://pydantic-airtable.readthedocs.io/api/)
 - [Examples](https://pydantic-airtable.readthedocs.io/examples/)
 
+## 🦾 ClawBot Skill
+
+A [ClawBot skill](https://clawhub.ai/grishick/pydantic-airtable) is available for this library on ClawHub. Install it to give your ClawBot assistant specialized knowledge for building Pydantic–Airtable integrations, including model definitions, CRUD patterns, and field type detection.
+
 ## 🔗 Links
 
 - [Documentation](https://pydantic-airtable.readthedocs.io/)
